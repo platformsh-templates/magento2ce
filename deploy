@@ -1,0 +1,86 @@
+#!/usr/bin/python
+
+import base64
+import errno
+import json
+import os
+import subprocess
+
+relationships = json.loads(base64.b64decode(os.environ["PLATFORM_RELATIONSHIPS"]))
+routes = json.loads(base64.b64decode(os.environ["PLATFORM_ROUTES"]))
+
+for url, route in routes.iteritems():
+    if route["original_url"] == "https://{default}/":
+        break
+
+db = relationships["database"][0]
+redis = relationships["redis"][0]
+
+installed = os.path.exists(".config/installed")
+
+try:
+    os.unlink(".config/env.php")
+except OSError as exc:
+    if exc.errno != errno.ENOENT:
+        raise
+
+args = [
+    "php",
+    "bin/magento",
+    "setup:install",
+    "--ansi",
+    "--no-interaction",
+    "--base-url=%s" % url,
+    "--db-host=%s" % db["host"],
+    "--db-name=%s" % db["path"],
+    "--db-user=%s" % db["username"],
+    "--backend-frontname=admin",
+    "--language=en_US",
+    "--currency=USD",
+    "--timezone=Europe/Paris",
+    "--use-rewrites=1",
+    "--session-save=redis",
+    "--session-save-redis-host=%s" % redis["host"],
+    "--session-save-redis-port=%s" % redis["port"],
+    "--session-save-redis-db=0",
+    "--cache-backend=redis",
+    "--cache-backend-redis-server=%s" % redis["host"],
+    "--cache-backend-redis-port=%s" % redis["port"],
+    "--cache-backend-redis-db=1",
+    "--page-cache=redis",
+    "--page-cache-redis-server=%s" % redis["host"],
+    "--page-cache-redis-port=%s" % redis["port"],
+    "--page-cache-redis-db=2",
+    ]
+
+if not installed:
+    args += [
+        "--admin-firstname=admin",
+        "--admin-lastname=admin",
+        "--admin-email=admin@admin.com",
+        "--admin-user=admin",
+        "--admin-password=admin123",
+    ]
+
+subprocess.check_call(args)
+if not installed:
+    # Make sure that the admin will change their password on first login.
+    args = [
+        "mysql",
+        "-h%s" % db["host"],
+        "-u%s" % db["username"],
+        ]
+    if db["password"] != "":
+        args += [
+            "-p%s" % db["password"],
+            ]
+
+    args += [
+        db["path"],
+        "-e",
+        "insert into admin_passwords (user_id, expires, last_updated) values (1, 1, 1435156243);"
+    ]
+    subprocess.check_call(args)
+
+    with open(".config/installed", "wb") as f:
+        f.write("Thank you for your time!\n")
