@@ -4,7 +4,7 @@ https://{default}/:
 
 https://{default}/static/:
     type: upstream
-    upstream: magento:http
+    upstream: app:http
     cache:
         enabled: true
         cookies: []
