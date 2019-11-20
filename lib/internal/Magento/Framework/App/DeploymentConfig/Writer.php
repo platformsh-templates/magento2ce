@@ -143,7 +143,11 @@ class Writer
                 $contents = $this->formatter->format($config, $comments);
                 try {
                     $writeFilePath = $paths[$fileKey];
-                    $this->filesystem->getDirectoryWrite(DirectoryList::CONFIG)->writeFile($writeFilePath, $contents);
+                    $fullPath = implode(
+                        DIRECTORY_SEPARATOR,
+                        [DirectoryList::APP, DirectoryList::CONFIG, $writeFilePath]
+                    );
+                    file_put_contents($fullPath, $contents);
                 } catch (FileSystemException $e) {
                     throw new FileSystemException(
                         new Phrase('The "%1" deployment config file isn\'t writable.', [$paths[$fileKey]])

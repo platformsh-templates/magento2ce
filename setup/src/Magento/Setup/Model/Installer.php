@@ -497,6 +497,7 @@ class Installer
      */
     public function checkInstallationFilePermissions()
     {
+        return;
         $this->throwExceptionForNotWritablePaths(
             $this->filePermissions->getMissingWritablePathsForInstallation()
         );
@@ -885,6 +886,7 @@ class Installer
      */
     public function checkFilePermissionsForDbUpgrade()
     {
+        return;
         $this->throwExceptionForNotWritablePaths(
             $this->filePermissions->getMissingWritableDirectoriesForDbUpgrade()
         );
