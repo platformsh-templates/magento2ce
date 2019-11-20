@@ -90,6 +90,8 @@ class ConfigModel
      */
     public function process($inputOptions)
     {
+        $this->checkInstallationFilePermissions();
+
         $options = $this->collector->collectOptionsLists();
 
         foreach ($options as $moduleName => $option) {
@@ -148,5 +150,20 @@ class ConfigModel
         }
 
         return $errors;
+    }
+
+    /**
+     * Check permissions of directories that are expected to be writable for installation
+     *
+     * @return void
+     * @throws \Exception
+     */
+    private function checkInstallationFilePermissions()
+    {
+        $results = $this->filePermissions->getMissingWritablePathsForInstallation();
+        if ($results) {
+            $errorMsg = "Missing write permissions to the following paths:" . PHP_EOL . implode(PHP_EOL, $results);
+            throw new \Exception($errorMsg);
+        }
     }
 }

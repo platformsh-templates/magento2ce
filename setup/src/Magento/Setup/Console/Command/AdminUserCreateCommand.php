@@ -177,7 +177,6 @@ class AdminUserCreateCommand extends AbstractSetupCommand
      */
     public function getOptionsList($mode = InputOption::VALUE_REQUIRED)
     {
-        $mode = InputOption::VALUE_OPTIONAL;
         $requiredStr = ($mode === InputOption::VALUE_REQUIRED ? '(Required) ' : '');
 
         return [
@@ -222,7 +221,6 @@ class AdminUserCreateCommand extends AbstractSetupCommand
      */
     public function validate(InputInterface $input)
     {
-        return [];
         $errors = [];
         $user = new \Magento\Framework\DataObject();
         $user->setFirstname($input->getOption(AdminAccount::KEY_FIRST_NAME))

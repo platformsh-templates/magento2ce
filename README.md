@@ -1,29 +1,70 @@
-# Magento 2 Community Edition for Platform.sh
+[![Open Source Helpers](https://www.codetriage.com/magento/magento2/badges/users.svg)](https://www.codetriage.com/magento/magento2)
+[![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/magento/magento2?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
+[![Crowdin](https://d322cqt584bo4o.cloudfront.net/magento-2/localized.svg)](https://crowdin.com/project/magento-2)
+<h2>Welcome</h2>
+Welcome to Magento 2 installation! We're glad you chose to install Magento 2, a cutting-edge, feature-rich eCommerce solution that gets results.
 
-This template builds Magento 2 CE on Platform.sh.  It includes additional scripts to customize Magento to run effectively in a build-and-deploy environment.
+## Magento System Requirements
+[Magento System Requirements](https://devdocs.magento.com/guides/v2.3/install-gde/system-requirements.html).
 
-Magneto is a fully integrated ecommerce system and web store written in PHP.  This is the Open Source version.
+## Install Magento
 
-## Services
+*	[Installation Guide](https://devdocs.magento.com/guides/v2.3/install-gde/bk-install-guide.html).
 
-* PHP 7.2
-* MariaDB 10.2
-* Redis 3.2
+<h2>Contributing to the Magento 2 Code Base</h2>
+Contributions can take the form of new components or features, changes to existing features, tests, documentation (such as developer guides, user guides, examples, or specifications), bug fixes, optimizations, or just good suggestions.
 
-## Post-install
+To learn about how to make a contribution, click [here][1].
 
-1. The site comes pre-configured with an admin account, with username/password of `admin`/`admin123`.  Login at `/admin` in your browser.  **You will be required to update the password the first time you log in**.
+To learn about issues, click [here][2]. To open an issue, click [here][3].
 
-## Customizations
+To suggest documentation improvements, click [here][4].
 
-The following changes have been made relative to Magento 2 as it is downloaded from Magento.com.  If using this project as a reference for your own existing project, replicate the changes below to your project.
+[1]: <https://devdocs.magento.com/guides/v2.3/contributor-guide/contributing.html>
+[2]: <https://devdocs.magento.com/guides/v2.3/contributor-guide/contributing.html#report>
+[3]: <https://github.com/magento/magento2/issues>
+[4]: <https://devdocs.magento.com>
 
-* The `.platform.app.yaml`, `.platform/services.yaml`, and `.platform/routes.yaml` files have been added.  These provide Platform.sh-specific configuration and are present in all projects on Platform.sh.  You may customize them as you see fit.
-* An additional front controller is included in `pub/static-versioned.php` to serve static files.
-* A custom deploy script, written in Python, is provided in the `deploy` file and called from the deploy hook in `.platform.app.yaml`.  The `deploy` script handles installing Magento on first run, including populating the administrator account.  It also handles Magento self-updates on normal point release updates.  Do not modify or remove this file.
-* The installer has been patched to not ask for information that is already provided by Platform.sh, such as database credentials, file paths, or the initial administrator account.  These changes should have no impact post-installation.  See the [patch file](https://github.com/platformsh/template-builder/blob/master/magento2ce/platformsh.patch) for details.
+<h3>Community Maintainers</h3>
+The members of this team have been recognized for their outstanding commitment to maintaining and improving Magento. Magento has granted them permission to accept, merge, and reject pull requests, as well as review issues, and thanks these Community Maintainers for their valuable contributions.
 
-## References
+<a href="https://magento.com/magento-contributors#maintainers">
+    <img src="https://raw.githubusercontent.com/wiki/magento/magento2/images/maintainers.png"/>
+</a>
 
-* [Magento](https://magento.com/)
-* [PHP on Platform.sh](https://docs.platform.sh/languages/php.html)
+<h3>Top Contributors</h3>
+Magento is thankful for any contribution that can improve our code base, documentation or increase test coverage. We always recognize our most active members, as their contributions are the foundation of the Magento Open Source platform.
+<a href="https://magento.com/magento-contributors">
+    <img src="https://raw.githubusercontent.com/wiki/magento/magento2/images/contributors.png"/>
+</a>
+
+### Labels Applied by the Magento Team
+We apply labels to public Pull Requests and Issues to help other participants retrieve additional information about current progress, component assignments, Magento release lines, and much more.
+Please review the [Code Contributions guide](https://devdocs.magento.com/guides/v2.3/contributor-guide/contributing.html#labels) for detailed information on labels used in Magento 2 repositories.
+
+## Reporting Security Issues
+
+To report security vulnerabilities or learn more about reporting security issues in Magento software or web sites visit the [Magento Bug Bounty Program](https://hackerone.com/magento) on hackerone. Please create a hackerone account [there](https://hackerone.com/magento) to submit and follow-up your issue.
+
+Stay up-to-date on the latest security news and patches for Magento by signing up for [Security Alert Notifications](https://magento.com/security/sign-up).
+
+## License
+
+Each Magento source file included in this distribution is licensed under OSL 3.0 or the Magento Enterprise Edition (MEE) license.
+
+[Open Software License (OSL 3.0)](https://opensource.org/licenses/osl-3.0.php).
+Please see [LICENSE.txt](https://github.com/magento/magento2/blob/2.3-develop/LICENSE.txt) for the full text of the OSL 3.0 license or contact license@magentocommerce.com for a copy.
+
+Subject to Licensee's payment of fees and compliance with the terms and conditions of the MEE License, the MEE License supersedes the OSL 3.0 license for each source file.
+Please see LICENSE_EE.txt for the full text of the MEE License or visit https://magento.com/legal/terms/enterprise.
+
+## Community Engineering Slack
+
+To connect with Magento and the Community, join us on the [Magento Community Engineering Slack](https://magentocommeng.slack.com). If you are interested in joining Slack, or a specific channel, send us request at [engcom@adobe.com](mailto:engcom@adobe.com) or [self signup](https://tinyurl.com/engcom-slack).
+
+
+We have channels for each project. These channels are recommended for new members:
+
+- [general](https://magentocommeng.slack.com/messages/C4YS78WE6): Open chat for introductions and Magento 2 questions
+- [github](https://magentocommeng.slack.com/messages/C7KB93M32): Support for GitHub issues, pull requests, and processes
+- [public-backlog](https://magentocommeng.slack.com/messages/CCV3J3RV5): Discussions of the Magento 2 backlog
