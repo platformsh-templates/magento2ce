@@ -1,0 +1,9 @@
+<?php
+/**
+ * Copyright © Magento, Inc. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+?>
+<div class="order-date">
+    <?= $block->escapeHtml(__('<span class="label">Order Date:</span> %1', '<date>' . $block->formatDate($block->getOrder()->getCreatedAt(), \IntlDateFormatter::LONG) . '</date>'), ['span', 'date']) ?>
+</div>
