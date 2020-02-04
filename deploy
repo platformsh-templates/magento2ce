@@ -78,7 +78,7 @@ if not installed:
     args += [
         db["path"],
         "-e",
-        "insert into admin_passwords (user_id, expires, last_updated) values (1, 1, 1435156243);"
+        "insert into admin_passwords (user_id, password_hash, expires, last_updated) values (1, '123456789:2', 1, 1435156243);"
     ]
     subprocess.check_call(args)
 

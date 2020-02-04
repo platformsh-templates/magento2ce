@@ -60,6 +60,7 @@ hooks:
     deploy: |
         set -e
         ./deploy
+        php disable-cron-workers.php
 
 # The configuration of scheduled execution.
 crons:
@@ -102,4 +103,4 @@ workers:
         disk: 128
         commands:
             start: |
-                bin/magento queue:consumers:start --single-thread --max-messages=10000
+                bin/magento queue:consumers:start async.operations.all --single-thread --max-messages=10000
