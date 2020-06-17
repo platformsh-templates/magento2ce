@@ -6,15 +6,18 @@
 </a>
 </p>
 
-This template builds Magento 2 CE on Platform.sh.  It includes additional scripts to customize Magento to run effectively in a build-and-deploy environment.
+This template builds Magento 2 CE on Platform.sh.  It includes additional scripts to customize Magento to run effectively in a build-and-deploy environment.  A MariaDB database and Redis cache server come pre-configured and work out of the box.  The installer has been modified to not ask for database information.  Background workers are run using a worker container rather than via cron.
 
 Magento is a fully integrated ecommerce system and web store written in PHP.  This is the Open Source version.
 
-## Services
+## Features
 
 * PHP 7.2
 * MariaDB 10.2
 * Redis 3.2
+* Dedicated worker instance for background processing
+* Automatic TLS certificates
+* Composer-based build
 
 ## Post-install
 
