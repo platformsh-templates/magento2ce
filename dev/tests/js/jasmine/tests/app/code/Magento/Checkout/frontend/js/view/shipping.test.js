@@ -21,13 +21,14 @@ define(['squire', 'ko', 'jquery', 'jquery/validate'], function (Squire, ko, $) {
             closeModal: jasmine.createSpy()
         },
         country = {
-            indexedOptions: {
-                'AD': {
-                    label: 'Andorra',
-                    labeltitle: 'Andorra',
-                    value: 'AD'
-                }
-            }
+            /** Stub */
+            on: function () {},
+
+            /** Stub */
+            get: function () {},
+
+            /** Stub */
+            set: function () {}
         },
         mocks = {
             'Magento_Customer/js/model/customer': {
@@ -37,17 +38,7 @@ define(['squire', 'ko', 'jquery', 'jquery/validate'], function (Squire, ko, $) {
             'Magento_Checkout/js/model/address-converter': jasmine.createSpy(),
             'Magento_Checkout/js/model/quote': {
                 isVirtual: jasmine.createSpy(),
-                shippingMethod: ko.observable(),
-
-                /**
-                 * Stub
-                 */
-                shippingAddress: function () {
-
-                    return {
-                        'countryId': 'AD'
-                    };
-                }
+                shippingMethod: ko.observable()
             },
             'Magento_Checkout/js/action/create-shipping-address': jasmine.createSpy().and.returnValue(
                 jasmine.createSpyObj('newShippingAddress', ['getKey'])
@@ -94,7 +85,6 @@ define(['squire', 'ko', 'jquery', 'jquery/validate'], function (Squire, ko, $) {
                 provider: 'provName',
                 name: '',
                 index: '',
-                parentName: 'test',
                 popUpForm: {
                     options: {
                         buttons: {
@@ -212,6 +202,7 @@ define(['squire', 'ko', 'jquery', 'jquery/validate'], function (Squire, ko, $) {
                 $('body').append('<form data-role="email-with-possible-login">' +
                     '<input type="text" name="username" />' +
                     '</form>');
+
                 obj.source = {
                     get: jasmine.createSpy().and.returnValue(true),
                     set: jasmine.createSpy(),

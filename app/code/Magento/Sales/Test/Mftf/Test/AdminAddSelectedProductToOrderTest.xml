@@ -14,8 +14,8 @@
             <stories value="Admin create order"/>
             <title value="Add selected products to order in Admin when requested qty more than available"/>
             <description value="Trying to add selected products to order in Admin when requested qty more than available"/>
-            <useCaseId value="MC-29851"/>
-            <testCaseId value="MC-29797"/>
+            <useCaseId value="MC-29184"/>
+            <testCaseId value="MC-31589"/>
             <severity value="MAJOR"/>
             <group value="sales"/>
             <group value="catalogInventory"/>
@@ -23,12 +23,12 @@
         <before>
             <createData entity="Simple_US_Customer" stepKey="simpleCustomer"/>
             <createData entity="SimpleProduct2" stepKey="simpleProduct"/>
-            <actionGroup ref="LoginAsAdmin" stepKey="loginAsAdmin"/>
+            <actionGroup ref="AdminLoginActionGroup" stepKey="loginAsAdmin"/>
         </before>
         <after>
             <deleteData createDataKey="simpleCustomer" stepKey="deleteSimpleCustomer"/>
             <deleteData createDataKey="simpleProduct" stepKey="deleteSimpleProduct"/>
-            <actionGroup ref="logout" stepKey="logoutFromAdmin"/>
+            <actionGroup ref="AdminLogoutActionGroup" stepKey="logoutFromAdmin"/>
         </after>
 
         <!-- Initiate create new order -->
@@ -70,9 +70,6 @@
             <argument name="productQty" value="1"/>
         </actionGroup>
         <!-- Check that error remains -->
-        <actionGroup ref="AssertAdminItemOrderedErrorActionGroup" stepKey="assertProductErrorRemains">
-            <argument name="productName" value="$simpleProduct.name$"/>
-            <argument name="messageType" value="notice"/>
-        </actionGroup>
+        <see userInput="The requested qty is not available" stepKey="assertProductErrorRemains"/>
     </test>
 </tests>

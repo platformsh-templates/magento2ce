@@ -8,10 +8,10 @@
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
     <system>
         <section id="payment">
-            <group id="account" translate="label" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="0">
+            <group id="account" translate="label" sortOrder="1" showInDefault="1" showInWebsite="1">
                 <label>Merchant Location</label>
                 <frontend_model>Magento\Paypal\Block\Adminhtml\System\Config\Fieldset\Expanded</frontend_model>
-                <field id="merchant_country" type="select" translate="label comment" sortOrder="5" showInDefault="1" showInWebsite="1" showInStore="0">
+                <field id="merchant_country" type="select" translate="label comment" sortOrder="5" showInDefault="1" showInWebsite="1">
                     <label>Merchant Country</label>
                     <comment>If not specified, Default Country from General Config will be used.</comment>
                     <frontend_model>Magento\Paypal\Block\Adminhtml\System\Config\Field\Country</frontend_model>
@@ -34,13 +34,6 @@
                 <label>Other Payment Methods:</label>
                 <attribute type="expanded">1</attribute>
                 <fieldset_css>paypal-top-section payments-other-header</fieldset_css>
-                <frontend_model>\Magento\Config\Block\System\Config\Form\Fieldset</frontend_model>
-            </group>
-            <group id="deprecated_payment_methods" translate="label" sortOrder="5" showInDefault="1" showInWebsite="1" showInStore="1">
-                <label>Deprecated Payment Methods:</label>
-                <comment><![CDATA[These payment methods have been deprecated because they are no longer compliant. We recommend that these payment method to be disabled to prevent new orders, since the payment processor might not support them. Please migrate to the official payment methods extensions from Magento Marketplace instead and disable deprecated payment integrations as soon as possible.]]></comment>
-                <attribute type="expanded">1</attribute>
-                <fieldset_css>paypal-top-section payments-other-header deprecated-message</fieldset_css>
                 <frontend_model>\Magento\Config\Block\System\Config\Form\Fieldset</frontend_model>
             </group>
         </section>
@@ -82,7 +75,7 @@
                     <label>Payments Pro</label>
                     <attribute type="activity_path">payment/paypal_payment_pro/active</attribute>
                     <group id="configuration_details">
-                        <comment>https://docs.magento.com/m2/ce/user_guide/payment/paypal-payments-pro.html</comment>
+                        <comment>https://docs.magento.com/user-guide/payment/paypal-payments-pro.html</comment>
                     </group>
                     <group id="paypal_payflow_required" showInDefault="1" showInWebsite="1" sortOrder="10">
                         <field id="enable_paypal_payflow">
@@ -102,7 +95,7 @@
                     <comment>Accept credit card and PayPal payments securely.</comment>
                     <attribute type="activity_path">payment/wps_express/active</attribute>
                     <group id="configuration_details">
-                        <comment>https://docs.magento.com/m2/ce/user_guide/payment/paypal-payments-standard.html</comment>
+                        <comment>https://docs.magento.com/user-guide/payment/paypal-payments-standard.html</comment>
                     </group>
                     <group id="express_checkout_required">
                         <group id="express_checkout_required_express_checkout">
@@ -181,7 +174,7 @@
                     <comment>Accept credit card and PayPal payments securely.</comment>
                     <attribute type="activity_path">payment/wps_express/active</attribute>
                     <group id="configuration_details">
-                        <comment>https://docs.magento.com/m2/ce/user_guide/payment/paypal-payments-standard.html</comment>
+                        <comment>https://docs.magento.com/user-guide/payment/paypal-payments-standard.html</comment>
                     </group>
                     <group id="express_checkout_required">
                         <group id="express_checkout_required_express_checkout" translate="label">
@@ -252,7 +245,7 @@
                     <comment>Accept credit card and PayPal payments securely.</comment>
                     <attribute type="activity_path">payment/wps_express/active</attribute>
                     <group id="configuration_details">
-                        <comment>https://docs.magento.com/m2/ce/user_guide/payment/paypal-payments-standard.html</comment>
+                        <comment>https://docs.magento.com/user-guide/payment/paypal-payments-standard.html</comment>
                     </group>
                     <group id="express_checkout_required">
                         <group id="express_checkout_required_express_checkout" translate="label">
@@ -297,7 +290,7 @@
                     <label>Website Payments Pro</label>
                     <attribute type="activity_path">payment/paypal_payment_pro/active</attribute>
                     <group id="configuration_details">
-                        <comment>https://docs.magento.com/m2/ce/user_guide/payment/paypal-payments-pro.html</comment>
+                        <comment>https://docs.magento.com/user-guide/payment/paypal-payments-pro.html</comment>
                     </group>
                     <group id="paypal_payflow_required" translate="label" showInDefault="1" showInWebsite="1" sortOrder="10">
                         <group id="paypal_payflow_api_settings">

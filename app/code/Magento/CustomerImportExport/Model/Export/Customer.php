@@ -27,9 +27,8 @@ class Customer extends \Magento\ImportExport\Model\Export\Entity\AbstractEav
 
     const COLUMN_STORE = '_store';
 
-    /** Attribute collection name.
-     *
-     * Used to resolve entity attribute collection.
+    /**
+     * Attribute collection name
      */
     const ATTRIBUTE_COLLECTION_NAME = \Magento\Customer\Model\ResourceModel\Attribute\Collection::class;
 
@@ -140,12 +139,12 @@ class Customer extends \Magento\ImportExport\Model\Export\Entity\AbstractEav
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     protected function _getHeaderColumns()
     {
         $validAttributeCodes = $this->_getExportAttributeCodes();
-        return array_merge($this->_permanentAttributes, $validAttributeCodes);
+        return array_merge($this->_permanentAttributes, $validAttributeCodes, ['password']);
     }
 
     /**

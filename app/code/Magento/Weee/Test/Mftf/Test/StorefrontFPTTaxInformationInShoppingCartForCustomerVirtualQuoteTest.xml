@@ -16,7 +16,7 @@
             <description value="Tax information are updating/recalculating on fly in shopping cart for Customer with default addresses (virtual quote)"/>
             <severity value="CRITICAL"/>
             <useCaseId value="MC-294"/>
-            <testCaseId value="MC-16525"/>
+            <testCaseId value="MC-28585"/>
             <group value="checkout"/>
             <group value="tax"/>
             <group value="weee"/>
@@ -40,10 +40,8 @@
             <!-- Customer is created with default addresses: -->
             <createData entity="Simple_US_Customer_NY" stepKey="createCustomer"/>
 
-            <actionGroup ref="LoginAsAdmin" stepKey="loginAsAdmin"/>
-            <!-- Delete all catalog price rules that can (and actually do) affect this test-->
-            <actionGroup ref="AdminCatalogPriceRuleDeleteAllActionGroup" stepKey="deleteAllCatalogPriceRule"/>
-            <actionGroup ref="CliRunReindexUsingCronJobsActionGroup" stepKey="reindexBrokenIndices"/>
+            <actionGroup ref="AdminLoginActionGroup" stepKey="loginAsAdmin"/>
+            <magentoCron groups="index" stepKey="reindexBrokenIndices"/>
         </before>
 
         <after>
@@ -54,8 +52,8 @@
             <createData entity="DefaultTaxConfig" stepKey="defaultTaxConfiguration"/>
             <deleteData createDataKey="createVirtualProduct" stepKey="deleteVirtualProduct"/>
             <deleteData createDataKey="createCustomer" stepKey="deleteCustomer"/>
-            <actionGroup ref="logout" stepKey="logoutFromAdmin"/>
-            <actionGroup ref="CliRunReindexUsingCronJobsActionGroup" stepKey="reindexBrokenIndices"/>
+            <actionGroup ref="AdminLogoutActionGroup" stepKey="logoutFromAdmin"/>
+            <magentoCron groups="index" stepKey="reindexBrokenIndices"/>
         </after>
 
         <!--  Test Steps  -->
@@ -66,11 +64,11 @@
         <!--  Step 2: Add virtual product to shopping cart -->
         <amOnPage url="{{StorefrontProductPage.url($createVirtualProduct.custom_attributes[url_key]$)}}" stepKey="amOnStorefrontVirtualProductPage"/>
         <waitForPageLoad stepKey="waitForPageLoad"/>
-        <actionGroup ref="addToCartFromStorefrontProductPage" stepKey="cartAddVirtualProductToCart">
+        <actionGroup ref="AddToCartFromStorefrontProductPageActionGroup" stepKey="cartAddVirtualProductToCart">
             <argument name="productName" value="$createVirtualProduct.name$"/>
         </actionGroup>
         <!--  Step 3: Go to Shopping Cart -->
-        <actionGroup ref="clickViewAndEditCartFromMiniCart" stepKey="goToShoppingCartFromMinicart"/>
+        <actionGroup ref="ClickViewAndEditCartFromMiniCartActionGroup" stepKey="goToShoppingCartFromMinicart"/>
         <!--  Step 4: Open Estimate Shipping and Tax section -->
         <actionGroup ref="AssertStorefrontCheckoutCartEstimateShippingAndTaxAddressActionGroup" stepKey="checkAddress">
             <argument name="country" value="{{US_Address_NY.country}}"/>

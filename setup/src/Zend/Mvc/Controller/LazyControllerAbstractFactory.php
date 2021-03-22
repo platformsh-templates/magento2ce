@@ -1,8 +1,8 @@
 <?php
 /**
- * @link      http://github.com/zendframework/zend-mvc for the canonical source repository
+ * @link      http://github.com/laminas/laminas-mvc for the canonical source repository
  * @copyright Copyright (c) 2005-2018 Zend Technologies USA Inc. (http://www.zend.com)
- * @license   https://github.com/zendframework/zend-mvc/blob/master/LICENSE.md New BSD License
+ * @license   https://github.com/laminas/laminas-mvc/blob/master/LICENSE.md New BSD License
  * @SuppressWarnings(PHPMD)
  */
 
@@ -11,8 +11,6 @@ declare(strict_types=1);
 namespace Zend\Mvc\Controller;
 
 use Interop\Container\ContainerInterface;
-use ReflectionClass;
-use ReflectionParameter;
 use Laminas\Console\Adapter\AdapterInterface as ConsoleAdapterInterface;
 use Laminas\Filter\FilterPluginManager;
 use Laminas\Hydrator\HydratorPluginManager;
@@ -27,6 +25,8 @@ use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use Laminas\Stdlib\DispatchableInterface;
 use Laminas\Validator\ValidatorPluginManager;
+use ReflectionClass;
+use ReflectionParameter;
 
 /**
  * Reflection-based factory for controllers.
@@ -169,7 +169,7 @@ class LazyControllerAbstractFactory implements AbstractFactoryInterface
             }
 
             if (! $parameter->getClass()) {
-                return;
+                return null;
             }
 
             $type = $parameter->getClass()->getName();

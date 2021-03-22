@@ -31,14 +31,15 @@
             <actionGroup ref="StorefrontCustomerLogoutActionGroup" stepKey="customerLogoutStorefront"/>
         </before>
         <after>
+            <!-- Logout customer -->
+            <actionGroup ref="StorefrontCustomerLogoutActionGroup" stepKey="logoutStorefront"/>
             <deleteData createDataKey="createCustomer" stepKey="deleteCustomer"/>
             <!-- Delete product and category -->
             <deleteData createDataKey="createProduct" stepKey="deleteProduct"/>
             <deleteData createDataKey="createCategory" stepKey="deleteCategory"/>
             <actionGroup ref="AdminOrdersGridClearFiltersActionGroup" stepKey="clearOrderListingFilters"/>
-            <actionGroup ref="logout" stepKey="logoutAdmin"/>
-            <!-- Logout customer -->
-            <actionGroup ref="StorefrontCustomerLogoutActionGroup" stepKey="customerLogoutStorefront"/>
+            <actionGroup ref="AdminLogoutActionGroup" stepKey="logoutAdmin"/>
+            <comment userInput="BIC workaround" stepKey="customerLogoutStorefront"/>
         </after>
 
         <!-- Login Customer Storefront -->
@@ -115,9 +116,7 @@
         <see selector="{{CheckoutPaymentSection.ProductOptionsActiveByProductItemName($$createProduct.name$$)}}" userInput="1:00 AM" stepKey="seeProductOptionTimeInput" />
         <!--Select shipping method-->
         <actionGroup ref="CheckoutSelectFlatRateShippingMethodActionGroup" stepKey="selectFlatRateShippingMethod"/>
-        <waitForElement selector="{{CheckoutShippingSection.next}}" time="30" stepKey="waitForNextButton"/>
-        <click selector="{{CheckoutShippingSection.next}}" stepKey="clickNext"/>
-        <waitForLoadingMaskToDisappear stepKey="waitForLoadingMaskAfterClickNext"/>
+        <actionGroup ref="StorefrontCheckoutClickNextOnShippingStepActionGroup" stepKey="clickNext"/>
         <!--Select payment method-->
         <actionGroup ref="CheckoutSelectCheckMoneyOrderPaymentActionGroup" stepKey="selectPaymentMethod"/>
         <!-- Place Order -->
@@ -128,9 +127,9 @@
 
         <!-- Login to Admin and open Order -->
 
-        <actionGroup ref="LoginAsAdmin" stepKey="loginAsAdmin1"/>
+        <actionGroup ref="AdminLoginActionGroup" stepKey="loginAsAdmin1"/>
 
-        <actionGroup ref="filterOrderGridById" stepKey="filterByOrderId">
+        <actionGroup ref="FilterOrderGridByIdActionGroup" stepKey="filterByOrderId">
             <argument name="orderId" value="$grabOrderNumber"/>
         </actionGroup>
         <click selector="{{AdminDataGridTableSection.firstRow}}" stepKey="clickOrderRow"/>
@@ -154,7 +153,7 @@
 
         <click selector="{{AdminOrderDetailsMainActionsSection.reorder}}" stepKey="clickReorder"/>
         <actionGroup ref="AdminCheckoutSelectCheckMoneyOrderBillingMethodActionGroup" stepKey="selectBillingMethod"/>
-        <click selector="{{AdminOrderFormActionSection.SubmitOrder}}" stepKey="trySubmitOrder"/>
+        <actionGroup ref="AdminOrderClickSubmitOrderActionGroup" stepKey="trySubmitOrder" />
 
         <see selector="{{AdminOrderItemsOrderedSection.productNameOptions}}" userInput="{{ProductOptionField.title}}" stepKey="seeAdminOrderProductOptionField1" />
         <see selector="{{AdminOrderItemsOrderedSection.productNameOptions}}" userInput="{{ProductOptionArea.title}}" stepKey="seeAdminOrderProductOptionArea1"/>

@@ -21,6 +21,7 @@ class CspUtilTest extends AbstractController
      *
      * @return void
      * @magentoConfigFixture default_store csp/mode/storefront/report_only 0
+     * @magentoConfigFixture default_store csp/policies/storefront/scripts/inline 0
      */
     public function testPhtmlHelper(): void
     {
@@ -28,11 +29,14 @@ class CspUtilTest extends AbstractController
         $this->dispatch('csputil/csp/helper');
         $content = $this->getResponse()->getContent();
 
-        $this->assertContains('<script src="http://my.magento.com/static/script.js" />', $content);
-        $this->assertContains("<script>\n    let myVar = 1;\n</script>", $content);
+        $this->assertStringContainsString(
+            '<script src="http&#x3A;&#x2F;&#x2F;my.magento.com&#x2F;static&#x2F;script.js"/>',
+            $content
+        );
+        $this->assertStringContainsString("<script>\n    let myVar = 1;\n</script>", $content);
         $header = $this->getResponse()->getHeader('Content-Security-Policy');
         $this->assertNotEmpty($header);
-        $this->assertContains('http://my.magento.com', $header->getFieldValue());
-        $this->assertContains('\'sha256-H4RRnauTM2X2Xg/z9zkno1crqhsaY3uKKu97uwmnXXE=\'', $header->getFieldValue());
+        $this->assertStringContainsString('http://my.magento.com', $header->getFieldValue());
+        $this->assertStringContainsString('\'sha256-H4RRnauTM2X2Xg/z9zkno1crqhsaY3uKKu97uwmnXXE=\'', $header->getFieldValue());
     }
 }

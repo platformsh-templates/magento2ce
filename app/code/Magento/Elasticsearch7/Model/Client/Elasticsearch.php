@@ -7,6 +7,7 @@ declare(strict_types=1);
 
 namespace Magento\Elasticsearch7\Model\Client;
 
+use Magento\Elasticsearch\Model\Adapter\FieldsMappingPreprocessorInterface;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\AdvancedSearch\Model\Client\ClientInterface;
 
@@ -33,18 +34,27 @@ class Elasticsearch implements ClientInterface
     private $pingResult;
 
     /**
+     * @var FieldsMappingPreprocessorInterface[]
+     */
+    private $fieldsMappingPreprocessors;
+
+    /**
      * Initialize Elasticsearch 7 Client
      *
      * @param array $options
      * @param \Elasticsearch\Client|null $elasticsearchClient
+     * @param array $fieldsMappingPreprocessors
      * @throws LocalizedException
      */
     public function __construct(
         $options = [],
-        $elasticsearchClient = null
+        $elasticsearchClient = null,
+        $fieldsMappingPreprocessors = []
     ) {
-        if (empty($options['hostname']) || ((!empty($options['enableAuth']) &&
-                    ($options['enableAuth'] == 1)) && (empty($options['username']) || empty($options['password'])))) {
+        if (empty($options['hostname'])
+            || ((!empty($options['enableAuth']) && ($options['enableAuth'] == 1))
+                && (empty($options['username']) || empty($options['password'])))
+        ) {
             throw new LocalizedException(
                 __('The search failed because of a search engine misconfiguration.')
             );
@@ -54,6 +64,7 @@ class Elasticsearch implements ClientInterface
             $this->client[getmypid()] = $elasticsearchClient;
         }
         $this->clientOptions = $options;
+        $this->fieldsMappingPreprocessors = $fieldsMappingPreprocessors;
     }
 
     /**
@@ -62,7 +73,7 @@ class Elasticsearch implements ClientInterface
      * @param array $query
      * @return array
      */
-    public function suggest(array $query) : array
+    public function suggest(array $query): array
     {
         return $this->getElasticsearchClient()->suggest($query);
     }
@@ -87,7 +98,7 @@ class Elasticsearch implements ClientInterface
      *
      * @return bool
      */
-    public function ping() : bool
+    public function ping(): bool
     {
         if ($this->pingResult === null) {
             $this->pingResult = $this->getElasticsearchClient()
@@ -102,7 +113,7 @@ class Elasticsearch implements ClientInterface
      *
      * @return bool
      */
-    public function testConnection() : bool
+    public function testConnection(): bool
     {
         return $this->ping();
     }
@@ -113,7 +124,7 @@ class Elasticsearch implements ClientInterface
      * @param array $options
      * @return array
      */
-    private function buildESConfig(array $options = []) : array
+    private function buildESConfig(array $options = []): array
     {
         $hostname = preg_replace('/http[s]?:\/\//i', '', $options['hostname']);
         // @codingStandardsIgnoreStart
@@ -169,6 +180,23 @@ class Elasticsearch implements ClientInterface
     }
 
     /**
+     * Add/update an Elasticsearch index settings.
+     *
+     * @param string $index
+     * @param array $settings
+     * @return void
+     */
+    public function putIndexSettings(string $index, array $settings): void
+    {
+        $this->getElasticsearchClient()->indices()->putSettings(
+            [
+                'index' => $index,
+                'body' => $settings,
+            ]
+        );
+    }
+
+    /**
      * Delete an Elasticsearch 7 index.
      *
      * @param string $index
@@ -185,12 +213,13 @@ class Elasticsearch implements ClientInterface
      * @param string $index
      * @return bool
      */
-    public function isEmptyIndex(string $index) : bool
+    public function isEmptyIndex(string $index): bool
     {
         $stats = $this->getElasticsearchClient()->indices()->stats(['index' => $index, 'metric' => 'docs']);
-        if ($stats['indices'][$index]['primaries']['docs']['count'] ===  0) {
+        if ($stats['indices'][$index]['primaries']['docs']['count'] === 0) {
             return true;
         }
+
         return false;
     }
 
@@ -225,7 +254,7 @@ class Elasticsearch implements ClientInterface
      * @param string $index
      * @return bool
      */
-    public function indexExists(string $index) : bool
+    public function indexExists(string $index): bool
     {
         return $this->getElasticsearchClient()->indices()->exists(['index' => $index]);
     }
@@ -237,12 +266,13 @@ class Elasticsearch implements ClientInterface
      * @param string $index
      * @return bool
      */
-    public function existsAlias(string $alias, string $index = '') : bool
+    public function existsAlias(string $alias, string $index = ''): bool
     {
         $params = ['name' => $alias];
         if ($index) {
             $params['index'] = $index;
         }
+
         return $this->getElasticsearchClient()->indices()->existsAlias($params);
     }
 
@@ -252,7 +282,7 @@ class Elasticsearch implements ClientInterface
      * @param string $alias
      * @return array
      */
-    public function getAlias(string $alias) : array
+    public function getAlias(string $alias): array
     {
         return $this->getElasticsearchClient()->indices()->getAlias(['name' => $alias]);
     }
@@ -273,18 +303,14 @@ class Elasticsearch implements ClientInterface
             'include_type_name' => true,
             'body' => [
                 $entityType => [
-                    'properties' => [
-                        '_search' => [
-                            'type' => 'text'
-                        ],
-                    ],
+                    'properties' => [],
                     'dynamic_templates' => [
                         [
                             'price_mapping' => [
                                 'match' => 'price_*',
                                 'match_mapping_type' => 'string',
                                 'mapping' => [
-                                    'type' => 'float',
+                                    'type' => 'double',
                                     'store' => true,
                                 ],
                             ],
@@ -306,7 +332,15 @@ class Elasticsearch implements ClientInterface
                                 'mapping' => [
                                     'type' => 'text',
                                     'index' => true,
-                                    'copy_to' => '_search'
+                                    'copy_to' => '_search',
+                                ],
+                            ],
+                        ],
+                        [
+                            'integer_mapping' => [
+                                'match_mapping_type' => 'long',
+                                'mapping' => [
+                                    'type' => 'integer',
                                 ],
                             ],
                         ],
@@ -315,7 +349,7 @@ class Elasticsearch implements ClientInterface
             ],
         ];
 
-        foreach ($fields as $field => $fieldInfo) {
+        foreach ($this->applyFieldsMappingPreprocessors($fields) as $field => $fieldInfo) {
             $params['body'][$entityType]['properties'][$field] = $fieldInfo;
         }
 
@@ -328,9 +362,20 @@ class Elasticsearch implements ClientInterface
      * @param array $query
      * @return array
      */
-    public function query(array $query) : array
+    public function query(array $query): array
     {
         return $this->getElasticsearchClient()->search($query);
+    }
+
+    /**
+     * Get mapping from Elasticsearch index.
+     *
+     * @param array $params
+     * @return array
+     */
+    public function getMapping(array $params): array
+    {
+        return $this->getElasticsearchClient()->indices()->getMapping($params);
     }
 
     /**
@@ -348,5 +393,19 @@ class Elasticsearch implements ClientInterface
                 'type' => $entityType,
             ]
         );
+    }
+
+    /**
+     * Apply fields mapping preprocessors
+     *
+     * @param array $properties
+     * @return array
+     */
+    private function applyFieldsMappingPreprocessors(array $properties): array
+    {
+        foreach ($this->fieldsMappingPreprocessors as $preprocessor) {
+            $properties = $preprocessor->process($properties);
+        }
+        return $properties;
     }
 }

@@ -1286,15 +1286,6 @@ class Nvp extends \Magento\Paypal\Model\Api\AbstractApi
         );
         $this->_logger->critical($exceptionLogMessage);
 
-        /**
-         * The response code 10415 'Transaction has already been completed for this token'
-         * must not fails place order. The old Paypal interface does not lock 'Send' button
-         * it may result to re-send data.
-         */
-        if (in_array((string)ProcessableException::API_TRANSACTION_HAS_BEEN_COMPLETED, $this->_callErrors)) {
-            return;
-        }
-
         $exceptionPhrase = __('PayPal gateway has rejected request. %1', $errorMessages);
 
         /** @var \Magento\Framework\Exception\LocalizedException $exception */
@@ -1423,7 +1414,7 @@ class Nvp extends \Magento\Paypal\Model\Api\AbstractApi
      */
     protected function _deformatNVP($nvpstr)
     {
-        $intial = 0;
+        $initial = 0;
         $nvpArray = [];
 
         $nvpstr = strpos($nvpstr, "\r\n\r\n") !== false ? substr($nvpstr, strpos($nvpstr, "\r\n\r\n") + 4) : $nvpstr;
@@ -1435,7 +1426,7 @@ class Nvp extends \Magento\Paypal\Model\Api\AbstractApi
             $valuepos = strpos($nvpstr, '&') ? strpos($nvpstr, '&') : strlen($nvpstr);
 
             /*getting the Key and Value values and storing in a Associative Array*/
-            $keyval = substr($nvpstr, $intial, $keypos);
+            $keyval = substr($nvpstr, $initial, $keypos);
             $valval = substr($nvpstr, $keypos + 1, $valuepos - $keypos - 1);
             //decoding the response
             $nvpArray[urldecode($keyval)] = urldecode($valval);
@@ -1513,12 +1504,13 @@ class Nvp extends \Magento\Paypal\Model\Api\AbstractApi
         // attempt to fetch region_id from directory
         if ($address->getCountryId() && $address->getRegion()) {
             $regions = $this->_countryFactory->create()
+                ->loadByCode($address->getCountryId())
                 ->getRegionCollection()
-                ->addCountryFilter($address->getCountryId())
                 ->addRegionCodeOrNameFilter($address->getRegion())
                 ->setPageSize(1);
-            $regionItems = $regions->getItems();
-            if (count($regionItems)) {
+
+            if ($regions->count()) {
+                $regionItems = $regions->getItems();
                 $region = array_shift($regionItems);
                 $address->setRegionId($region->getId());
                 $address->setExportedKeys(array_merge($address->getExportedKeys(), ['region_id']));

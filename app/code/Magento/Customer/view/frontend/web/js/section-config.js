@@ -50,7 +50,7 @@ define(['underscore'], function (_) {
                     return route.indexOf(section) === 0;
                 });
 
-            return _.union(_.toArray(actions), _.toArray(sections['*']));
+            return _.union(_.toArray(actions), sections['*']);
         },
 
         /**
@@ -59,7 +59,7 @@ define(['underscore'], function (_) {
          * @return {Array} - List of filtered sections.
          */
         filterClientSideSections: function (allSections) {
-            return _.difference(_.toArray(allSections), clientSideSections);
+            return _.difference(allSections, clientSideSections);
         },
 
         /**

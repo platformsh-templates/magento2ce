@@ -73,6 +73,11 @@ class ProcessCronQueueObserver implements ObserverInterface
     const LOCK_PREFIX = 'CRON_';
 
     /**
+     * Timer ID for profiling
+     */
+    const CRON_TIMERID = 'job %s';
+
+    /**
      * Max retries for acquire locks for cron jobs
      */
     const MAX_RETRIES = 5;
@@ -341,7 +346,7 @@ class ProcessCronQueueObserver implements ObserverInterface
             $schedule->getResource()->getConnection()
         );
 
-        $this->startProfiling();
+        $this->startProfiling($jobCode);
         $this->eventManager->dispatch('cron_job_run', ['job_name' => 'cron/' . $groupId . '/' . $jobCode]);
 
         try {
@@ -355,7 +360,7 @@ class ProcessCronQueueObserver implements ObserverInterface
                     'Cron Job %s has an error: %s. Statistics: %s',
                     $jobCode,
                     $e->getMessage(),
-                    $this->getProfilingStat()
+                    $this->getProfilingStat($jobCode)
                 )
             );
             if (!$e instanceof \Exception) {
@@ -367,7 +372,7 @@ class ProcessCronQueueObserver implements ObserverInterface
             }
             throw $e;
         } finally {
-            $this->stopProfiling();
+            $this->stopProfiling($jobCode);
         }
 
         $schedule->setStatus(
@@ -383,7 +388,7 @@ class ProcessCronQueueObserver implements ObserverInterface
             sprintf(
                 'Cron Job %s is successfully finished. Statistics: %s',
                 $jobCode,
-                $this->getProfilingStat()
+                $this->getProfilingStat($jobCode)
             )
         );
     }
@@ -391,32 +396,47 @@ class ProcessCronQueueObserver implements ObserverInterface
     /**
      * Starts profiling
      *
+     * @param string $jobName
      * @return void
      */
-    private function startProfiling()
+    private function startProfiling(string $jobName = '')
     {
         $this->statProfiler->clear();
-        $this->statProfiler->start('job', microtime(true), memory_get_usage(true), memory_get_usage());
+        $this->statProfiler->start(
+            sprintf(self::CRON_TIMERID, $jobName),
+            microtime(true),
+            memory_get_usage(true),
+            memory_get_usage()
+        );
     }
 
     /**
      * Stops profiling
      *
+     * @param string $jobName
      * @return void
      */
-    private function stopProfiling()
+    private function stopProfiling(string $jobName = '')
     {
-        $this->statProfiler->stop('job', microtime(true), memory_get_usage(true), memory_get_usage());
+        $this->statProfiler->stop(
+            sprintf(self::CRON_TIMERID, $jobName),
+            microtime(true),
+            memory_get_usage(true),
+            memory_get_usage()
+        );
     }
 
     /**
      * Retrieves statistics in the JSON format
      *
+     * @param string $jobName
      * @return string
      */
-    private function getProfilingStat()
+    private function getProfilingStat(string $jobName): string
     {
-        $stat = $this->statProfiler->get('job');
+        $stat = $this->statProfiler->get(
+            sprintf(self::CRON_TIMERID, $jobName)
+        );
         unset($stat[Stat::START]);
         return json_encode($stat);
     }
@@ -547,7 +567,7 @@ class ProcessCronQueueObserver implements ObserverInterface
                 [
                     'status = ?' => $status,
                     'job_code in (?)' => array_keys($jobs),
-                    'created_at < ?' => $this->_scheduleFactory
+                    'scheduled_at < ?' => $this->_scheduleFactory
                         ->create()
                         ->getResource()
                         ->getConnection()

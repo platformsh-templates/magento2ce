@@ -12,10 +12,11 @@ use Magento\Checkout\Model\Session as CheckoutSession;
 use Magento\Framework\TestFramework\Unit\Helper\ObjectManager as ObjectManagerHelper;
 use Magento\Framework\View\LayoutInterface;
 use Magento\PageCache\Model\DepersonalizeChecker;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 /**
- * Tests \Magento\Checkout\Model\Layout\DepersonalizePlugin.
+ * Unit tests for \Magento\Checkout\Model\Layout\DepersonalizePlugin class.
  */
 class DepersonalizePluginTest extends TestCase
 {
@@ -25,24 +26,24 @@ class DepersonalizePluginTest extends TestCase
     private $plugin;
 
     /**
-     * @var LayoutInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var LayoutInterface|MockObject
      */
     private $layoutMock;
 
     /**
-     * @var CheckoutSession|\PHPUnit_Framework_MockObject_MockObject
+     * @var CheckoutSession|MockObject
      */
     private $checkoutSessionMock;
 
     /**
-     * @var DepersonalizeChecker|\PHPUnit_Framework_MockObject_MockObject
+     * @var DepersonalizeChecker|MockObject
      */
     private $depersonalizeCheckerMock;
 
     /**
      * @inheritdoc
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->layoutMock = $this->getMockForAbstractClass(LayoutInterface::class);
         $this->checkoutSessionMock = $this->createPartialMock(CheckoutSession::class, ['clearStorage']);

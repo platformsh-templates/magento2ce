@@ -14,7 +14,6 @@ use Magento\Framework\View\Element\UiComponent\Control\ButtonProviderInterface;
 
 /**
  * Represents delete button with pre-configured options
- *
  * Provide an ability to show confirmation message on click on the "Delete" button
  *
  * @api
@@ -85,8 +84,7 @@ class DeleteButton implements ButtonProviderInterface
     }
 
     /**
-     * @inheritDoc
-     *
+     * {@inheritdoc}
      * @since 101.0.0
      */
     public function getButtonData()

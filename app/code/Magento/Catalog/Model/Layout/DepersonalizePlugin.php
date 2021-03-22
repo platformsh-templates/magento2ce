@@ -1,7 +1,5 @@
 <?php
 /**
- * Depersonalize catalog session data
- *
  * Copyright © Magento, Inc. All rights reserved.
  * See COPYING.txt for license details.
  */
@@ -26,8 +24,6 @@ class DepersonalizePlugin
     private $depersonalizeChecker;
 
     /**
-     * Catalog session
-     *
      * @var CatalogSession
      */
     private $catalogSession;

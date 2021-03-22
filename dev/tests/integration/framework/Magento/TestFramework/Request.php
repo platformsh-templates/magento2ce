@@ -9,7 +9,6 @@ use \Laminas\Stdlib\ParametersInterface;
 
 /**
  * HTTP request implementation that is used instead core one for testing
- *
  * @SuppressWarnings(PHPMD.CookieAndSessionMisuse)
  */
 class Request extends \Magento\Framework\App\Request\Http

@@ -15,6 +15,7 @@ use Magento\Framework\Data\Form\Element\Fieldset;
  * Class ElementCreator
  *
  * @deprecated 101.0.1 in favour of UI component implementation
+ * @package Magento\Backend\Block\Widget\Form\Element
  */
 class ElementCreator
 {

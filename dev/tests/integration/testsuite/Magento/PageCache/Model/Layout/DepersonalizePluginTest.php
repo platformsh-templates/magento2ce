@@ -10,13 +10,12 @@ namespace Magento\PageCache\Model\Layout;
 use Magento\Framework\App\Cache\Type\Layout as LayoutCache;
 use Magento\Framework\Message\Session;
 use Magento\Framework\View\Layout;
-use Magento\Framework\View\Layout\Element;
 use Magento\Framework\View\LayoutFactory;
 use Magento\TestFramework\Helper\Bootstrap;
 use PHPUnit\Framework\TestCase;
 
 /**
- * Tests \Magento\PageCache\Model\Layout\DepersonalizePlugin.
+ * Integration tests for \Magento\PageCache\Model\Layout\DepersonalizePlugin class.
  *
  * @magentoAppArea frontend
  */
@@ -40,9 +39,9 @@ class DepersonalizePluginTest extends TestCase
     /**
      * @inheritdoc
      */
-    protected function setUp()
+    protected function setUp(): void
     {
-        $this->messageSession = Bootstrap::getObjectManager()->create(Session::class);
+        $this->messageSession = Bootstrap::getObjectManager()->get(Session::class);
         $this->layout = Bootstrap::getObjectManager()->get(LayoutFactory::class)->create();
         $this->cache = Bootstrap::getObjectManager()->get(LayoutCache::class);
     }
@@ -50,14 +49,12 @@ class DepersonalizePluginTest extends TestCase
     /**
      * @inheritDoc
      */
-    protected function tearDown()
+    protected function tearDown(): void
     {
         $this->messageSession->clearStorage();
     }
 
     /**
-     * Test afterGenerateElements method
-     *
      * @magentoCache full_page enabled
      * @dataProvider afterGenerateElementsDataProvider
      *
@@ -75,8 +72,6 @@ class DepersonalizePluginTest extends TestCase
     }
 
     /**
-     * Data provider
-     *
      * @return array
      */
     public function afterGenerateElementsDataProvider(): array
@@ -92,12 +87,12 @@ class DepersonalizePluginTest extends TestCase
             ],
             'nonCacheableBlockWithoutReference' => [
                 'layout' => INTEGRATION_TESTS_DIR
-                . '/testsuite/Magento/Framework/View/_files/layout/non_cacheable_block_with_missing_refference.xml',
+                    . '/testsuite/Magento/Framework/View/_files/layout/non_cacheable_block_with_missing_refference.xml',
                 'expectedResult' => [],
             ],
             'nonCacheableBlockWithExistedReference' => [
                 'layout' => INTEGRATION_TESTS_DIR
-                . '/testsuite/Magento/Framework/View/_files/layout/non_cacheable_block_with_declared_reference.xml',
+                    . '/testsuite/Magento/Framework/View/_files/layout/non_cacheable_block_with_declared_reference.xml',
                 'expectedResult' => ['some_data' => 1],
             ],
         ];

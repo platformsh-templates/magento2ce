@@ -10,6 +10,8 @@ use Magento\Framework\View\Element\Template;
 use Magento\Framework\View\Element\Template\Context;
 
 /**
+ * Block passes configuration for cookies set by JS
+ *
  * @api
  * @since 100.0.2
  */
@@ -76,6 +78,8 @@ class Cookie extends Template
     }
 
     /**
+     * Get configured cookie lifetime
+     *
      * @return int
      */
     public function getLifetime()

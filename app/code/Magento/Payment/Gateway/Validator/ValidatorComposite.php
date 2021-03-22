@@ -3,6 +3,7 @@
  * Copyright © Magento, Inc. All rights reserved.
  * See COPYING.txt for license details.
  */
+
 namespace Magento\Payment\Gateway\Validator;
 
 use Magento\Framework\ObjectManager\TMap;
@@ -64,20 +65,19 @@ class ValidatorComposite extends AbstractValidator
             $result = $validator->validate($validationSubject);
             if (!$result->isValid()) {
                 $isValid = false;
-                $failsDescriptionAggregate = array_merge(
-                    $failsDescriptionAggregate,
-                    $result->getFailsDescription()
-                );
-                $errorCodesAggregate = array_merge(
-                    $errorCodesAggregate,
-                    $result->getErrorCodes()
-                );
+                $failsDescriptionAggregate[] = $result->getFailsDescription();
+                $errorCodesAggregate[] = $result->getErrorCodes();
+
                 if (!empty($this->chainBreakingValidators[$key])) {
                     break;
                 }
             }
         }
 
-        return $this->createResult($isValid, $failsDescriptionAggregate, $errorCodesAggregate);
+        return $this->createResult(
+            $isValid,
+            array_merge([], ...$failsDescriptionAggregate),
+            array_merge([], ...$errorCodesAggregate)
+        );
     }
 }

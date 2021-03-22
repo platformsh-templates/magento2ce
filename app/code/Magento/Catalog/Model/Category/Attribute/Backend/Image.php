@@ -108,7 +108,6 @@ class Image extends \Magento\Eav\Model\Entity\Attribute\Backend\AbstractBackend
      *
      * @param string $imageName
      * @return string
-     * @throws \Magento\Framework\Exception\FileSystemException
      */
     private function checkUniqueImageName(string $imageName): string
     {
@@ -130,7 +129,6 @@ class Image extends \Magento\Eav\Model\Entity\Attribute\Backend\AbstractBackend
      *
      * @param \Magento\Framework\DataObject $object
      * @return $this
-     * @throws \Magento\Framework\Exception\FileSystemException
      * @since 101.0.8
      */
     public function beforeSave($object)

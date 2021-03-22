@@ -7,46 +7,34 @@ declare(strict_types=1);
 
 namespace Magento\ImportExport\Test\Unit\Controller\Adminhtml\Export\File;
 
-use Magento\Framework\Filesystem;
 use Magento\Backend\App\Action\Context;
+use Magento\Backend\Model\View\Result\Redirect;
 use Magento\Framework\App\Request\Http;
-use Magento\Framework\App\ResponseInterface;
-use PHPUnit\Framework\MockObject\MockObject;
-use Magento\Framework\Filesystem\Directory\Read;
-use Magento\Framework\App\Filesystem\DirectoryList;
 use Magento\Framework\App\Response\Http\FileFactory;
-use Magento\ImportExport\Controller\Adminhtml\Export\File\Download;
+use Magento\Framework\Controller\Result\Raw;
+use Magento\Framework\Controller\Result\RedirectFactory;
+use Magento\Framework\Filesystem;
+use Magento\Framework\Filesystem\Directory\ReadInterface;
+use Magento\Framework\Message\ManagerInterface;
 use Magento\Framework\TestFramework\Unit\Helper\ObjectManager as ObjectManagerHelper;
+use Magento\ImportExport\Controller\Adminhtml\Export\File\Download;
+use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\TestCase;
 
 /**
- * Unit tests for \Magento\ImportExport\Controller\Adminhtml\Export\File\Download.
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  */
-class DownloadTest extends \PHPUnit\Framework\TestCase
+class DownloadTest extends TestCase
 {
-    /**
-     * @var Download
-     */
-    private $controller;
-
-    /**
-     * @var ObjectManagerHelper
-     */
-    private $objectManager;
-
     /**
      * @var Context|MockObject
      */
     private $contextMock;
 
     /**
-     * @var FileFactory|MockObject
+     * @var ObjectManagerHelper
      */
-    private $fileFactoryMock;
-
-    /**
-     * @var Filesystem|MockObject
-     */
-    private $fileSystemMock;
+    private $objectManagerHelper;
 
     /**
      * @var Http|MockObject
@@ -54,109 +42,164 @@ class DownloadTest extends \PHPUnit\Framework\TestCase
     private $requestMock;
 
     /**
-     * @var Read|MockObject
+     * @var Raw|MockObject
      */
-    private $readMock;
+    private $redirectMock;
 
     /**
-     * @inheritdoc
+     * @var RedirectFactory|MockObject
      */
-    protected function setUp()
+    private $resultRedirectFactoryMock;
+
+    /**
+     * @var Filesystem|MockObject
+     */
+    private $fileSystemMock;
+
+    /**
+     * @var FileFactory|MockObject
+     */
+    private $fileFactoryMock;
+
+    /**
+     * @var Download|MockObject
+     */
+    private $downloadControllerMock;
+
+    /**
+     * @var ManagerInterface|MockObject
+     */
+    private $messageManagerMock;
+
+    /**
+     * @var ReadInterface|MockObject
+     */
+    private $directoryMock;
+
+    /**
+     * Set up
+     */
+    protected function setUp(): void
     {
-        $this->objectManager = new ObjectManagerHelper($this);
+        $this->requestMock = $this->getMockBuilder(Http::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $this->fileSystemMock = $this->getMockBuilder(Filesystem::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $this->directoryMock = $this->getMockBuilder(ReadInterface::class)
+            ->disableOriginalConstructor()
+            ->getMockForAbstractClass();
+
+        $this->fileFactoryMock = $this->getMockBuilder(FileFactory::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $this->messageManagerMock = $this->getMockBuilder(ManagerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMockForAbstractClass();
 
         $this->contextMock = $this->createPartialMock(
             Context::class,
-            ['getRequest', 'getObjectManager', 'getResultRedirectFactory']
+            ['getRequest', 'getResultRedirectFactory', 'getMessageManager']
         );
-        $this->fileFactoryMock = $this->createPartialMock(FileFactory::class, ['create']);
-        $this->fileSystemMock = $this->createPartialMock(Filesystem::class, ['getDirectoryRead']);
-        $this->requestMock = $this->createPartialMock(Http::class, ['getParam']);
-        $this->readMock = $this->createPartialMock(Read::class, ['isFile', 'readFile']);
 
-        $this->contextMock->expects($this->once())->method('getRequest')->willReturn($this->requestMock);
+        $this->redirectMock = $this->createPartialMock(
+            Redirect::class,
+            ['setPath']
+        );
 
-        $this->controller = $this->objectManager->getObject(
+        $this->resultRedirectFactoryMock = $this->createPartialMock(
+            RedirectFactory::class,
+            ['create']
+        );
+        $this->resultRedirectFactoryMock->expects($this->any())
+            ->method('create')
+            ->willReturn($this->redirectMock);
+
+        $this->contextMock->expects($this->any())
+            ->method('getRequest')
+            ->willReturn($this->requestMock);
+
+        $this->contextMock->expects($this->any())
+            ->method('getResultRedirectFactory')
+            ->willReturn($this->resultRedirectFactoryMock);
+
+        $this->contextMock->expects($this->any())
+            ->method('getMessageManager')
+            ->willReturn($this->messageManagerMock);
+
+        $this->fileSystemMock->expects($this->any())
+            ->method('getDirectoryRead')
+            ->willReturn($this->directoryMock);
+
+        $this->objectManagerHelper = new ObjectManagerHelper($this);
+        $this->downloadControllerMock = $this->objectManagerHelper->getObject(
             Download::class,
             [
                 'context' => $this->contextMock,
-                'fileFactory' => $this->fileFactoryMock,
                 'filesystem' => $this->fileSystemMock,
+                'fileFactory' => $this->fileFactoryMock
             ]
         );
     }
 
     /**
-     * Check download controller behavior.
-     *
-     * @return void
+     * Tests download controller with successful file downloads
      */
-    public function testExecute(): void
+    public function testExecuteSuccess()
     {
-        $fileName = 'customer.csv';
-        $path = 'export/' . $fileName;
-        $fileContent = 'content';
+        $this->requestMock->method('getParam')
+            ->with('filename')
+            ->willReturn('sampleFile.csv');
+        $this->directoryMock->expects($this->once())->method('isExist')->willReturn(true);
+        $this->directoryMock->expects($this->once())->method('isFile')->willReturn(true);
+        $this->fileFactoryMock->expects($this->once())->method('create');
 
-        $this->processDownloadAction($fileName, $path);
-        $this->readMock->expects($this->once())->method('readFile')->with($path)->willReturn($fileContent);
-        $response = $this->createMock(ResponseInterface::class);
-        $this->fileFactoryMock->expects($this->once())
-            ->method('create')
-            ->with($path, $fileContent, DirectoryList::VAR_DIR)
-            ->willReturn($response);
-
-        $this->controller->execute();
+        $this->downloadControllerMock->execute();
     }
 
     /**
-     * Check behavior with incorrect filename.
-     *
-     * @expectedException \Magento\Framework\Exception\LocalizedException
-     * @expectedExceptionMessage Please provide valid export file name
-     * @return void
+     * Tests download controller with file that doesn't exist
      */
-    public function testExecuteWithEmptyFileName(): void
+    public function testExecuteFileDoesntExists()
     {
-        $this->requestMock->expects($this->once())->method('getParam')->with('filename')->willReturn('');
+        $this->requestMock->method('getParam')
+            ->with('filename')
+            ->willReturn('sampleFile');
 
-        $this->controller->execute();
+        $this->directoryMock->expects($this->once())->method('isFile')->willReturn(false);
+        $this->directoryMock->expects($this->once())->method('isExist')->willReturn(true);
+        $this->messageManagerMock->expects($this->once())->method('addErrorMessage');
+
+        $this->downloadControllerMock->execute();
     }
 
     /**
-     * Check behavior when method throw exception.
-     *
-     * @expectedException \Magento\Framework\Exception\LocalizedException
-     * @expectedExceptionMessage There are no export file with such name customer.csv
-     * @return void
+     * Test execute() with invalid file name
+     * @param ?string $requestFilename
+     * @dataProvider invalidFileDataProvider
      */
-    public function testExecuteWithNonExistanceFile(): void
+    public function testExecuteInvalidFileName($requestFilename)
     {
-        $fileName = 'customer.csv';
-        $path = 'export/' . $fileName;
+        $this->requestMock->method('getParam')->with('filename')->willReturn($requestFilename);
+        $this->messageManagerMock->expects($this->once())->method('addErrorMessage');
 
-        $this->processDownloadAction($fileName, $path);
-        $this->readMock->expects($this->once())
-            ->method('readFile')
-            ->with($path)
-            ->willThrowException(new \Exception('Message'));
-
-        $this->controller->execute();
+        $this->downloadControllerMock->execute();
     }
 
     /**
-     * Check that parameter valid and file exist.
-     *
-     * @param string $fileName
-     * @param string $path
-     * @return void
+     * Data provider to test possible invalid filenames
+     * @return array
      */
-    private function processDownloadAction(string $fileName, string $path): void
+    public function invalidFileDataProvider()
     {
-        $this->requestMock->expects($this->once())->method('getParam')->with('filename')->willReturn($fileName);
-        $this->fileSystemMock->expects($this->once())
-            ->method('getDirectoryRead')
-            ->with(DirectoryList::VAR_DIR)
-            ->willReturn($this->readMock);
-        $this->readMock->expects($this->once())->method('isFile')->with($path)->willReturn(true);
+        return [
+            'Relative file name' => ['../.htaccess'],
+            'Empty file name' => [''],
+            'Null file name' => [null],
+        ];
     }
 }

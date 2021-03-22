@@ -108,6 +108,13 @@ define([
         },
 
         /**
+         * @inheritdoc
+         */
+        getPreview: function () {
+            return this.shiftedValue();
+        },
+
+        /**
          * Prepares and sets date/time value that will be displayed
          * in the input field.
          *
@@ -120,7 +127,7 @@ define([
                 if (this.options.showsTime) {
                     shiftedValue = moment.tz(value, 'UTC').tz(this.storeTimeZone);
                 } else {
-                    shiftedValue = moment(value, this.outputDateFormat);
+                    shiftedValue = moment(value, this.outputDateFormat, true);
                 }
 
                 if (!shiftedValue.isValid()) {

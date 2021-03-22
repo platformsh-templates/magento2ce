@@ -69,55 +69,55 @@ class AccountManagement implements AccountManagementInterface
     /**
      * Configuration paths for create account email template
      *
-     * @deprecated Get rid of Helpers in Password Security Management
-     * @see EmailNotification::XML_PATH_REGISTER_EMAIL_TEMPLATE
+     * @deprecated get rid of Helpers in Password Security Management.
+     * @see \Magento\Customer\Model\EmailNotification::XML_PATH_REGISTER_EMAIL_TEMPLATE
      */
     const XML_PATH_REGISTER_EMAIL_TEMPLATE = 'customer/create_account/email_template';
 
     /**
      * Configuration paths for register no password email template
      *
-     * @deprecated Get rid of Helpers in Password Security Management
-     * @see EmailNotification::XML_PATH_REGISTER_EMAIL_TEMPLATE
+     * @deprecated get rid of Helpers in Password Security Management.
+     * @see \Magento\Customer\Model\EmailNotification::XML_PATH_REGISTER_NO_PASSWORD_EMAIL_TEMPLATE
      */
     const XML_PATH_REGISTER_NO_PASSWORD_EMAIL_TEMPLATE = 'customer/create_account/email_no_password_template';
 
     /**
      * Configuration paths for remind email identity
      *
-     * @deprecated Get rid of Helpers in Password Security Management
-     * @see EmailNotification::XML_PATH_REGISTER_EMAIL_TEMPLATE
+     * @deprecated get rid of Helpers in Password Security Management.
+     * @see \Magento\Customer\Model\EmailNotification::XML_PATH_REGISTER_EMAIL_IDENTITY
      */
     const XML_PATH_REGISTER_EMAIL_IDENTITY = 'customer/create_account/email_identity';
 
     /**
      * Configuration paths for remind email template
      *
-     * @deprecated Get rid of Helpers in Password Security Management
-     * @see EmailNotification::XML_PATH_REGISTER_EMAIL_TEMPLATE
+     * @deprecated get rid of Helpers in Password Security Management.
+     * @see \Magento\Customer\Model\EmailNotification::XML_PATH_REMIND_EMAIL_TEMPLATE
      */
     const XML_PATH_REMIND_EMAIL_TEMPLATE = 'customer/password/remind_email_template';
 
     /**
      * Configuration paths for forgot email email template
      *
-     * @deprecated Get rid of Helpers in Password Security Management
-     * @see EmailNotification::XML_PATH_REGISTER_EMAIL_TEMPLATE
+     * @deprecated get rid of Helpers in Password Security Management.
+     * @see \Magento\Customer\Model\EmailNotification::XML_PATH_FORGOT_EMAIL_TEMPLATE
      */
     const XML_PATH_FORGOT_EMAIL_TEMPLATE = 'customer/password/forgot_email_template';
 
     /**
      * Configuration paths for forgot email identity
      *
-     * @deprecated Get rid of Helpers in Password Security Management
-     * @see EmailNotification::XML_PATH_REGISTER_EMAIL_TEMPLATE
+     * @deprecated get rid of Helpers in Password Security Management.
+     * @see \Magento\Customer\Model\EmailNotification::XML_PATH_FORGOT_EMAIL_IDENTITY
      */
     const XML_PATH_FORGOT_EMAIL_IDENTITY = 'customer/password/forgot_email_identity';
 
     /**
      * Configuration paths for account confirmation required
      *
-     * @deprecated Get rid of Helpers in Password Security Management
+     * @deprecated get rid of Helpers in Password Security Management.
      * @see AccountConfirmation::XML_PATH_IS_CONFIRM
      */
     const XML_PATH_IS_CONFIRM = 'customer/create_account/confirm';
@@ -125,48 +125,48 @@ class AccountManagement implements AccountManagementInterface
     /**
      * Configuration paths for account confirmation email template
      *
-     * @deprecated Get rid of Helpers in Password Security Management
-     * @see EmailNotification::XML_PATH_REGISTER_EMAIL_TEMPLATE
+     * @deprecated get rid of Helpers in Password Security Management.
+     * @see \Magento\Customer\Model\EmailNotification::XML_PATH_CONFIRM_EMAIL_TEMPLATE
      */
     const XML_PATH_CONFIRM_EMAIL_TEMPLATE = 'customer/create_account/email_confirmation_template';
 
     /**
      * Configuration paths for confirmation confirmed email template
      *
-     * @deprecated Get rid of Helpers in Password Security Management
-     * @see EmailNotification::XML_PATH_REGISTER_EMAIL_TEMPLATE
+     * @deprecated get rid of Helpers in Password Security Management.
+     * @see \Magento\Customer\Model\EmailNotification::XML_PATH_CONFIRMED_EMAIL_TEMPLATE
      */
     const XML_PATH_CONFIRMED_EMAIL_TEMPLATE = 'customer/create_account/email_confirmed_template';
 
     /**
      * Constants for the type of new account email to be sent
      *
-     * @deprecated Get rid of Helpers in Password Security Management
-     * @see EmailNotificationInterface::NEW_ACCOUNT_EMAIL_REGISTERED
+     * @deprecated get rid of Helpers in Password Security Management.
+     * @see \Magento\Customer\Model\EmailNotificationInterface::NEW_ACCOUNT_EMAIL_REGISTERED
      */
     const NEW_ACCOUNT_EMAIL_REGISTERED = 'registered';
 
     /**
      * Welcome email, when password setting is required
      *
-     * @deprecated Get rid of Helpers in Password Security Management
-     * @see EmailNotificationInterface::NEW_ACCOUNT_EMAIL_REGISTERED
+     * @deprecated get rid of Helpers in Password Security Management.
+     * @see \Magento\Customer\Model\EmailNotificationInterface::NEW_ACCOUNT_EMAIL_REGISTERED_NO_PASSWORD
      */
     const NEW_ACCOUNT_EMAIL_REGISTERED_NO_PASSWORD = 'registered_no_password';
 
     /**
      * Welcome email, when confirmation is enabled
      *
-     * @deprecated Get rid of Helpers in Password Security Management
-     * @see EmailNotificationInterface::NEW_ACCOUNT_EMAIL_REGISTERED
+     * @deprecated get rid of Helpers in Password Security Management.
+     * @see \Magento\Customer\Model\EmailNotificationInterface::NEW_ACCOUNT_EMAIL_CONFIRMATION
      */
     const NEW_ACCOUNT_EMAIL_CONFIRMATION = 'confirmation';
 
     /**
      * Confirmation email, when account is confirmed
      *
-     * @deprecated Get rid of Helpers in Password Security Management
-     * @see EmailNotificationInterface::NEW_ACCOUNT_EMAIL_REGISTERED
+     * @deprecated get rid of Helpers in Password Security Management.
+     * @see \Magento\Customer\Model\EmailNotificationInterface::NEW_ACCOUNT_EMAIL_CONFIRMED
      */
     const NEW_ACCOUNT_EMAIL_CONFIRMED = 'confirmed';
 
@@ -192,15 +192,15 @@ class AccountManagement implements AccountManagementInterface
     /**
      * Configuration path to customer reset password email template
      *
-     * @deprecated Get rid of Helpers in Password Security Management
-     * @see Magento/Customer/Model/EmailNotification::XML_PATH_REGISTER_EMAIL_TEMPLATE
+     * @deprecated get rid of Helpers in Password Security Management.
+     * @see \Magento\Customer\Model\EmailNotification::XML_PATH_RESET_PASSWORD_TEMPLATE
      */
     const XML_PATH_RESET_PASSWORD_TEMPLATE = 'customer/password/reset_password_template';
 
     /**
      * Minimum password length
      *
-     * @deprecated Get rid of Helpers in Password Security Management
+     * @deprecated get rid of Helpers in Password Security Management.
      * @see \Magento\Customer\Model\AccountManagement::XML_PATH_MINIMUM_PASSWORD_LENGTH
      */
     const MIN_PASSWORD_LENGTH = 6;
@@ -531,6 +531,7 @@ class AccountManagement implements AccountManagementInterface
 
             return false;
         }
+
         return true;
     }
 
@@ -677,16 +678,18 @@ class AccountManagement implements AccountManagementInterface
      */
     private function handleUnknownTemplate($template)
     {
-        $phrase = __(
-            'Invalid value of "%value" provided for the %fieldName field. Possible values: %template1 or %template2.',
-            [
-                'value' => $template,
-                'fieldName' => 'template',
-                'template1' => AccountManagement::EMAIL_REMINDER,
-                'template2' => AccountManagement::EMAIL_RESET
-            ]
+        throw new InputException(
+            __(
+                'Invalid value of "%value" provided for the %fieldName field. '
+                    . 'Possible values: %template1 or %template2.',
+                [
+                    'value' => $template,
+                    'fieldName' => 'template',
+                    'template1' => AccountManagement::EMAIL_REMINDER,
+                    'template2' => AccountManagement::EMAIL_RESET
+                ]
+            )
         );
-        throw new InputException($phrase);
     }
 
     /**
@@ -864,6 +867,7 @@ class AccountManagement implements AccountManagementInterface
         if ($customer->getId()) {
             $customer = $this->customerRepository->get($customer->getEmail());
             $websiteId = $customer->getWebsiteId();
+
             if ($this->isCustomerInStore($websiteId, $customer->getStoreId())) {
                 throw new InputException(__('This customer already exists in this store.'));
             }
@@ -973,7 +977,6 @@ class AccountManagement implements AccountManagementInterface
                 $templateType = self::NEW_ACCOUNT_EMAIL_REGISTERED_NO_PASSWORD;
             }
             $this->getEmailNotification()->newAccount($customer, $templateType, $redirectUrl, $customer->getStoreId());
-            $customer->setConfirmation(null);
         } catch (MailException $e) {
             // If we are not able to send a new account email, this should be ignored
             $this->logger->critical($e);
