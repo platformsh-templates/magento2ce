@@ -16,11 +16,7 @@
         "magento/magento-cloud-patches": "^1.0.10",
         "magento/product-community-edition": "^2.4",
         "magento/quality-patches": "^1.0.22",
-        "wolfsellers/module-enabledisabletfa": "^1.0",
-        "magento/module-catalog-sample-data": "*",
-        "magento/module-configurable-sample-data": "*",
-        "magento/module-cms-sample-data": "*",
-        "magento/module-sales-sample-data": "*"
+        "wolfsellers/module-enabledisabletfa": "^1.0"
     },
     "replace": {
         "magento/magento-cloud-docker": "*"
