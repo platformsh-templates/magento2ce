@@ -20,7 +20,17 @@ Magento is a fully integrated ecommerce system and web store written in PHP.  Th
 * Automatic TLS certificates
 * Composer-based build
 
-## Post-install
+## Warning
+
+This template will fail when first deployed with the following error
+
+```
+    W:   The 'https://repo.magento.com/packages.json' URL required authentication.  
+    W:   You must be using the interactive console to authenticate    
+```
+Please follow the post install instructions and add the needed authentication for composer.
+
+## Composer Authentication and Post Installation Setup
 
 1. Get your Magento Repository authentication keys https://devdocs.magento.com/guides/v2.4/install-gde/prereq/connect-auth.html
 2. In the Platform.sh console for you project, under the Settings menu, click the Variables tab.
