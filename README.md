@@ -44,8 +44,8 @@ The following changes have been made relative to Magento 2 as it is downloaded f
 * The `.platform.app.yaml`, `.platform/services.yaml`, and `.platform/routes.yaml` files have been added.  These provide Platform.sh-specific configuration and are present in all projects on Platform.sh.  You may customize them as you see fit.
 * The `composer.json` file has had the ECE-Tools package and its dependencies added.
 * Magento crons have been setup to ensure they are run sequentially to ensure there is availible memory
-* A logrotation and cleanup cron have been added.
-* We have added a module to disable two factor authentication if needed.
+* A logrotate and report housekeeping cron have been added.
+* A module which allows two factor authentication to be disabled has been added to `composer.json`.
 
 ## References
 
