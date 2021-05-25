@@ -33,26 +33,7 @@ Please follow the post install instructions and add the needed authentication fo
 ## Composer Authentication and Post Installation Setup
 
 1. Get your Magento Repository authentication keys https://devdocs.magento.com/guides/v2.4/install-gde/prereq/connect-auth.html
-2. In the Platform.sh console for you project, under the Settings menu, click the Variables tab.
-
-   Click Add Variable.
-   
-   In the Name field, enter env:COMPOSER_AUTH.
-   
-   In the Value field, add the following and replace <public-key> and <private-key> with your Adobe Commerce authentication credentials:
-   
-   {
-       "http-basic": {
-           "repo.magento.com": {
-               "username": "<public-key>",
-               "password": "<private-key>"
-           }
-       }
-   }
-   Select Visible during build and deselect Visible at run.
-   
-   Click Add Variable.
-    
+2. Add your keys as a project level variable `platform variable:create -p 7zzuhunfjpogq --level project --name env:COMPOSER_AUTH --json true --visible-runtime false --sensitive true --visible-build true  --value '{"http-basic":{"repo.magento.com":{"username":"<your public key>","password":"<your private key>"}}}'`    
 3. Please add an admin user using `php bin/magento admin:user:create`.  Login at `/admin` in your browser. 
 4. If you need to disable Magento two factor auth for admin logins on development enviroments with mail disabled, please SSH into your application and run `php bin/magento config:set twofactorauth/general/enabled 0` 
 
