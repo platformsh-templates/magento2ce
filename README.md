@@ -45,6 +45,7 @@ The following changes have been made relative to Magento 2 as it is downloaded f
 * The `composer.json` file has had the ECE-Tools package and its dependencies added.
 * Magento crons have been setup to ensure they are run sequentially to ensure there is availible memory
 * A logrotation and cleanup cron have been added.
+* We have added a module to disable two factor authentication if needed.
 
 ## References
 
