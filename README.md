@@ -8,7 +8,7 @@
 
 This template builds Magento 2 CE on Platform.sh.  It includes the Magento ECE-Tools to run effectively in a build-and-deploy environment.  A MariaDB Database, Elasticsearch Indexer, RabbitMQ Message Queue and Redis Cache server come pre-configured and work out of the box. 
 
-Magento is a fully integrated ecommerce system and web store written in PHP.  This is the Open Source version.
+Magento is a fully integrated ecommerce system and web store written in PHP.  This is the Open Source version of Magento.
 
 ## Features
 
@@ -22,7 +22,29 @@ Magento is a fully integrated ecommerce system and web store written in PHP.  Th
 
 ## Post-install
 
-1. Please add an admin user using `php bin/magento admin:user:create`.  Login at `/admin` in your browser. 
+1. Get your Magento Repository authentication keys https://devdocs.magento.com/guides/v2.4/install-gde/prereq/connect-auth.html
+2. In the Platform.sh console for you project, under the Settings menu, click the Variables tab.
+
+   Click Add Variable.
+   
+   In the Name field, enter env:COMPOSER_AUTH.
+   
+   In the Value field, add the following and replace <public-key> and <private-key> with your Adobe Commerce authentication credentials:
+   
+   {
+       "http-basic": {
+           "repo.magento.com": {
+               "username": "<public-key>",
+               "password": "<private-key>"
+           }
+       }
+   }
+   Select Visible during build and deselect Visible at run.
+   
+   Click Add Variable.
+    
+3. Please add an admin user using `php bin/magento admin:user:create`.  Login at `/admin` in your browser. 
+4. If you need to disable Magento two factor auth for admin logins on development enviroments with mail disabled, please SSH into your application and run `php bin/magento config:set twofactorauth/general/enabled 0` 
 
 ## Customizations
 
