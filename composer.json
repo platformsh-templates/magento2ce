@@ -45,9 +45,9 @@
     },
     "minimum-stability": "stable",
     "repositories": {
-        "Magento OS Mirror": {
+        "Magento Repo Auth Required": {
             "type": "composer",
-            "url": "https://repo-magento-mirror.fooman.co.nz/"
+            "url": "https://repo.magento.com"
         },
         "ECE-Tools": {
             "type": "git",
