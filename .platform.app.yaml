@@ -72,7 +72,7 @@ hooks:
 crons:
     magento:
         spec: "*/5 * * * *"
-        cmd: for group in $(grep -shoP "(?<=<group id=\")(.+)(?=\">)" {app,vendor}/*/*/etc/cron_groups.xml); do echo -e "\n${group}:"; php bin/magento cron:run --group=${group}; done
+        cmd: bash -c 'for group in $(grep -shoP "(?<=<group id=\")(.+)(?=\">)" {app,vendor}/*/*/etc/cron_groups.xml); do php bin/magento cron:run --group=${group}; done'
     logrotate:
         spec: "45 1 * * *"
         cmd: shtool rotate -n10 $PLATFORM_APP_DIR/var/log/*.log
