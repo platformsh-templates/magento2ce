@@ -72,13 +72,13 @@ hooks:
 crons:
     magento:
         spec: "*/5 * * * *"
-        cmd: "for group in $(grep -shoP "(?<=<group id=\")(.+)(?=\">)" {app,vendor}/*/*/etc/cron_groups.xml); do php bin/magento cron:run --group=${group}; done"
+        cmd: for group in $(grep -shoP "(?<=<group id=\")(.+)(?=\">)" {app,vendor}/*/*/etc/cron_groups.xml); do php bin/magento cron:run --group=${group}; done
     logrotate:
         spec: "45 1 * * *"
-        cmd: 'shtool rotate -n10 $PLATFORM_APP_DIR/var/log/*.log'
+        cmd: shtool rotate -n10 $PLATFORM_APP_DIR/var/log/*.log
     reportcleanup:
         spec: "0 2 * * *"
-        cmd: 'find $PLATFORM_APP_DIR/var/report/* -mtime +10 -delete'
+        cmd: find $PLATFORM_APP_DIR/var/report/* -mtime +10 -delete
 
 # The configuration of app when it is exposed to the web.
 web:
