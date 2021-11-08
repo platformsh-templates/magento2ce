@@ -9,17 +9,19 @@ use Magento\Sales\Model\Order\Email\Sender\OrderSender;
 
 class OrderSenderTest extends AbstractSenderTest
 {
+    private const ORDER_ID = 1;
+
     /**
      * @var \Magento\Sales\Model\Order\Email\Sender\OrderSender
      */
     protected $sender;
 
     /**
-     * @var \Magento\Sales\Model\ResourceModel\EntityAbstract|\PHPUnit_Framework_MockObject_MockObject
+     * @var \Magento\Sales\Model\ResourceModel\EntityAbstract|\PHPUnit\Framework\MockObject\MockObject
      */
     protected $orderResourceMock;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->stepMockSetup();
 
@@ -34,7 +36,10 @@ class OrderSenderTest extends AbstractSenderTest
         );
         $this->identityContainerMock->expects($this->any())
             ->method('getStore')
-            ->will($this->returnValue($this->storeMock));
+            ->willReturn($this->storeMock);
+
+        $this->orderMock->method('getId')
+            ->willReturn(self::ORDER_ID);
 
         $this->sender = new OrderSender(
             $this->templateContainerMock,
@@ -127,6 +132,7 @@ class OrderSenderTest extends AbstractSenderTest
                     ->with(
                         [
                             'order' => $this->orderMock,
+                            'order_id' => self::ORDER_ID,
                             'billing' => $addressMock,
                             'payment_html' => 'payment',
                             'store' => $this->storeMock,
@@ -295,6 +301,7 @@ class OrderSenderTest extends AbstractSenderTest
             ->with(
                 [
                     'order' => $this->orderMock,
+                    'order_id' => self::ORDER_ID,
                     'billing' => $addressMock,
                     'payment_html' => 'payment',
                     'store' => $this->storeMock,

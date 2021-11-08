@@ -26,7 +26,7 @@ use Magento\Store\Model\ScopeInterface;
 use Magento\Store\Model\StoreManagerInterface;
 use Magento\Vault\Api\Data\PaymentTokenInterface;
 use Magento\Vault\Api\Data\PaymentTokenInterfaceFactory;
-use PHPUnit_Framework_MockObject_MockObject as MockObject;
+use PHPUnit\Framework\MockObject\MockObject as MockObject;
 
 /**
  * Paypal transparent test class
@@ -75,7 +75,7 @@ class TransparentTest extends \PHPUnit\Framework\TestCase
      */
     private $order;
 
-    public function setUp()
+    protected function setUp(): void
     {
         $this->initPayment();
 
@@ -196,9 +196,11 @@ class TransparentTest extends \PHPUnit\Framework\TestCase
             ->disableOriginalConstructor()
             ->getMock();
         $orderPaymentExtension = $this->getMockBuilder(OrderPaymentExtensionInterface::class)
-            ->setMethods(['setVaultPaymentToken', 'getVaultPaymentToken'])
+            ->setMethods(
+                ['setVaultPaymentToken', 'getVaultPaymentToken', 'setNotificationMessage', 'getNotificationMessage']
+            )
             ->disableOriginalConstructor()
-            ->getMock();
+            ->getMockForAbstractClass();
 
         $paymentExtensionInterfaceFactory->method('create')->willReturn($orderPaymentExtension);
 
@@ -290,12 +292,17 @@ class TransparentTest extends \PHPUnit\Framework\TestCase
         $this->order = $this->getMockBuilder(Order::class)
             ->disableOriginalConstructor()
             ->getMock();
-
+        $paymentExtensionAttributes  = $this->getMockBuilder(OrderPaymentExtensionInterface::class)
+            ->setMethods(
+                ['setVaultPaymentToken', 'getVaultPaymentToken', 'setNotificationMessage', 'getNotificationMessage']
+            )
+            ->getMockForAbstractClass();
         $this->payment->method('getOrder')->willReturn($this->order);
         $this->payment->method('setTransactionId')->willReturnSelf();
         $this->payment->method('setIsTransactionClosed')->willReturnSelf();
         $this->payment->method('getCcExpYear')->willReturn('2019');
         $this->payment->method('getCcExpMonth')->willReturn('05');
+        $this->payment->method('getExtensionAttributes')->willReturn($paymentExtensionAttributes);
 
         return $this->payment;
     }

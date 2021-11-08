@@ -64,11 +64,14 @@ define([
             events['click ' + this.options.button.checkout] = $.proxy(function () {
                 var cart = customerData.get('cart'),
                     customer = customerData.get('customer'),
+                    cookieOptions = {
+                        samesite: 'lax'
+                    },
                     element = $(this.options.button.checkout);
 
                 if (!customer().firstname && cart().isGuestCheckoutAllowed === false) {
                     // set URL for redirect on successful login/registration. It's postprocessed on backend.
-                    $.cookie('login_redirect', this.options.url.checkout);
+                    $.cookie('login_redirect', this.options.url.checkout, cookieOptions);
 
                     if (this.options.url.isRedirectRequired) {
                         element.prop('disabled', true);
@@ -260,7 +263,12 @@ define([
 
             if (!_.isUndefined(productData)) {
                 $(document).trigger('ajax:removeFromCart', {
-                    productIds: [productData['product_id']]
+                    productIds: [productData['product_id']],
+                    productInfo: [
+                        {
+                            'id': productData['product_id']
+                        }
+                    ]
                 });
 
                 if (window.location.href.indexOf(this.shoppingCartUrl) === 0) {

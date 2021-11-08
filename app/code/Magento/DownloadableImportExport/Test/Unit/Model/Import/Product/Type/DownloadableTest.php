@@ -6,6 +6,7 @@
 
 namespace Magento\DownloadableImportExport\Test\Unit\Model\Import\Product\Type;
 
+use Magento\Downloadable\Model\Url\DomainValidator;
 use Magento\Framework\TestFramework\Unit\Helper\ObjectManager as ObjectManager;
 
 /**
@@ -18,54 +19,59 @@ class DownloadableTest extends \Magento\ImportExport\Test\Unit\Model\Import\Abst
     /** @var ObjectManager|\Magento\DownloadableImportExport\Model\Import\Product\Type\Downloadable */
     protected $downloadableModelMock;
 
-    /** @var \Magento\Framework\DB\Adapter\Pdo\Mysql|\PHPUnit_Framework_MockObject_MockObject */
+    /** @var \Magento\Framework\DB\Adapter\Pdo\Mysql|\PHPUnit\Framework\MockObject\MockObject */
     protected $connectionMock;
 
-    /** @var \Magento\Framework\DB\Select|\PHPUnit_Framework_MockObject_MockObject */
+    /** @var \Magento\Framework\DB\Select|\PHPUnit\Framework\MockObject\MockObject */
     protected $select;
 
     /**
-     * @var \PHPUnit_Framework_MockObject_MockObject
+     * @var \PHPUnit\Framework\MockObject\MockObject
      */
     protected $attrSetColFacMock;
 
     /**
-     * @var \Magento\Eav\Model\ResourceModel\Entity\Attribute\Set\Collection|\PHPUnit_Framework_MockObject_MockObject
+     * @var \Magento\Eav\Model\ResourceModel\Entity\Attribute\Set\Collection|\PHPUnit\Framework\MockObject\MockObject
      */
     protected $attrSetColMock;
 
     /**
-     * @var \PHPUnit_Framework_MockObject_MockObject
+     * @var \PHPUnit\Framework\MockObject\MockObject
      */
     protected $prodAttrColFacMock;
 
     /**
-     * @var \Magento\Catalog\Model\ResourceModel\Product\Attribute\Collection|\PHPUnit_Framework_MockObject_MockObject
+     * @var DomainValidator
+     */
+    private $domainValidator;
+
+    /**
+     * @var \Magento\Catalog\Model\ResourceModel\Product\Attribute\Collection|\PHPUnit\Framework\MockObject\MockObject
      */
     protected $prodAttrColMock;
 
-    /** @var \Magento\Framework\App\ResourceConnection|\PHPUnit_Framework_MockObject_MockObject */
+    /** @var \Magento\Framework\App\ResourceConnection|\PHPUnit\Framework\MockObject\MockObject */
     protected $resourceMock;
 
-    /** @var \Magento\CatalogImportExport\Model\Import\Product|\PHPUnit_Framework_MockObject_MockObject */
+    /** @var \Magento\CatalogImportExport\Model\Import\Product|\PHPUnit\Framework\MockObject\MockObject */
     protected $entityModelMock;
 
     /** @var array|mixed */
     protected $paramsArray;
 
-    /** @var \Magento\CatalogImportExport\Model\Import\Uploader|\PHPUnit_Framework_MockObject_MockObject */
+    /** @var \Magento\CatalogImportExport\Model\Import\Uploader|\PHPUnit\Framework\MockObject\MockObject */
     protected $uploaderMock;
 
-    /** @var \Magento\Framework\Filesystem\Directory\Write|\PHPUnit_Framework_MockObject_MockObject */
+    /** @var \Magento\Framework\Filesystem\Directory\Write|\PHPUnit\Framework\MockObject\MockObject */
     protected $directoryWriteMock;
 
     /**
-     * @var |\PHPUnit_Framework_MockObject_MockObject
+     * @var |\PHPUnit\Framework\MockObject\MockObject
      */
     protected $uploaderHelper;
 
     /**
-     * @var |\PHPUnit_Framework_MockObject_MockObject
+     * @var |\PHPUnit\Framework\MockObject\MockObject
      */
     protected $downloadableHelper;
 
@@ -73,7 +79,7 @@ class DownloadableTest extends \Magento\ImportExport\Test\Unit\Model\Import\Abst
      * Set up
      * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -83,13 +89,13 @@ class DownloadableTest extends \Magento\ImportExport\Test\Unit\Model\Import\Abst
             ['select', 'fetchAll', 'fetchPairs', 'joinLeft', 'insertOnDuplicate', 'delete', 'quoteInto', 'fetchAssoc']
         );
         $this->select = $this->createMock(\Magento\Framework\DB\Select::class);
-        $this->select->expects($this->any())->method('from')->will($this->returnSelf());
-        $this->select->expects($this->any())->method('where')->will($this->returnSelf());
-        $this->select->expects($this->any())->method('joinLeft')->will($this->returnSelf());
+        $this->select->expects($this->any())->method('from')->willReturnSelf();
+        $this->select->expects($this->any())->method('where')->willReturnSelf();
+        $this->select->expects($this->any())->method('joinLeft')->willReturnSelf();
         $adapter = $this->createMock(\Magento\Framework\DB\Adapter\Pdo\Mysql::class);
-        $adapter->expects($this->any())->method('quoteInto')->will($this->returnValue('query'));
+        $adapter->expects($this->any())->method('quoteInto')->willReturn('query');
         $this->select->expects($this->any())->method('getAdapter')->willReturn($adapter);
-        $this->connectionMock->expects($this->any())->method('select')->will($this->returnValue($this->select));
+        $this->connectionMock->expects($this->any())->method('select')->willReturn($this->select);
 
         $this->connectionMock->expects($this->any())->method('insertOnDuplicate')->willReturnSelf();
         $this->connectionMock->expects($this->any())->method('delete')->willReturnSelf();
@@ -108,7 +114,7 @@ class DownloadableTest extends \Magento\ImportExport\Test\Unit\Model\Import\Abst
         $this->attrSetColMock
             ->expects($this->any())
             ->method('setEntityTypeFilter')
-            ->will($this->returnValue([]));
+            ->willReturn([]);
 
         // 2. $prodAttrColFac
         $this->prodAttrColFacMock = $this->createPartialMock(
@@ -119,18 +125,18 @@ class DownloadableTest extends \Magento\ImportExport\Test\Unit\Model\Import\Abst
         $attrCollection = $this->createMock(\Magento\Catalog\Model\ResourceModel\Product\Attribute\Collection::class);
 
         $attrCollection->expects($this->any())->method('addFieldToFilter')->willReturn([]);
-        $this->prodAttrColFacMock->expects($this->any())->method('create')->will($this->returnValue($attrCollection));
+        $this->prodAttrColFacMock->expects($this->any())->method('create')->willReturn($attrCollection);
 
         // 3. $resource
         $this->resourceMock = $this->createPartialMock(
             \Magento\Framework\App\ResourceConnection::class,
             ['getConnection', 'getTableName']
         );
-        $this->resourceMock->expects($this->any())->method('getConnection')->will(
-            $this->returnValue($this->connectionMock)
+        $this->resourceMock->expects($this->any())->method('getConnection')->willReturn(
+            $this->connectionMock
         );
-        $this->resourceMock->expects($this->any())->method('getTableName')->will(
-            $this->returnValue('tableName')
+        $this->resourceMock->expects($this->any())->method('getTableName')->willReturn(
+            'tableName'
         );
 
         // 4. $params
@@ -145,9 +151,9 @@ class DownloadableTest extends \Magento\ImportExport\Test\Unit\Model\Import\Abst
                 'addRowError'
             ]);
 
-        $this->entityModelMock->expects($this->any())->method('addMessageTemplate')->will($this->returnSelf());
-        $this->entityModelMock->expects($this->any())->method('getEntityTypeId')->will($this->returnValue(5));
-        $this->entityModelMock->expects($this->any())->method('getParameters')->will($this->returnValue([]));
+        $this->entityModelMock->expects($this->any())->method('addMessageTemplate')->willReturnSelf();
+        $this->entityModelMock->expects($this->any())->method('getEntityTypeId')->willReturn(5);
+        $this->entityModelMock->expects($this->any())->method('getParameters')->willReturn([]);
         $this->paramsArray = [
             $this->entityModelMock,
             'downloadable'
@@ -179,9 +185,9 @@ class DownloadableTest extends \Magento\ImportExport\Test\Unit\Model\Import\Abst
      */
     public function testSaveDataAppend($newSku, $bunch, $allowImport, $fetchResult)
     {
-        $this->entityModelMock->expects($this->once())->method('getNewSku')->will($this->returnValue($newSku));
-        $this->entityModelMock->expects($this->at(1))->method('getNextBunch')->will($this->returnValue($bunch));
-        $this->entityModelMock->expects($this->at(2))->method('getNextBunch')->will($this->returnValue(null));
+        $this->entityModelMock->expects($this->once())->method('getNewSku')->willReturn($newSku);
+        $this->entityModelMock->expects($this->at(1))->method('getNextBunch')->willReturn($bunch);
+        $this->entityModelMock->expects($this->at(2))->method('getNextBunch')->willReturn(null);
         $this->entityModelMock->expects($this->any())->method('isRowAllowedToImport')->willReturn($allowImport);
 
         $this->uploaderMock->expects($this->any())->method('setTmpDir')->willReturn(true);
@@ -498,7 +504,7 @@ class DownloadableTest extends \Magento\ImportExport\Test\Unit\Model\Import\Abst
     /**
      * @dataProvider isRowValidData
      */
-    public function testIsRowValid(array $rowData, $rowNum, $isNewProduct = true)
+    public function testIsRowValid(array $rowData, $rowNum, $isNewProduct, $isDomainValid, $expectedResult)
     {
         $this->connectionMock->expects($this->any())->method('fetchAll')->with(
             $this->select
@@ -514,6 +520,13 @@ class DownloadableTest extends \Magento\ImportExport\Test\Unit\Model\Import\Abst
                 ],
             ]
         );
+
+        $this->domainValidator = $this->createMock(DomainValidator::class);
+        $this->domainValidator
+            ->expects($this->any())->method('isValid')
+            ->withAnyParameters()
+            ->willReturn($isDomainValid);
+
         $this->downloadableModelMock = $this->objectManagerHelper->getObject(
             \Magento\DownloadableImportExport\Model\Import\Product\Type\Downloadable::class,
             [
@@ -522,11 +535,12 @@ class DownloadableTest extends \Magento\ImportExport\Test\Unit\Model\Import\Abst
                 'resource' => $this->resourceMock,
                 'params' => $this->paramsArray,
                 'uploaderHelper' => $this->uploaderHelper,
-                'downloadableHelper' => $this->downloadableHelper
+                'downloadableHelper' => $this->downloadableHelper,
+                'domainValidator' => $this->domainValidator
             ]
         );
         $result = $this->downloadableModelMock->isRowValid($rowData, $rowNum, $isNewProduct);
-        $this->assertNotNull($result);
+        $this->assertEquals($expectedResult, $result);
     }
 
     /**
@@ -550,6 +564,8 @@ class DownloadableTest extends \Magento\ImportExport\Test\Unit\Model\Import\Abst
                         . 'title=Title 2, price=10, downloads=unlimited, url=media/file2.mp4,sortorder=0',
                 ],
                 0,
+                true,
+                true,
                 true
             ],
             [
@@ -564,15 +580,8 @@ class DownloadableTest extends \Magento\ImportExport\Test\Unit\Model\Import\Abst
                         . ' title=Title 2, price=10, downloads=unlimited, url=media/file2.mp4,sortorder=0',
                 ],
                 1,
-                true
-            ],
-            [
-                [
-                    'sku' => 'downloadablesku12',
-                    'product_type' => 'downloadable',
-                    'name' => 'Downloadable Product 2',
-                ],
-                2,
+                true,
+                true,
                 true
             ],
             [
@@ -587,6 +596,8 @@ class DownloadableTest extends \Magento\ImportExport\Test\Unit\Model\Import\Abst
                         . ' url=media/file2.mp4,sortorder=0',
                 ],
                 3,
+                true,
+                true,
                 true
             ],
             [
@@ -594,13 +605,15 @@ class DownloadableTest extends \Magento\ImportExport\Test\Unit\Model\Import\Abst
                     'sku' => 'downloadablesku12',
                     'product_type' => 'downloadable',
                     'name' => 'Downloadable Product 2',
-                    'downloadable_samples' => 'file=media/file.mp4,sortorder=1|group_title=Group Title, '
-                        . 'url=media/file2.mp4,sortorder=0',
+                    'downloadable_samples' => 'title=Title 1, file=media/file.mp4,sortorder=1|title=Title 2,' .
+                        ' group_title=Group Title, url=media/file2.mp4,sortorder=0',
                     'downloadable_links' => 'title=Title 1, price=10, downloads=unlimited, file=media/file.mp4,'
                         . 'sortorder=1|group_title=Group Title, title=Title 2, price=10, downloads=unlimited,'
                         . ' url=media/file2.mp4,sortorder=0',
                 ],
                 4,
+                true,
+                true,
                 true
             ],
             [ //empty group title samples
@@ -615,6 +628,8 @@ class DownloadableTest extends \Magento\ImportExport\Test\Unit\Model\Import\Abst
                         . ' title=Title 2, price=10, downloads=unlimited, url=media/file2.mp4,sortorder=0',
                 ],
                 5,
+                true,
+                true,
                 true
             ],
             [ //empty group title links
@@ -629,6 +644,19 @@ class DownloadableTest extends \Magento\ImportExport\Test\Unit\Model\Import\Abst
                         . 'downloads=unlimited, url=media/file2.mp4,sortorder=0',
                 ],
                 6,
+                true,
+                true,
+                true
+            ],
+            [
+                [
+                    'sku' => 'downloadablesku12',
+                    'product_type' => 'downloadable',
+                    'name' => 'Downloadable Product 2',
+                ],
+                2,
+                false,
+                true,
                 true
             ],
             [
@@ -640,7 +668,9 @@ class DownloadableTest extends \Magento\ImportExport\Test\Unit\Model\Import\Abst
                     'downloadable_links' => '',
                 ],
                 7,
-                true
+                true,
+                true,
+                false
             ],
         ];
     }
@@ -674,9 +704,9 @@ class DownloadableTest extends \Magento\ImportExport\Test\Unit\Model\Import\Abst
                 'metadataPool' => $metadataPoolMock,
             ]
         );
-        $this->entityModelMock->expects($this->once())->method('getNewSku')->will($this->returnValue($newSku));
-        $this->entityModelMock->expects($this->at(1))->method('getNextBunch')->will($this->returnValue($bunch));
-        $this->entityModelMock->expects($this->at(2))->method('getNextBunch')->will($this->returnValue(null));
+        $this->entityModelMock->expects($this->once())->method('getNewSku')->willReturn($newSku);
+        $this->entityModelMock->expects($this->at(1))->method('getNextBunch')->willReturn($bunch);
+        $this->entityModelMock->expects($this->at(2))->method('getNextBunch')->willReturn(null);
         $this->entityModelMock->expects($this->any())->method('isRowAllowedToImport')->willReturn($allowImport);
         $exception = new \Magento\Framework\Exception\LocalizedException(new \Magento\Framework\Phrase('Error'));
         $this->uploaderMock->expects($this->any())->method('move')->will($this->throwException($exception));

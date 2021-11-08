@@ -9,7 +9,7 @@ use Magento\Sales\Api\Data\OrderAddressInterface as OrderAddress;
 use Magento\TestFramework\TestCase\WebapiAbstract;
 
 /**
- * Class OrderAddressUpdateTest
+ * Test for address update
  */
 class OrderAddressUpdateTest extends WebapiAbstract
 {

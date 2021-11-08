@@ -1,11 +1,17 @@
 {
     "name": "magento/module-tax",
     "description": "N/A",
+    "type": "magento2-module",
+    "license": [
+        "OSL-3.0",
+        "AFL-3.0"
+    ],
     "config": {
         "sort-packages": true
     },
+    "version": "100.3.7",
     "require": {
-        "php": "~7.1.3||~7.2.0||~7.3.0",
+        "php": "~7.3.0||~7.4.0",
         "magento/framework": "102.0.*",
         "magento/module-backend": "101.0.*",
         "magento/module-catalog": "103.0.*",
@@ -24,11 +30,6 @@
     "suggest": {
         "magento/module-tax-sample-data": "Sample Data version: 100.3.*"
     },
-    "type": "magento2-module",
-    "license": [
-        "OSL-3.0",
-        "AFL-3.0"
-    ],
     "autoload": {
         "files": [
             "registration.php"
@@ -36,6 +37,6 @@
         "psr-4": {
             "Magento\\Tax\\": ""
         }
-    },
-    "version": "100.3.5"
+    }
 }
+

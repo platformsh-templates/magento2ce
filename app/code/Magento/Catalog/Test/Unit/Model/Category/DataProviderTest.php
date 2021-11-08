@@ -7,6 +7,7 @@ namespace Magento\Catalog\Test\Unit\Model\Category;
 
 use Magento\Catalog\Model\Category\DataProvider;
 use Magento\Catalog\Model\Category\FileInfo;
+use Magento\Catalog\Model\Category\Image;
 use Magento\Catalog\Model\CategoryFactory;
 use Magento\Catalog\Model\ResourceModel\Category\Collection;
 use Magento\Catalog\Model\ResourceModel\Category\CollectionFactory;
@@ -18,6 +19,7 @@ use Magento\Store\Model\StoreManagerInterface;
 use Magento\Ui\DataProvider\EavValidationRules;
 use Magento\Ui\DataProvider\Modifier\PoolInterface;
 use Magento\Framework\Stdlib\ArrayUtils;
+use PHPUnit\Framework\MockObject\MockObject;
 
 /**
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
@@ -25,69 +27,73 @@ use Magento\Framework\Stdlib\ArrayUtils;
 class DataProviderTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * @var EavValidationRules|\PHPUnit_Framework_MockObject_MockObject
+     * @var EavValidationRules|\PHPUnit\Framework\MockObject\MockObject
      */
     private $eavValidationRules;
 
     /**
-     * @var CollectionFactory|\PHPUnit_Framework_MockObject_MockObject
+     * @var CollectionFactory|\PHPUnit\Framework\MockObject\MockObject
      */
     private $categoryCollectionFactory;
 
     /**
-     * @var StoreManagerInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var StoreManagerInterface|\PHPUnit\Framework\MockObject\MockObject
      */
     private $storeManager;
 
     /**
-     * @var Registry|\PHPUnit_Framework_MockObject_MockObject
+     * @var Registry|\PHPUnit\Framework\MockObject\MockObject
      */
     private $registry;
 
     /**
-     * @var Config|\PHPUnit_Framework_MockObject_MockObject
+     * @var Config|\PHPUnit\Framework\MockObject\MockObject
      */
     private $eavConfig;
 
     /**
-     * @var RequestInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var RequestInterface|\PHPUnit\Framework\MockObject\MockObject
      */
     private $request;
 
     /**
-     * @var CategoryFactory|\PHPUnit_Framework_MockObject_MockObject
+     * @var CategoryFactory|\PHPUnit\Framework\MockObject\MockObject
      */
     private $categoryFactory;
 
     /**
-     * @var Collection|\PHPUnit_Framework_MockObject_MockObject
+     * @var Collection|\PHPUnit\Framework\MockObject\MockObject
      */
     private $collection;
 
     /**
-     * @var Type|\PHPUnit_Framework_MockObject_MockObject
+     * @var Type|\PHPUnit\Framework\MockObject\MockObject
      */
     private $eavEntityMock;
 
     /**
-     * @var FileInfo|\PHPUnit_Framework_MockObject_MockObject
+     * @var FileInfo|\PHPUnit\Framework\MockObject\MockObject
      */
     private $fileInfo;
 
     /**
-     * @var PoolInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var PoolInterface|\PHPUnit\Framework\MockObject\MockObject
      */
     private $modifierPool;
 
     /**
-     * @var ArrayUtils|\PHPUnit_Framework_MockObject_MockObject
+     * @var ArrayUtils|\PHPUnit\Framework\MockObject\MockObject
      */
     private $arrayUtils;
+    /**
+     * @var Image|MockObject
+     */
+    private $categoryImage;
 
     /**
      * @inheritDoc
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->eavValidationRules = $this->getMockBuilder(EavValidationRules::class)
             ->disableOriginalConstructor()
@@ -126,7 +132,7 @@ class DataProviderTest extends \PHPUnit\Framework\TestCase
 
         $this->request = $this->getMockBuilder(RequestInterface::class)
             ->disableOriginalConstructor()
-            ->getMock();
+            ->getMockForAbstractClass();
 
         $this->categoryFactory = $this->getMockBuilder(CategoryFactory::class)
             ->disableOriginalConstructor()
@@ -141,6 +147,11 @@ class DataProviderTest extends \PHPUnit\Framework\TestCase
         $this->arrayUtils = $this->getMockBuilder(ArrayUtils::class)
             ->setMethods(['flatten'])
             ->disableOriginalConstructor()->getMock();
+
+        $this->categoryImage = $this->createPartialMock(
+            Image::class,
+            ['getUrl']
+        );
     }
 
     /**
@@ -171,7 +182,8 @@ class DataProviderTest extends \PHPUnit\Framework\TestCase
                 'request' => $this->request,
                 'categoryFactory' => $this->categoryFactory,
                 'pool' => $this->modifierPool,
-                'arrayUtils' => $this->arrayUtils
+                'arrayUtils' => $this->arrayUtils,
+                'categoryImage' => $this->categoryImage,
             ]
         );
 
@@ -253,7 +265,7 @@ class DataProviderTest extends \PHPUnit\Framework\TestCase
         $model = $this->getModel();
         $result = $model->getData();
 
-        $this->assertTrue(is_array($result));
+        $this->assertIsArray($result);
         $this->assertArrayHasKey($categoryId, $result);
         $this->assertArrayNotHasKey('image', $result[$categoryId]);
     }
@@ -315,8 +327,8 @@ class DataProviderTest extends \PHPUnit\Framework\TestCase
         $categoryMock->expects($this->once())
             ->method('getAttributes')
             ->willReturn(['image' => $attributeMock]);
-        $categoryMock->expects($this->once())
-            ->method('getImageUrl')
+        $this->categoryImage->expects($this->once())
+            ->method('getUrl')
             ->willReturn($categoryUrl);
 
         $this->registry->expects($this->once())
@@ -340,7 +352,7 @@ class DataProviderTest extends \PHPUnit\Framework\TestCase
         $model = $this->getModel();
         $result = $model->getData();
 
-        $this->assertTrue(is_array($result));
+        $this->assertIsArray($result);
         $this->assertArrayHasKey($categoryId, $result);
         $this->assertArrayHasKey('image', $result[$categoryId]);
 

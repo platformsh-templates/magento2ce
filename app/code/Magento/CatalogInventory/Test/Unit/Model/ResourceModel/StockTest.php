@@ -26,51 +26,51 @@ class StockTest extends \PHPUnit\Framework\TestCase
     const ITEM_TABLE = 'testItemTableName';
 
     /**
-     * @var Stock|\PHPUnit_Framework_MockObject_MockObject
+     * @var Stock|\PHPUnit\Framework\MockObject\MockObject
      */
     private $stock;
 
     /**
-     * @var Mysql|\PHPUnit_Framework_MockObject_MockObject
+     * @var Mysql|\PHPUnit\Framework\MockObject\MockObject
      */
     private $connectionMock;
 
     /**
-     * @var Config|\PHPUnit_Framework_MockObject_MockObject
+     * @var Config|\PHPUnit\Framework\MockObject\MockObject
      */
     private $scopeConfigMock;
 
     /**
-     * @var DateTime|\PHPUnit_Framework_MockObject_MockObject
+     * @var DateTime|\PHPUnit\Framework\MockObject\MockObject
      */
     private $dateTimeMock;
 
     /**
-     * @var StockConfiguration|\PHPUnit_Framework_MockObject_MockObject
+     * @var StockConfiguration|\PHPUnit\Framework\MockObject\MockObject
      */
     private $stockConfigurationMock;
 
     /**
-     * @var StoreManagerInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var StoreManagerInterface|\PHPUnit\Framework\MockObject\MockObject
      */
     private $storeManagerMock;
 
     /**
-     * @var Context|\PHPUnit_Framework_MockObject_MockObject
+     * @var Context|\PHPUnit\Framework\MockObject\MockObject
      */
     private $contextMock;
 
     /**
-     * @var \Magento\Framework\DB\Select|\PHPUnit_Framework_MockObject_MockObject
+     * @var \Magento\Framework\DB\Select|\PHPUnit\Framework\MockObject\MockObject
      */
     private $selectMock;
 
     /**
-     * @var \Zend_Db_Statement_Interface|\PHPUnit_Framework_MockObject_MockObject
+     * @var \Zend_Db_Statement_Interface|\PHPUnit\Framework\MockObject\MockObject
      */
     private $statementMock;
-    
-    protected function setUp()
+
+    protected function setUp(): void
     {
         $objectManager = new ObjectManager($this);
         $this->selectMock = $this->getMockBuilder(\Magento\Framework\DB\Select::class)
@@ -89,7 +89,7 @@ class StockTest extends \PHPUnit\Framework\TestCase
             ->getMock();
         $this->storeManagerMock = $this->getMockBuilder(StoreManagerInterface::class)
             ->disableOriginalConstructor()
-            ->getMock();
+            ->getMockForAbstractClass();
         $this->connectionMock = $this->getMockBuilder(Mysql::class)
             ->disableOriginalConstructor()
             ->getMock();
@@ -115,23 +115,35 @@ class StockTest extends \PHPUnit\Framework\TestCase
      * @param array $productIds
      * @param array $products
      * @param array $result
+     * @param array $items
      *
      * @return void
      */
-    public function testLockProductsStock(int $websiteId, array $productIds, array $products, array $result)
-    {
-        $this->selectMock->expects($this->exactly(2))
+    public function testLockProductsStock(
+        int $websiteId,
+        array $productIds,
+        array $products,
+        array $result,
+        array $items
+    ) {
+        $itemIds = [];
+        foreach ($items as $item) {
+            $itemIds[] = $item['item_id'];
+        }
+        $this->selectMock->expects($this->exactly(3))
             ->method('from')
             ->withConsecutive(
+                [$this->identicalTo(self::ITEM_TABLE)],
                 [$this->identicalTo(['si' => self::ITEM_TABLE])],
                 [$this->identicalTo(['p' => self::PRODUCT_TABLE]), $this->identicalTo([])]
             )
             ->willReturnSelf();
-        $this->selectMock->expects($this->exactly(3))
+        $this->selectMock->expects($this->exactly(4))
             ->method('where')
             ->withConsecutive(
                 [$this->identicalTo('website_id = ?'), $this->identicalTo($websiteId)],
                 [$this->identicalTo('product_id IN(?)'), $this->identicalTo($productIds)],
+                [$this->identicalTo('item_id IN (?)'), $this->identicalTo($itemIds)],
                 [$this->identicalTo('entity_id IN (?)'), $this->identicalTo($productIds)]
             )
             ->willReturnSelf();
@@ -143,14 +155,17 @@ class StockTest extends \PHPUnit\Framework\TestCase
             ->method('columns')
             ->with($this->identicalTo(['product_id' => 'entity_id', 'type_id' => 'type_id']))
             ->willReturnSelf();
-        $this->connectionMock->expects($this->exactly(2))
+        $this->connectionMock->expects($this->exactly(3))
             ->method('select')
             ->willReturn($this->selectMock);
-        $this->connectionMock->expects($this->once())
+        $this->connectionMock->expects($this->exactly(2))
             ->method('query')
             ->with($this->identicalTo($this->selectMock))
             ->willReturn($this->statementMock);
-        $this->statementMock->expects($this->once())
+        $this->statementMock->expects($this->at(0))
+            ->method('fetchAll')
+            ->willReturn($items);
+        $this->statementMock->expects($this->at(1))
             ->method('fetchAll')
             ->willReturn($products);
         $this->connectionMock->expects($this->once())
@@ -166,7 +181,7 @@ class StockTest extends \PHPUnit\Framework\TestCase
                 self::ITEM_TABLE,
                 self::PRODUCT_TABLE
             ));
-        $this->stock->expects($this->exactly(4))
+        $this->stock->expects($this->exactly(6))
             ->method('getConnection')
             ->willReturn($this->connectionMock);
 
@@ -203,6 +218,7 @@ class StockTest extends \PHPUnit\Framework\TestCase
                         'type_id' => 'simple',
                     ],
                 ],
+                [['item_id' => 1], ['item_id' => 2], ['item_id' => 3]]
             ],
         ];
     }
