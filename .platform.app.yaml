@@ -1,0 +1,113 @@
+# This file describes an application. You can have multiple applications
+# in the same project.
+#
+# See https://docs.platform.sh/user_guide/reference/platform-app-yaml.html
+
+# The name of this app. Must be unique within a project.
+name: app
+
+# The runtime the application uses.
+type: php:7.4
+
+# Specify additional PHP extensions that should be loaded.
+runtime:
+    extensions:
+    - xsl
+    - sodium
+    - redis
+    - xsl
+    - json
+
+# Configuration of the build of this application.
+build:
+    flavor: composer
+
+dependencies:
+    php:
+        composer/composer: '^2'
+
+# The relationships of the application with services or other applications.
+#
+# The left-hand side is the name of the relationship as it will be exposed
+# to the application in the PLATFORM_RELATIONSHIPS variable. The right-hand
+# side is in the form `<service name>:<endpoint name>`.
+relationships:
+    database: db:mysql
+    redis: cache:redis
+    elasticsearch: indexer:elasticsearch
+    rabbitmq: queue:rabbitmq
+
+# The size of the persistent disk of the application (in MB).
+disk: 2048
+
+# The 'mounts' describe writable, persistent filesystem mounts in the application.
+mounts:
+    "/var":
+        source: local
+        source_path: "var"
+    "/app/etc":
+        source: local
+        source_path: "etc"
+    "/pub/media":
+        source: local
+        source_path: "media"
+    "/pub/static":
+        source: local
+        source_path: "static"
+
+# The hooks executed at various points in the lifecycle of the application.
+hooks:
+  build: |
+    set -e
+    php ./vendor/bin/ece-tools build:generate
+    php ./vendor/bin/ece-tools build:transfer
+  deploy: |
+    set -e
+    php ./vendor/bin/ece-tools deploy
+  post_deploy: |
+    set -e
+    php ./vendor/bin/ece-tools post-deploy
+
+# The configuration of scheduled execution.
+crons:
+    magento:
+        spec: "*/5 * * * *"
+        cmd: bash -c 'for group in $(grep -shoP "(?<=<group id=\")(.+)(?=\">)" {app,vendor}/*/*/etc/cron_groups.xml); do echo -n Running cron group ${group} --- && php -d memory_limit=-1 bin/magento cron:run --group=${group}; done'
+    logrotate:
+        spec: "45 1 * * *"
+        cmd: shtool rotate -n10 $PLATFORM_APP_DIR/var/log/*.log
+    reportcleanup:
+        spec: "0 2 * * *"
+        cmd: find $PLATFORM_APP_DIR/var/report/* -mtime +10 -delete
+
+# The configuration of app when it is exposed to the web.
+web:
+    locations:
+        "/":
+            # The public directory of the app, relative to its root.
+            root: "pub"
+            # The front-controller script to send non-static requests to.
+            passthru: "/index.php"
+            index:
+                - index.php
+            expires: -1
+            scripts: true
+            allow: false
+            rules:
+                \.(css|js|map|hbs|gif|jpe?g|png|tiff|wbmp|ico|jng|bmp|svgz|midi?|mp?ga|mp2|mp3|m4a|ra|weba|3gpp?|mp4|mpe?g|mpe|ogv|mov|webm|flv|mng|asx|asf|wmv|avi|ogx|swf|jar|ttf|eot|woff|otf|html?)$:
+                    allow: true
+        "/media":
+            root: "pub/media"
+            allow: true
+            scripts: false
+            expires: 1y
+            passthru: "/get.php"
+        "/static":
+            root: "pub/static"
+            allow: true
+            scripts: false
+            expires: 1y
+            passthru: "/front-static.php"
+            rules:
+                ^/static/version\d+/(?<resource>.*)$:
+                    passthru: "/static/$resource"

@@ -1,0 +1,14 @@
+db:
+    type: mysql:10.4
+    disk: 1500
+
+cache:
+    type: redis:6.0
+
+indexer:
+    type: elasticsearch:7.9
+    disk: 512
+
+queue:
+    type: rabbitmq:3.8
+    disk: 1024

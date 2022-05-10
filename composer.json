@@ -1,0 +1,72 @@
+{
+    "name": "magento/project-community-edition",
+    "description": "Platform.sh Magento 2 CE(Community Edition)",
+    "type": "project",
+    "license": [
+        "OSL-3.0",
+        "AFL-3.1"
+    ],
+    "config": {
+        "preferred-install": "dist",
+        "sort-packages": true
+    },
+    "require": {
+        "magento/ece-tools": "^2002.1.6",
+        "magento/magento-cloud-components": "^1.0.7",
+        "magento/magento-cloud-patches": "^1.0.10",
+        "magento/product-community-edition": "^2.4",
+        "magento/quality-patches": "^1.0.22",
+        "wolfsellers/module-enabledisabletfa": "^1.0"
+    },
+    "replace": {
+        "magento/magento-cloud-docker": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "Magento\\Framework\\": "lib/internal/Magento/Framework/",
+            "Magento\\Setup\\": "setup/src/Magento/Setup/",
+            "Magento\\": "app/code/Magento/",
+            "Zend\\Mvc\\Controller\\": "setup/src/Zend/Mvc/Controller/"
+        },
+        "psr-0": {
+            "": [
+                "app/code/",
+                "generated/code/"
+            ]
+        },
+        "files": [
+            "app/etc/NonComposerComponentRegistration.php"
+        ],
+        "exclude-from-classmap": [
+            "**/dev/**",
+            "**/update/**",
+            "**/Test/**"
+        ]
+    },
+    "minimum-stability": "stable",
+    "repositories": {
+        "Magento Repo Auth Required": {
+            "type": "composer",
+            "url": "https://repo.magento.com"
+        },
+        "ECE-Tools": {
+            "type": "git",
+            "url": "https://github.com/magento/ece-tools.git"
+        },
+        "Magento Cloud Components": {
+            "type": "git",
+            "url": "https://github.com/magento/magento-cloud-components.git"
+        },
+        "Magento Cloud Patches": {
+            "type": "git",
+            "url": "https://github.com/magento/magento-cloud-patches.git"
+        },
+        "Magento Quality Patches": {
+            "type": "git",
+            "url": "https://github.com/magento/quality-patches.git"
+        }
+    },
+    "extra": {
+        "magento-force": "override"
+    }
+}
