@@ -1,3 +1,4 @@
 https://{default}/:
+    id: main
     type: upstream
     upstream: app:http

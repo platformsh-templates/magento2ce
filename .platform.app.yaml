@@ -66,7 +66,7 @@ hooks:
     # The deploy hook runs after your application has been deployed and started.
     deploy: |
         set -e
-        ./deploy
+        php deploy.php
         php disable-cron-workers.php
 
 # The configuration of scheduled execution.
