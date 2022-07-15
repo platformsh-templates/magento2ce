@@ -44,10 +44,30 @@ $isMagentoInstalled = file_exists($filePaths['installed']);
 $isFreshInstall = !$isMagentoInstalled;
 $isEnvConfigured = file_exists($filePaths['env.php']);
 
+$magento24SetupPatch = "<?php return ['db' => [
+        'table_prefix' => '',
+        'connection' => [
+            'default' => [
+                'host' => {$database['host']},
+                'dbname' => {$database['path']},
+                'username' => {$database['username']},
+                'password' => {$database['password']},
+                'model' => 'mysql4',
+                'engine' => 'innodb',
+                'initStatements' => 'SET NAMES utf8;',
+                'active' => '1',
+                'driver_options' => [
+                    1014 => false
+                ]
+            ]
+        ]
+    ],];";
+
 /** Let's reset our Magento env.php since we are redeploying */
 if($isEnvConfigured) {
     unlink($filePaths['env.php']);
-    file_put_contents($filePaths['env.php'], '<?php return [];');
+    /** A Magento 2.4.4 bug requires the database to be defined before running setup:install */
+    file_put_contents($filePaths['env.php'], $magento24SetupPatch);
 }
 
 
