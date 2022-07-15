@@ -41,8 +41,10 @@ $isFreshInstall = !$isMagentoInstalled;
 $isEnvConfigured = file_exists($filePaths['env.php']);
 
 /** Let's reset our Magento env.php since we are redeploying */
-if($isEnvConfigured)
+if($isEnvConfigured) {
     unlink($filePaths['env.php']);
+    file_put_contents($filePaths['env.php'], "");
+}
 
 /** Now, we're going to define our Magento CLI setup command */
 $setupCommand = ["php bin/magento setup:install"];
