@@ -9,8 +9,6 @@ magento_search:
   type: elasticsearch:7.7
   disk: 256
   configuration:
-    authentication:
-      enabled: true
     plugins:
       - analysis-icu
       - analysis-phonetic

@@ -70,7 +70,6 @@ if($isEnvConfigured) {
     file_put_contents($filePaths['env.php'], $magento24SetupPatch);
 }
 
-
 /** Now, we're going to define our Magento CLI setup command */
 $setupCommand = ["php bin/magento setup:install"];
 $deploymentArgs = [
@@ -100,9 +99,6 @@ $deploymentArgs = [
     "--search-engine=elasticsearch7",
     "--elasticsearch-host={$search['host']}",
     "--elasticsearch-port={$search['port']}",
-    "--elasticsearch-enable-auth=1",
-    "--elasticsearch-username={$search['username']}",
-    "--elasticsearch-password={$search['password']}",
 ];
 
 $initialSetupArgs = [
