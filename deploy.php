@@ -18,15 +18,19 @@ $mainRouteInfo = array_filter($routes, function($value) {
     return array_key_exists('id', $value) && strtolower($value['id']) === 'main';
 });
 
-if(!$mainRouteInfo)
-    throw new Error('Cannot find the main route for Magento. Please add `id: main` to your routes.yaml.');
+if(!$mainRouteInfo) {
+    echo 'Cannot find the main route for Magento. Please add `id: main` to your routes.yaml.'.PHP_EOL;
+    exit(1);
+}
 
-if(!array_key_exists('database', $relationships))
-    throw new Error('Cannot find the database service for Magento. Please update your .platform.app.yaml or .platform/applications.yaml to use the relationship name "database" or modify deploy.php to use the new name.');
-
-if(!array_key_exists('redis', $relationships))
-    throw new Error('Cannot find the main redis service for Magento. Please update your .platform.app.yaml or .platform/applications.yaml to use the relationship name "redis" or modify deploy.php to use the new name.');
-
+if(!array_key_exists('database', $relationships)) {
+    echo 'Cannot find the database service for Magento. Please update your .platform.app.yaml or .platform/applications.yaml to use the relationship name "database" or modify deploy.php to use the new name.'.PHP_EOL;
+    exit(1);
+}
+if(!array_key_exists('redis', $relationships)) {
+    echo 'Cannot find the main redis service for Magento. Please update your .platform.app.yaml or .platform/applications.yaml to use the relationship name "redis" or modify deploy.php to use the new name.'.PHP_EOL;
+    exit(1);
+}
 /** @var $mainRoute Let's get our real world route to Magento */
 $mainRoute = key($mainRouteInfo);
 
@@ -41,10 +45,9 @@ $isFreshInstall = !$isMagentoInstalled;
 $isEnvConfigured = file_exists($filePaths['env.php']);
 
 /** Let's reset our Magento env.php since we are redeploying */
-if($isEnvConfigured) {
+if($isEnvConfigured)
     unlink($filePaths['env.php']);
-    file_put_contents($filePaths['env.php'], "");
-}
+
 
 /** Now, we're going to define our Magento CLI setup command */
 $setupCommand = ["php bin/magento setup:install"];
@@ -75,6 +78,9 @@ $deploymentArgs = [
     "--search-engine=elasticsearch7",
     "--elasticsearch-host={$search['host']}",
     "--elasticsearch-port={$search['port']}",
+    "--elasticsearch-enable-auth=1",
+    "--elasticsearch-username={$search['username']}",
+    "--elasticsearch-password={$search['password']}",
 ];
 
 $initialSetupArgs = [
@@ -94,8 +100,10 @@ $deployCommand = join(' ', array_merge($setupCommand, $deploymentArgs));
 /** Execute the setup command and output to deploy log */
 passthru($deployCommand, $exitStatus);
 
-if($exitStatus !== 0)
-    throw new Error("Build failed w/ command: {$deployCommand}");
+if($exitStatus !== 0) {
+    echo "Build failed w/ command: {$deployCommand}".PHP_EOL;
+    exit($exitStatus);
+}
 
 if($isFreshInstall) {
     echo "Forcing admin password to expire after first login.".PHP_EOL;
@@ -113,8 +121,10 @@ if($isFreshInstall) {
 
     passthru(join(' ', $expirePasswordCommand), $exitStatus);
 
-    if ($exitStatus !== 0)
-        throw new Error('WARNING! Failed to expire admin password. Please login to /admin and reset the password.');
+    if ($exitStatus !== 0) {
+        echo 'WARNING! Failed to expire admin password. Please login to /admin and reset the password.' . PHP_EOL;
+        exit($exitStatus);
+    }
 }
 
 echo PHP_EOL.PHP_EOL."Deployment complete! Your Magento site is accessible at {$mainRoute}".PHP_EOL;
