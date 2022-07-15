@@ -7,7 +7,11 @@
 name: app
 
 # The runtime the application uses.
-type: php:7.2
+type: php:7.4
+
+dependencies:
+  php:
+    composer/composer: "^2"
 
 # Specify additional PHP extensions that should be loaded.
 runtime:
