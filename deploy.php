@@ -89,7 +89,7 @@ $deployCommand = join(' ', array_merge($setupCommand, $deploymentArgs));
 passthru($deployCommand, $exitStatus);
 
 if($exitStatus !== 0)
-    throw new Error('Build failed');
+    throw new Error("Build failed w/ command: {$deployCommand}");
 
 if($isFreshInstall) {
     echo "Forcing admin password to expire after first login.".PHP_EOL;
