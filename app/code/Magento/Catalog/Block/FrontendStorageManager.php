@@ -47,8 +47,6 @@ class FrontendStorageManager extends \Magento\Framework\View\Element\Template
     }
 
     /**
-     * Retrieve configuration data as JSON
-     *
      * Merge and retrieve configuration of storages like ids_storage or product_storage
      * in json format
      *

@@ -7,7 +7,8 @@
 -->
 <layout xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_layout.xsd">
-    <container name="cachable_container1-1" label="test1" htmlTag="div" htmlId="cachable_container11" htmlClass="class11">
+    <container name="cacheable_container1-1" label="test1" htmlTag="div" htmlId="cacheable_container11"
+               htmlClass="class11">
         <block class="Magento\Framework\View\Element\Text" name="block-1-in-cacheable-container1">
             <action method="setText">
                 <argument name="text" xsi:type="string">Test11</argument>
@@ -15,7 +16,7 @@
         </block>
     </container>
 
-    <referenceContainer name="cachable_container1-1-2">
+    <referenceContainer name="cacheable_container1-1-2">
         <block name="non_cacheable_block" cacheable="false"/>
     </referenceContainer>
 </layout>

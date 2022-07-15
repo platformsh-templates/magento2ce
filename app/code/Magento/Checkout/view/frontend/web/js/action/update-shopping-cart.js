@@ -122,7 +122,10 @@ define([
         submitForm: function () {
             this.element
                 .off('submit', this.onSubmit)
-                .submit();
+                .on('submit', function () {
+                    $(document.body).trigger('processStart');
+                })
+                .trigger('submit');
         }
     });
 

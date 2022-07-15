@@ -13,6 +13,7 @@ use Magento\Framework\App\Filesystem\DirectoryList;
 
 /**
  * Tests for the \Magento\CatalogImportExport\Model\Import\Uploader class.
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  */
 class UploaderTest extends \Magento\TestFramework\Indexer\TestCase
 {
@@ -42,7 +43,7 @@ class UploaderTest extends \Magento\TestFramework\Indexer\TestCase
     /**
      * @inheritdoc
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->objectManager = \Magento\TestFramework\Helper\Bootstrap::getObjectManager();
         $this->fileReader = $this->getMockForAbstractClass(\Magento\Framework\Filesystem\File\ReadInterface::class);
@@ -82,7 +83,6 @@ class UploaderTest extends \Magento\TestFramework\Indexer\TestCase
     /**
      * Tests move with external url
      *
-     * @magentoAppIsolation enabled
      * @return void
      */
     public function testMoveWithExternalURL(): void
@@ -95,7 +95,6 @@ class UploaderTest extends \Magento\TestFramework\Indexer\TestCase
     }
 
     /**
-     * @magentoAppIsolation enabled
      * @return void
      */
     public function testMoveWithValidFile(): void
@@ -112,12 +111,12 @@ class UploaderTest extends \Magento\TestFramework\Indexer\TestCase
     /**
      * Check validation against temporary directory.
      *
-     * @magentoAppIsolation enabled
      * @return void
-     * @expectedException \Magento\Framework\Exception\LocalizedException
      */
     public function testMoveWithFileOutsideTemp(): void
     {
+        $this->expectException(\Magento\Framework\Exception\LocalizedException::class);
+
         $tmpDir = $this->uploader->getTmpDir();
         $newTmpDir = $tmpDir . '/test1';
         if (!$this->directory->create($newTmpDir)) {
@@ -134,13 +133,13 @@ class UploaderTest extends \Magento\TestFramework\Indexer\TestCase
     }
 
     /**
-     * @magentoAppIsolation enabled
      * @return void
-     * @expectedException \Exception
-     * @expectedExceptionMessage Disallowed file type
      */
     public function testMoveWithInvalidFile(): void
     {
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage('Disallowed file type');
+
         $fileName = 'media_import_image.php';
         $filePath = $this->directory->getAbsolutePath($this->uploader->getTmpDir() . '/' . $fileName);
         //phpcs:ignore

@@ -14,8 +14,8 @@
             <title value="Saving custom attribute values using UI"/>
             <description value="Checks that saved custom attribute values are reflected on the product's edit page"/>
             <severity value="MAJOR"/>
-            <testCaseId value="MC-17516"/>
-            <useCaseId value="MC-29022"/>
+            <testCaseId value="MC-29653"/>
+            <useCaseId value="MC-29023"/>
             <group value="catalog"/>
         </annotations>
         <before>
@@ -33,27 +33,29 @@
             </createData>
             <!-- Create simple product -->
             <createData entity="SimpleProduct2" stepKey="createSimpleProduct"/>
-            <magentoCLI command="indexer:reindex" arguments="catalogsearch_fulltext" stepKey="reindexCatalogSearch"/>
+            <comment userInput="Adding the comment to replace CliIndexerReindexActionGroup action group ('indexer:reindex' commands) for preserving Backward Compatibility" stepKey="reindexCatalogSearch"/>
             <!-- Login to Admin page -->
-            <actionGroup ref="LoginAsAdmin" stepKey="loginAsAdmin"/>
+            <actionGroup ref="AdminLoginActionGroup" stepKey="loginAsAdmin"/>
         </before>
         <after>
             <!-- Delete created entities -->
             <deleteData createDataKey="createSimpleProduct" stepKey="deleteSimpleProduct"/>
             <deleteData createDataKey="createMultiSelectProductAttribute" stepKey="deleteMultiSelectProductAttribute"/>
             <!-- Logout from Admin page -->
-            <actionGroup ref="logout" stepKey="logoutFromAdmin"/>
+            <actionGroup ref="AdminLogoutActionGroup" stepKey="logoutFromAdmin"/>
 
             <!-- Reindex invalidated indices after product attribute has been created/deleted -->
-            <actionGroup ref="CliRunReindexUsingCronJobsActionGroup" stepKey="reindexInvalidatedIndices"/>
+            <magentoCron groups="index" stepKey="reindexInvalidatedIndices"/>
         </after>
 
         <!-- Open created product for edit -->
-        <amOnPage url="{{AdminProductEditPage.url($createSimpleProduct.id$)}}" stepKey="goToProductEditPage"/>
+        <actionGroup ref="AdminProductPageOpenByIdActionGroup" stepKey="goToProductEditPage">
+            <argument name="productId" value="$createSimpleProduct.id$"/>
+        </actionGroup>
         <waitForPageLoad stepKey="waitForProductPageLoad"/>
 
         <!-- Add created attribute to the product -->
-        <actionGroup ref="addProductAttributeInProductModal" stepKey="addAttributeToProduct">
+        <actionGroup ref="AddProductAttributeInProductModalActionGroup" stepKey="addAttributeToProduct">
             <argument name="attributeCode" value="$createMultiSelectProductAttribute.attribute_code$"/>
         </actionGroup>
         <waitForPageLoad stepKey="waitForAttributeAdded"/>
@@ -65,7 +67,7 @@
         <!-- Select attribute options -->
         <selectOption selector="{{AdminProductAttributesSection.attributeDropdownByCode($createMultiSelectProductAttribute.attribute_code$)}}" parameterArray="[$addFirstOptionToAttribute.option[store_labels][0][label]$, $addThirdOptionToAttribute.option[store_labels][0][label]$]" stepKey="selectAttributeOptions"/>
         <!-- Save product -->
-        <actionGroup ref="saveProductForm" stepKey="saveProductForm"/>
+        <actionGroup ref="SaveProductFormActionGroup" stepKey="saveProductForm"/>
 
         <!-- Check attribute options are selected -->
         <actionGroup ref="AdminExpandProductAttributesTabActionGroup" stepKey="expandAttributesTabAfterProductSave"/>
@@ -73,8 +75,7 @@
         <seeOptionIsSelected selector="{{AdminProductAttributesSection.attributeDropdownByCode($createMultiSelectProductAttribute.attribute_code$)}}" userInput="$addThirdOptionToAttribute.option[store_labels][0][label]$" stepKey="assertThirdOptionIsSelected"/>
 
         <!-- Search for the product on Storefront -->
-        <amOnPage url="{{StorefrontHomePage.url}}" stepKey="goToHomePage"/>
-        <waitForPageLoad stepKey="waitForHomePageLoad"/>
+        <actionGroup ref="StorefrontOpenHomePageActionGroup" stepKey="goToHomePage"/>
         <actionGroup ref="StorefrontCheckQuickSearchActionGroup" stepKey="searchProductOnStorefront">
             <argument name="phrase" value="$createSimpleProduct.name$"/>
         </actionGroup>

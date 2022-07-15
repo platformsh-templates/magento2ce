@@ -5,8 +5,8 @@
  */
 namespace Magento\Framework\App\Response\HeaderProvider;
 
+use Laminas\Http\Header\HeaderInterface;
 use Magento\Framework\App\Response\Http as HttpResponse;
-use Zend\Http\Header\HeaderInterface;
 
 /**
  * Class AbstractHeaderTestCase
@@ -21,14 +21,12 @@ abstract class AbstractHeaderTestCase extends \Magento\TestFramework\TestCase\Ab
     /**
      * @inheritDoc
      */
-    public function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
         $this->_objectManager->configure(
             [
-                'preferences' =>
-                    [
-                        // phpcs:ignore Magento2.PHP.LiteralNamespaces.LiteralClassUsage
+                'preferences' => [
                         HttpResponse::class => 'Magento\Framework\App\Response\Http\Interceptor'
                     ]
             ]
@@ -44,6 +42,7 @@ abstract class AbstractHeaderTestCase extends \Magento\TestFramework\TestCase\Ab
      */
     protected function assertHeaderPresent($name, $value)
     {
+        $value = [$value];
         $this->interceptedResponse->sendResponse();
         $header = $this->interceptedResponse->getHeader($name);
 
@@ -57,7 +56,7 @@ abstract class AbstractHeaderTestCase extends \Magento\TestFramework\TestCase\Ab
         }
 
         $this->assertSame(
-            [$value],
+            $value,
             $headerContent
         );
     }

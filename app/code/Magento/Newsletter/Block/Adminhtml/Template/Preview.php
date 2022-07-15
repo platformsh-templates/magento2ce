@@ -65,8 +65,7 @@ class Preview extends \Magento\Backend\Block\Widget
             $template->setTemplateType($previewData['type']);
             $template->setTemplateText($previewData['text']);
             $template->setTemplateStyles($previewData['styles']);
-            // Emulate DB-loaded template to invoke strict mode
-            $template->setTemplateId(123);
+            $template->setData('is_legacy', false);
         }
 
         \Magento\Framework\Profiler::start($this->profilerName);

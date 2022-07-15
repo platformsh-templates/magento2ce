@@ -8,17 +8,19 @@ declare(strict_types=1);
 namespace Magento\Email\Model;
 
 use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Framework\App\ObjectManager;
 use Magento\Framework\Exception\MailException;
 use Magento\Framework\Mail\MessageInterface;
 use Magento\Framework\Mail\TransportInterface;
 use Magento\Framework\Phrase;
 use Magento\Store\Model\ScopeInterface;
-use Zend\Mail\Message;
-use Zend\Mail\Transport\Sendmail;
+use Laminas\Mail\Message;
+use Laminas\Mail\Transport\Sendmail;
+use Psr\Log\LoggerInterface;
 
 /**
  * Class that responsible for filling some message data before transporting it.
- * @see \Zend\Mail\Transport\Sendmail is used for transport
+ * @see \Laminas\Mail\Transport\Sendmail is used for transport
  */
 class Transport implements TransportInterface
 {
@@ -53,7 +55,7 @@ class Transport implements TransportInterface
     /**
      * @var Sendmail
      */
-    private $zendTransport;
+    private $laminasTransport;
 
     /**
      * @var MessageInterface
@@ -61,14 +63,21 @@ class Transport implements TransportInterface
     private $message;
 
     /**
+     * @var LoggerInterface|null
+     */
+    private $logger;
+
+    /**
      * @param MessageInterface $message Email message object
      * @param ScopeConfigInterface $scopeConfig Core store config
      * @param null|string|array|\Traversable $parameters Config options for sendmail parameters
+     * @param LoggerInterface|null $logger
      */
     public function __construct(
         MessageInterface $message,
         ScopeConfigInterface $scopeConfig,
-        $parameters = null
+        $parameters = null,
+        LoggerInterface $logger = null
     ) {
         $this->isSetReturnPath = (int) $scopeConfig->getValue(
             self::XML_PATH_SENDING_SET_RETURN_PATH,
@@ -79,8 +88,9 @@ class Transport implements TransportInterface
             ScopeInterface::SCOPE_STORE
         );
 
-        $this->zendTransport = new Sendmail($parameters);
+        $this->laminasTransport = new Sendmail($parameters);
         $this->message = $message;
+        $this->logger = $logger ?: ObjectManager::getInstance()->get(LoggerInterface::class);
     }
 
     /**
@@ -89,18 +99,19 @@ class Transport implements TransportInterface
     public function sendMessage()
     {
         try {
-            $zendMessage = Message::fromString($this->message->getRawMessage())->setEncoding('utf-8');
+            $laminasMessage = Message::fromString($this->message->getRawMessage())->setEncoding('utf-8');
             if (2 === $this->isSetReturnPath && $this->returnPathValue) {
-                $zendMessage->setSender($this->returnPathValue);
-            } elseif (1 === $this->isSetReturnPath && $zendMessage->getFrom()->count()) {
-                $fromAddressList = $zendMessage->getFrom();
+                $laminasMessage->setSender($this->returnPathValue);
+            } elseif (1 === $this->isSetReturnPath && $laminasMessage->getFrom()->count()) {
+                $fromAddressList = $laminasMessage->getFrom();
                 $fromAddressList->rewind();
-                $zendMessage->setSender($fromAddressList->current()->getEmail());
+                $laminasMessage->setSender($fromAddressList->current()->getEmail());
             }
 
-            $this->zendTransport->send($zendMessage);
+            $this->laminasTransport->send($laminasMessage);
         } catch (\Exception $e) {
-            throw new MailException(new Phrase($e->getMessage()), $e);
+            $this->logger->error($e);
+            throw new MailException(new Phrase('Unable to send mail. Please try again later.'));
         }
     }
 

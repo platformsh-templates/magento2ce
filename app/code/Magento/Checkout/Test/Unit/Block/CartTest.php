@@ -3,35 +3,41 @@
  * Copyright © Magento, Inc. All rights reserved.
  * See COPYING.txt for license details.
  */
+declare(strict_types=1);
+
 namespace Magento\Checkout\Test\Unit\Block;
 
-use Magento\Framework\View\Element\Template\Context;
-use Magento\Framework\TestFramework\Unit\Helper\ObjectManager;
-use Magento\Quote\Model\Quote;
+use Magento\Checkout\Block\Cart;
 use Magento\Checkout\Model\Session;
-use Magento\Framework\View\LayoutInterface;
 use Magento\Framework\Escaper;
+use Magento\Framework\Exception\LocalizedException;
+use Magento\Framework\TestFramework\Unit\Helper\ObjectManager;
+use Magento\Framework\View\Element\Template\Context;
+use Magento\Framework\View\LayoutInterface;
+use Magento\Quote\Model\Quote;
+use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\TestCase;
 
-class CartTest extends \PHPUnit\Framework\TestCase
+class CartTest extends TestCase
 {
 
     /**
-     * @var \Magento\Checkout\Block\Cart
+     * @var Cart
      */
     private $cartBlock;
 
     /**
-     * @var \Magento\Framework\Escaper|\PHPUnit_Framework_MockObject_MockObject
+     * @var Escaper|MockObject
      */
     private $escaper;
 
-    /** @var \Magento\Checkout\Block\Cart|\PHPUnit_Framework_MockObject_MockObject */
+    /** @var Cart|MockObject */
     private $context;
 
-    /** @var \Magento\Framework\View\LayoutInterface|\PHPUnit_Framework_MockObject_MockObject */
+    /** @var LayoutInterface|MockObject */
     private $layoutMock;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $objectManager = new ObjectManager($this);
         $this->context = $this->createPartialMock(Context::class, ['getEscaper', 'getLayout']);
@@ -44,9 +50,9 @@ class CartTest extends \PHPUnit\Framework\TestCase
         $this->context->expects($this->once())->method('getEscaper')->willReturn($this->escaper);
         $this->context->expects($this->once())->method('getLayout')->willReturn($this->layoutMock);
 
-        /** @var $cartBlock CartBlock */
+        /** @var $cartBlock Cart */
         $this->cartBlock = $objectManager->getObject(
-            \Magento\Checkout\Block\Cart::class,
+            Cart::class,
             [
                 'context'=> $this->context,
                 'checkoutSession'=>$checkoutSession,
@@ -59,7 +65,7 @@ class CartTest extends \PHPUnit\Framework\TestCase
     {
         $this->layoutMock->expects($this->any())->method('getBlock')->willReturn(false);
         $name='blockMethod';
-        $this->expectException(\Magento\Framework\Exception\LocalizedException::class);
+        $this->expectException(LocalizedException::class);
         $this->expectExceptionMessage(
             (string)__('Invalid method: %1', $name)
         );

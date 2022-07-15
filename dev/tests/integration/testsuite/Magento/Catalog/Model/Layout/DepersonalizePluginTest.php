@@ -15,7 +15,7 @@ use Magento\TestFramework\Helper\Bootstrap;
 use PHPUnit\Framework\TestCase;
 
 /**
- * Tests \Magento\Catalog\Model\Layout\DepersonalizePlugin.
+ * Integration tests for \Magento\Catalog\Model\Layout\DepersonalizePlugin class.
  *
  * @magentoAppArea frontend
  */
@@ -39,7 +39,7 @@ class DepersonalizePluginTest extends TestCase
     /**
      * @inheritdoc
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->catalogSession = Bootstrap::getObjectManager()->get(CatalogSession::class);
         $this->layout = Bootstrap::getObjectManager()->get(LayoutFactory::class)->create();
@@ -49,7 +49,7 @@ class DepersonalizePluginTest extends TestCase
     /**
      * @inheritdoc
      */
-    protected function tearDown()
+    protected function tearDown(): void
     {
         $this->catalogSession->clearStorage();
     }
@@ -87,12 +87,12 @@ class DepersonalizePluginTest extends TestCase
             ],
             'nonCacheableBlockWithoutReference' => [
                 'layout' => INTEGRATION_TESTS_DIR
-                . '/testsuite/Magento/Framework/View/_files/layout/non_cacheable_block_with_missing_refference.xml',
+                    . '/testsuite/Magento/Framework/View/_files/layout/non_cacheable_block_with_missing_refference.xml',
                 'expectedResult' => [],
             ],
             'nonCacheableBlockWithExistedReference' => [
                 'layout' => INTEGRATION_TESTS_DIR
-                . '/testsuite/Magento/Framework/View/_files/layout/non_cacheable_block_with_declared_reference.xml',
+                    . '/testsuite/Magento/Framework/View/_files/layout/non_cacheable_block_with_declared_reference.xml',
                 'expectedResult' => ['some_data' => 1],
             ],
         ];

@@ -16,7 +16,8 @@ use Magento\Framework\Event\ManagerInterface;
 use Magento\Framework\DataObject;
 
 /**
- * Class OrderSender
+ * Sends order email to the customer.
+ *
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  */
 class OrderSender extends Sender
@@ -97,6 +98,7 @@ class OrderSender extends Sender
      */
     public function send(Order $order, $forceSyncMode = false)
     {
+        $this->identityContainer->setStore($order->getStore());
         $order->setSendEmail($this->identityContainer->isEnabled());
 
         if (!$this->globalConfig->getValue('sales_email/general/async_sending') || $forceSyncMode) {
@@ -125,6 +127,7 @@ class OrderSender extends Sender
     {
         $transport = [
             'order' => $order,
+            'order_id' => $order->getId(),
             'billing' => $order->getBillingAddress(),
             'payment_html' => $this->getPaymentHtml($order),
             'store' => $order->getStore(),

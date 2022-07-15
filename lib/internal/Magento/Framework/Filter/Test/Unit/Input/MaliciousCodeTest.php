@@ -3,17 +3,19 @@
  * Copyright © Magento, Inc. All rights reserved.
  * See COPYING.txt for license details.
  */
+declare(strict_types=1);
 
 namespace Magento\Framework\Filter\Test\Unit\Input;
 
-use \Magento\Framework\Filter\Input\MaliciousCode;
+use Magento\Framework\Filter\Input\MaliciousCode;
+use PHPUnit\Framework\TestCase;
 
-class MaliciousCodeTest extends \PHPUnit\Framework\TestCase
+class MaliciousCodeTest extends TestCase
 {
-    /** @var \Magento\Framework\Filter\Input\MaliciousCode */
+    /** @var MaliciousCode */
     protected $filter;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->filter = new MaliciousCode();
         parent::setUp();
@@ -110,7 +112,19 @@ class MaliciousCodeTest extends \PHPUnit\Framework\TestCase
             'Nested malicious tags' => [
                 '<scri<script>pt>alert(1);</scri<script>pt>',
                 'alert(1);',
-            ]
+            ],
+            'Nested scripts' => [
+                '<?php echo "test" ?>',
+                '',
+                '<?= "test" ?>',
+                '',
+                '<?   ="test" ?>',
+                '',
+                '<?="test?>',
+                '',
+                '<?=$test?>',
+                '',
+            ],
         ];
     }
 

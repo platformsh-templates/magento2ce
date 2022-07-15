@@ -17,7 +17,7 @@ use Magento\Framework\Event\ManagerInterface;
 use Magento\Framework\DataObject;
 
 /**
- * Class CreditmemoSender
+ * Sends order creditmemo email to the customer.
  *
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  */
@@ -100,15 +100,16 @@ class CreditmemoSender extends Sender
      */
     public function send(Creditmemo $creditmemo, $forceSyncMode = false)
     {
+        $this->identityContainer->setStore($creditmemo->getStore());
         $creditmemo->setSendEmail($this->identityContainer->isEnabled());
 
         if (!$this->globalConfig->getValue('sales_email/general/async_sending') || $forceSyncMode) {
             $order = $creditmemo->getOrder();
-            $this->identityContainer->setStore($order->getStore());
-
             $transport = [
                 'order' => $order,
+                'order_id' => $order->getId(),
                 'creditmemo' => $creditmemo,
+                'creditmemo_id' => $creditmemo->getId(),
                 'comment' => $creditmemo->getCustomerNoteNotify() ? $creditmemo->getCustomerNote() : '',
                 'billing' => $order->getBillingAddress(),
                 'payment_html' => $this->getPaymentHtml($order),

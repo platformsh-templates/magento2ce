@@ -10,7 +10,6 @@
 namespace Magento\Sales\Block\Order\Creditmemo;
 
 /**
- * Sales order creditmemo items block
  * @api
  * @since 100.0.2
  */
@@ -97,7 +96,7 @@ class Items extends \Magento\Sales\Block\Items\AbstractItems
         $html = '';
         $comments = $this->getChildBlock('creditmemo_comments');
         if ($comments) {
-            $comments->setEntity($creditmemo)->setTitle($this->escapeHtml(__('About Your Refund')));
+            $comments->setEntity($creditmemo)->setTitle($this->escapeHtmlAttr(__('About Your Refund')));
             $html = $comments->toHtml();
         }
         return $html;

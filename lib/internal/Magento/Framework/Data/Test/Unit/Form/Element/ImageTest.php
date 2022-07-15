@@ -3,60 +3,86 @@
  * Copyright © Magento, Inc. All rights reserved.
  * See COPYING.txt for license details.
  */
+declare(strict_types=1);
 
 /**
- * Tests for \Magento\Framework\Data\Form\Element\Image.
+ * Tests for \Magento\Framework\Data\Form\Element\Image
  */
 namespace Magento\Framework\Data\Test\Unit\Form\Element;
 
+use Magento\Framework\Data\Form\Element\CollectionFactory;
+use Magento\Framework\Data\Form\Element\Factory;
+use Magento\Framework\Data\Form\Element\Image;
+use Magento\Framework\DataObject;
+use Magento\Framework\Escaper;
+use Magento\Framework\Url;
 use Magento\Framework\UrlInterface;
+use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\TestCase;
+use Magento\Framework\Math\Random;
+use Magento\Framework\View\Helper\SecureHtmlRenderer;
 
-class ImageTest extends \PHPUnit\Framework\TestCase
+/**
+ * Test for the widget.
+ *
+ * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+ */
+class ImageTest extends TestCase
 {
     /**
-     * @var \PHPUnit_Framework_MockObject_MockObject
+     * @var MockObject
      */
     protected $_objectManagerMock;
 
     /**
-     * @var \PHPUnit_Framework_MockObject_MockObject
+     * @var MockObject
      */
     protected $urlBuilder;
 
     /**
-     * @var \Magento\Framework\Data\Form\Element\Image
+     * @var Image
      */
     protected $_image;
 
-    /**
-     * @var \Magento\Framework\Escaper|\PHPUnit\Framework\MockObject\MockObject
-     */
-    private $escaperMock;
-
-    /**
-     * @inheritdoc
-     */
-    protected function setUp()
+    protected function setUp(): void
     {
-        $factoryMock = $this->createMock(\Magento\Framework\Data\Form\Element\Factory::class);
-        $collectionFactoryMock = $this->createMock(\Magento\Framework\Data\Form\Element\CollectionFactory::class);
-        $this->escaperMock = $this->createMock(\Magento\Framework\Escaper::class);
-        $this->urlBuilder = $this->createMock(\Magento\Framework\Url::class);
-        $this->_image = new \Magento\Framework\Data\Form\Element\Image(
+        $factoryMock = $this->createMock(Factory::class);
+        $collectionFactoryMock = $this->createMock(CollectionFactory::class);
+        $escaperMock = $this->createMock(Escaper::class);
+        $this->urlBuilder = $this->createMock(Url::class);
+        $randomMock = $this->createMock(Random::class);
+        $randomMock->method('getRandomString')->willReturn('some-rando-string');
+        $secureRendererMock = $this->createMock(SecureHtmlRenderer::class);
+        $secureRendererMock->method('renderEventListenerAsTag')
+            ->willReturnCallback(
+                function (string $event, string $listener, string $selector): string {
+                    return "<script>document.querySelector('{$selector}').{$event} = () => { {$listener} };</script>";
+                }
+            );
+        $secureRendererMock->method('renderTag')
+            ->willReturnCallback(
+                function (string $tag, array $attrs, ?string $content): string {
+                    $attrs = new DataObject($attrs);
+
+                    return "<$tag {$attrs->serialize()}>$content</$tag>";
+                }
+            );
+        $this->_image = new Image(
             $factoryMock,
             $collectionFactoryMock,
-            $this->escaperMock,
-            $this->urlBuilder
+            $escaperMock,
+            $this->urlBuilder,
+            [],
+            $secureRendererMock,
+            $randomMock
         );
-        $formMock = new \Magento\Framework\DataObject();
+        $formMock = new DataObject();
         $formMock->getHtmlIdPrefix('id_prefix');
         $formMock->getHtmlIdPrefix('id_suffix');
         $this->_image->setForm($formMock);
     }
 
     /**
-     * Check that getType return correct value.
-     *
      * @covers \Magento\Framework\Data\Form\Element\Image::__construct
      */
     public function testConstruct()
@@ -65,62 +91,47 @@ class ImageTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get name and check data.
-     *
      * @covers \Magento\Framework\Data\Form\Element\Image::getName
      */
     public function testGetName()
     {
         $this->_image->setName('image_name');
-
         $this->assertEquals('image_name', $this->_image->getName());
     }
 
     /**
-     * Get element without value and check data.
-     *
      * @covers \Magento\Framework\Data\Form\Element\Image::getElementHtml
      */
     public function testGetElementHtmlWithoutValue()
     {
         $html = $this->_image->getElementHtml();
-
-        $this->assertContains('class="input-file"', $html);
-        $this->assertContains('<input', $html);
-        $this->assertContains('type="file"', $html);
-        $this->assertContains('value=""', $html);
-        $this->assertNotContains('</a>', $html);
+        $this->assertStringContainsString('class="input-file"', $html);
+        $this->assertStringContainsString('<input', $html);
+        $this->assertStringContainsString('type="file"', $html);
+        $this->assertStringContainsString('value=""', $html);
+        $this->assertStringNotContainsString('</a>', $html);
     }
 
     /**
-     * Get element with value and check data.
-     *
      * @covers \Magento\Framework\Data\Form\Element\Image::getElementHtml
      */
     public function testGetElementHtmlWithValue()
     {
-        $data = 'test_value';
-        $baseUrl = 'http://localhost/media/';
-        $this->_image->setValue($data);
+        $this->_image->setValue('test_value');
         $this->urlBuilder->expects($this->once())
             ->method('getBaseUrl')
             ->with(['_type' => UrlInterface::URL_TYPE_MEDIA])
-            ->willReturn($baseUrl);
-        $this->escaperMock->expects($this->once())
-            ->method('escapeUrl')
-            ->with($baseUrl . $data)
-            ->willReturn($baseUrl . $data);
-        $this->escaperMock->expects($this->exactly(3))->method('escapeHtmlAttr')->with($data)->willReturn($data);
+            ->willReturn('http://localhost/media/');
         $html = $this->_image->getElementHtml();
-
-        $this->assertContains('class="input-file"', $html);
-        $this->assertContains('<input', $html);
-        $this->assertContains('type="file"', $html);
-        $this->assertContains('value="test_value"', $html);
-        $this->assertContains(
-            '<a href="http://localhost/media/test_value" onclick="imagePreview(\'_image\'); return false;"',
+        $this->assertStringContainsString('class="input-file"', $html);
+        $this->assertStringContainsString('<input', $html);
+        $this->assertStringContainsString('type="file"', $html);
+        $this->assertStringContainsString('value="test_value"', $html);
+        $this->assertStringContainsString(
+            '<a previewlinkid="linkIdsome-rando-string" href="http://localhost/media/test_value"',
             $html
         );
-        $this->assertContains('<input type="checkbox"', $html);
+        $this->assertStringContainsString("imagePreview('_image');\nreturn false;", $html);
+        $this->assertStringContainsString('<input type="checkbox"', $html);
     }
 }

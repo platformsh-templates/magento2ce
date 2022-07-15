@@ -13,11 +13,11 @@ use Magento\Framework\TestFramework\Unit\Helper\ObjectManager as ObjectManagerHe
 use Magento\Framework\View\LayoutInterface;
 use Magento\PageCache\Model\DepersonalizeChecker;
 use Magento\PageCache\Model\Layout\DepersonalizePlugin;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use PHPUnit_Framework_MockObject_MockObject;
 
 /**
- * Tests \Magento\PageCache\Model\Layout\DepersonalizePlugin.
+ * Unit tests for \Magento\PageCache\Model\Layout\DepersonalizePlugin class.
  */
 class DepersonalizePluginTest extends TestCase
 {
@@ -27,29 +27,29 @@ class DepersonalizePluginTest extends TestCase
     private $plugin;
 
     /**
-     * @var LayoutInterface|PHPUnit_Framework_MockObject_MockObject
+     * @var LayoutInterface|MockObject
      */
     private $layoutMock;
 
     /**
-     * @var Manager|PHPUnit_Framework_MockObject_MockObject
+     * @var Manager|MockObject
      */
     private $eventManagerMock;
 
     /**
-     * @var Session|PHPUnit_Framework_MockObject_MockObject
+     * @var Session|MockObject
      */
     private $messageSessionMock;
 
     /**
-     * @var DepersonalizeChecker|PHPUnit_Framework_MockObject_MockObject
+     * @var DepersonalizeChecker|MockObject
      */
     private $depersonalizeCheckerMock;
 
     /**
      * @inheritdoc
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->layoutMock = $this->getMockForAbstractClass(LayoutInterface::class);
         $this->eventManagerMock = $this->createMock(Manager::class);
@@ -77,7 +77,7 @@ class DepersonalizePluginTest extends TestCase
     {
         $this->eventManagerMock->expects($this->once())
             ->method('dispatch')
-            ->with($this->equalTo('depersonalize_clear_session'));
+            ->with('depersonalize_clear_session');
         $this->messageSessionMock->expects($this->once())->method('clearStorage');
         $this->depersonalizeCheckerMock->expects($this->once())->method('checkIfDepersonalize')->willReturn(true);
 

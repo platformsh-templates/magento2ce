@@ -42,8 +42,6 @@ class EditAction extends Column
     }
 
     /**
-     * Prepare data source
-     *
      * @param array $dataSource
      * @return array
      * @since 101.0.0

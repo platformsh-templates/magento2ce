@@ -6,6 +6,8 @@
 namespace Magento\Framework\View\Element;
 
 /**
+ * Get renderer by code
+ *
  * @api
  * @since 100.0.2
  */
