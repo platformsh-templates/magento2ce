@@ -4,6 +4,7 @@
  * See COPYING.txt for license details.
  */
 
+// phpcs:disable PHPCompatibility.Miscellaneous.RemovedAlternativePHPTags.MaybeASPOpenTagFound
 /** @var $block \Magento\Swatches\Block\Adminhtml\Attribute\Edit\Options\Text */
 
 $stores = $block->getStoresSortedBySortOrder();
@@ -40,7 +41,7 @@ $stores = $block->getStoresSortedBySortOrder();
                 <th colspan="<?= (int)$colTotal ?>" class="col-actions-add">
                     <?php if (!$block->getReadOnly() && !$block->canManageOptionDefaultOnly()) : ?>
                         <button id="add_new_swatch_text_option_button"
-                                title="<?= $block->escapeHtmlAttr(__('Add Swatch')) ?>"
+                                title="<?= $block->escapeHtml(__('Add Swatch')) ?>"
                                 type="button" class="action- scalable add">
                             <span><?= $block->escapeHtml(__('Add Swatch')) ?></span>
                         </button>

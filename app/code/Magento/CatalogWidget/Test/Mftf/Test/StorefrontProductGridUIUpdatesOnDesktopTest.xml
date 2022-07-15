@@ -15,7 +15,7 @@
             <title value="Storefront product grid UI updates on Desktop"/>
             <description value="Storefront product grid UI updates on Desktop"/>
             <severity value="MAJOR"/>
-            <testCaseId value="MC-13598"/>
+            <testCaseId value="MC-27569"/>
             <group value="catalog"/>
             <group value="WYSIWYGDisabled"/>
         </annotations>
@@ -36,7 +36,7 @@
             </createData>
             <!-- 2. Create new CMS page and add "Catalog Product List" widget type via content >insert  widget option -->
             <createData entity="_emptyCmsPage" stepKey="createCmsPage"/>
-            <actionGroup ref="LoginAsAdmin" stepKey="loginToAdminPanel"/>
+            <actionGroup ref="AdminLoginActionGroup" stepKey="loginToAdminPanel"/>
             <actionGroup ref="NavigateToCreatedCMSPageActionGroup" stepKey="navigateToCreatedCmsPage">
                 <argument name="CMSPage" value="$createCmsPage$"/>
             </actionGroup>
@@ -56,7 +56,7 @@
             <deleteData createDataKey="createFourthSimpleProduct" stepKey="deleteFourthSimpleProduct"/>
             <deleteData createDataKey="createCategory" stepKey="deleteCategory"/>
             <deleteData createDataKey="createCmsPage" stepKey="deleteCmsPage"/>
-            <actionGroup ref="logout" stepKey="logoutFromAdmin"/>
+            <actionGroup ref="AdminLogoutActionGroup" stepKey="logoutFromAdmin"/>
         </after>
         <actionGroup ref="StorefrontGoToCMSPageActionGroup" stepKey="navigateAndOpenCreatedCmsPage">
             <argument name="identifier" value="$createCmsPage.identifier$"/>
@@ -66,9 +66,7 @@
         <seeElement selector="{{StorefrontCategoryMainSection.productPriceByName($createFirstSimpleProduct.name$)}}" stepKey="assertProductPrice"/>
         <moveMouseOver selector="{{StorefrontCategoryProductSection.ProductInfoByName($createFirstSimpleProduct.name$)}}" stepKey="hoverProduct"/>
         <actionGroup ref="AssertStorefrontProductControlsAreVisibleOnHoverActionGroup" stepKey="assertProductControlsAreVisibleOnHoverOnCmsPage"/>
-        <actionGroup ref="AssertStorefrontAddToWishListIconIsClickableForGuestUserActionGroup" stepKey="assertAddToWishListIconIsClickable">
-            <argument name="productName" value="$createFirstSimpleProduct.name$"/>
-        </actionGroup>
+        <actionGroup ref="AssertStorefrontAddToWishListIconIsClickableForGuestUserActionGroup" stepKey="assertAddToWishListIconIsClickable"/>
         <actionGroup ref="StorefrontGoToCMSPageActionGroup" stepKey="navigateAndOpenCreatedCmsPageToVerifyAddToCompareIconIsClickable">
             <argument name="identifier" value="$createCmsPage.identifier$"/>
         </actionGroup>
@@ -83,9 +81,7 @@
         <seeElement selector="{{StorefrontCategoryMainSection.productPriceByName($createFirstSimpleProduct.name$)}}" stepKey="assertProductPriceOnCategoryPage"/>
         <moveMouseOver selector="{{StorefrontCategoryProductSection.ProductInfoByName($createFirstSimpleProduct.name$)}}" stepKey="hoverProductOnCategoryPage"/>
         <actionGroup ref="AssertStorefrontProductControlsAreVisibleOnHoverActionGroup" stepKey="assertProductControlsAreVisibleOnHoverOnCategoryPage"/>
-        <actionGroup ref="AssertStorefrontAddToWishListIconIsClickableForGuestUserActionGroup" stepKey="assertAddToWishListIconIsClickableOnCategoryPage">
-            <argument name="productName" value="$createFirstSimpleProduct.name$"/>
-        </actionGroup>
+        <actionGroup ref="AssertStorefrontAddToWishListIconIsClickableForGuestUserActionGroup" stepKey="assertAddToWishListIconIsClickableOnCategoryPage"/>
         <actionGroup ref="StorefrontNavigateCategoryPageActionGroup" stepKey="navigateCategoryCreatedInPreconditionsToVerifyAddToCompareIconIsClickable">
             <argument name="category" value="$createCategory$"/>
         </actionGroup>

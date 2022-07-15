@@ -32,7 +32,6 @@ class CompositePolicyCollector implements PolicyCollectorInterface
      */
     public function __construct(array $collectors, array $mergers)
     {
-        ksort($collectors);
         $this->collectors = $collectors;
         $this->mergers = $mergers;
     }

@@ -17,8 +17,6 @@ use Magento\Catalog\Model\Product\Attribute\Backend\Sku;
  */
 class Validator extends AbstractValidator implements RowValidatorInterface
 {
-    private const ERROR_SKU_MARGINAL_WHITESPACES = "Sku contains marginal whitespaces";
-
     /**
      * @var RowValidatorInterface[]|AbstractValidator[]
      */
@@ -77,7 +75,7 @@ class Validator extends AbstractValidator implements RowValidatorInterface
         } elseif ($attrCode == Product::COL_SKU) {
             $valid = $this->string->strlen($val) <= SKU::SKU_MAX_LENGTH;
             if ($this->string->strlen($val) !== $this->string->strlen(trim($val))) {
-                $this->_addMessages([self::ERROR_SKU_MARGINAL_WHITESPACES]);
+                $this->_addMessages([RowValidatorInterface::ERROR_SKU_MARGINAL_WHITESPACES]);
                 return false;
             }
         } else {

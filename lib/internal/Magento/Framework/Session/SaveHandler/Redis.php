@@ -14,9 +14,6 @@ use Magento\Framework\Phrase;
 use Magento\Framework\Filesystem;
 use Magento\Framework\App\Filesystem\DirectoryList;
 
-/**
- * Redis session save handler
- */
 class Redis implements \SessionHandlerInterface
 {
     /**
@@ -43,6 +40,7 @@ class Redis implements \SessionHandlerInterface
      * @param ConfigInterface $config
      * @param LoggerInterface $logger
      * @param Filesystem $filesystem
+     * @throws SessionException
      */
     public function __construct(ConfigInterface $config, LoggerInterface $logger, Filesystem $filesystem)
     {

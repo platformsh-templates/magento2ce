@@ -29,44 +29,26 @@ class CreateCustomOptionsTest extends AbstractBackendController
     protected $productSku = 'simple';
 
     /**
-     * @var ProductRepositoryInterface
-     */
-    private $productRepository;
-
-    /**
-     * @var ProductCustomOptionRepositoryInterface
-     */
-    private $optionRepository;
-
-    /**
-     * @inheritDoc
-     */
-    protected function setUp()
-    {
-        parent::setUp();
-
-        $this->productRepository = $this->_objectManager->create(ProductRepositoryInterface::class);
-        $this->optionRepository = $this->_objectManager->create(ProductCustomOptionRepositoryInterface::class);
-    }
-
-    /**
      * Test add to product custom option with type "field".
      *
      * @dataProvider productWithNewOptionsDataProvider
      *
      * @param array $productPostData
+     *
+     * @magentoDbIsolation enabled
      */
     public function testSaveCustomOptionWithTypeField(array $productPostData): void
     {
         $this->getRequest()->setPostValue($productPostData);
-        $product = $this->productRepository->get($this->productSku);
+        $product = $this->_objectManager->get(ProductRepositoryInterface::class)->get($this->productSku);
         $this->getRequest()->setMethod(HttpRequest::METHOD_POST);
         $this->dispatch('backend/catalog/product/save/id/' . $product->getEntityId());
         $this->assertSessionMessages(
-            $this->contains('You saved the product.'),
+            $this->containsEqual('You saved the product.'),
             MessageInterface::TYPE_SUCCESS
         );
-        $productOptions = $this->optionRepository->getProductOptions($product);
+        $productOptions = $this->_objectManager->get(ProductCustomOptionRepositoryInterface::class)
+            ->getProductOptions($product);
         $this->assertCount(2, $productOptions);
         foreach ($productOptions as $customOption) {
             $postOptionData = $productPostData['product']['options'][$customOption->getTitle()] ?? null;
@@ -271,5 +253,20 @@ class CreateCustomOptionsTest extends AbstractBackendController
                 ],
             ],
         ];
+    }
+
+    /**
+     * @inheritDoc
+     */
+    protected function tearDown(): void
+    {
+        parent::tearDown();
+        $reflection = new \ReflectionObject($this);
+        foreach ($reflection->getProperties() as $property) {
+            if (!$property->isStatic() && 0 !== strpos($property->getDeclaringClass()->getName(), 'PHPUnit')) {
+                $property->setAccessible(true);
+                $property->setValue($this, null);
+            }
+        }
     }
 }

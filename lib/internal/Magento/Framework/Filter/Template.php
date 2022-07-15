@@ -22,8 +22,8 @@ use Magento\Framework\Stdlib\StringUtils;
  * Template filter
  *
  * @api
- * @since 100.0.2
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ * @since 100.0.2
  */
 class Template implements \Zend_Filter_Interface
 {
@@ -92,7 +92,7 @@ class Template implements \Zend_Filter_Interface
     /**
      * @var bool
      */
-    private $strictMode = false;
+    private $strictMode = true;
 
     /**
      * @var VariableResolverInterface|null

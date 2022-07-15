@@ -8,6 +8,7 @@ declare(strict_types=1);
 namespace Magento\Customer\Model;
 
 use Magento\Eav\Api\AttributeRepositoryInterface;
+use Magento\Eav\Api\Data\AttributeInterface;
 use Magento\Eav\Model\Config;
 use Magento\Framework\ObjectManagerInterface;
 use Magento\TestFramework\Helper\Bootstrap;
@@ -40,7 +41,7 @@ class AttributeTest extends \PHPUnit\Framework\TestCase
     /**
      * @inheritDoc
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->objectManager = Bootstrap::getObjectManager();
         $this->model = $this->objectManager->get(Attribute::class);
@@ -61,20 +62,22 @@ class AttributeTest extends \PHPUnit\Framework\TestCase
             ->setEntityTypeId($this->customerEntityType)
             ->setFrontendLabel('test')
             ->setIsUserDefined(1);
-        $crud = new \Magento\TestFramework\Entity($this->model, ['frontend_label' => uniqid()]);
+        $crud = new \Magento\TestFramework\Entity($this->model, [AttributeInterface::FRONTEND_LABEL => uniqid()]);
         $crud->testCrud();
     }
 
     /**
      * @magentoDataFixture Magento/Customer/_files/attribute_user_defined_customer.php
      *
-     * @expectedException \Magento\Framework\Exception\LocalizedException
-     * @expectedExceptionMessage Do not change entity type.
-     *
      * @return void
      */
     public function testAttributeSaveWithChangedEntityType(): void
     {
+        $this->expectException(
+            \Magento\Framework\Exception\LocalizedException::class
+        );
+        $this->expectExceptionMessage('Do not change entity type.');
+
         $attribute = $this->attributeRepository->get($this->customerEntityType, 'user_attribute');
         $attribute->setEntityTypeId(5);
         $attribute->save();

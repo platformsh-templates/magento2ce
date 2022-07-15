@@ -7,13 +7,14 @@ declare(strict_types=1);
 
 namespace Magento\Newsletter\Controller\Subscriber;
 
-use Laminas\Stdlib\Parameters;
 use Magento\Customer\Api\CustomerRepositoryInterface;
 use Magento\Customer\Model\Session;
+use Magento\Customer\Model\Url;
 use Magento\Framework\App\Request\Http as HttpRequest;
 use Magento\Newsletter\Model\ResourceModel\Subscriber as SubscriberResource;
 use Magento\Newsletter\Model\ResourceModel\Subscriber\CollectionFactory;
 use Magento\TestFramework\TestCase\AbstractController;
+use Laminas\Stdlib\Parameters;
 
 /**
  * Class checks subscription behaviour from frontend
@@ -38,10 +39,13 @@ class NewActionTest extends AbstractController
     /** @var CustomerRepositoryInterface */
     private $customerRepository;
 
+    /** @var Url */
+    private $customerUrl;
+
     /**
      * @inheritdoc
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -49,12 +53,13 @@ class NewActionTest extends AbstractController
         $this->subscriberCollectionFactory = $this->_objectManager->get(CollectionFactory::class);
         $this->subscriberResource = $this->_objectManager->get(SubscriberResource::class);
         $this->customerRepository = $this->_objectManager->get(CustomerRepositoryInterface::class);
+        $this->customerUrl = $this->_objectManager->get(Url::class);
     }
 
     /**
      * @inheritdoc
      */
-    protected function tearDown()
+    protected function tearDown(): void
     {
         if ($this->subscriberToDelete) {
             $this->deleteSubscriber($this->subscriberToDelete);
@@ -147,12 +152,15 @@ class NewActionTest extends AbstractController
      */
     public function testWithNotAllowedGuestSubscription(): void
     {
-        $this->markTestSkipped('Blocked by MC-31520');
+        $message = sprintf(
+            'Sorry, but the administrator denied subscription for guests. Please <a href="%s">register</a>.',
+            $this->customerUrl->getRegisterUrl()
+        );
         $this->subscriberToDelete = 'guest@example.com';
         $this->prepareRequest('guest@example.com');
         $this->dispatch('newsletter/subscriber/new');
 
-        $this->performAsserts('Sorry, but the administrator denied subscription for guests. Please register.');
+        $this->performAsserts($message);
     }
 
     /**
