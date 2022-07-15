@@ -31,6 +31,7 @@ build:
 relationships:
     database: db:mysql
     redis: cache:redis
+    search: "magento_search:elasticsearch"
 
 # The size of the persistent disk of the application (in MB).
 disk: 2048
@@ -49,20 +50,20 @@ mounts:
     "/pub/static":
         source: local
         source_path: "static"
-    "/.config":
+    "/app/etc":
         source: local
-        source_path: "config"
+        source_path: "etc"
 
 # The hooks executed at various points in the lifecycle of the application.
 hooks:
     # The build hook runs on your code to prepare it for an active environment.
     build: |
         set -e
-        ln -sfn "$PLATFORM_APP_DIR"/.config/env.php "$PLATFORM_APP_DIR"/app/etc/env.php
-        ln -sfn "$PLATFORM_APP_DIR"/.config/config.php "$PLATFORM_APP_DIR"/app/etc/config.php
+        mkdir .versioned_backup && cp app/etc/* .versioned_backup/etc/
     # The deploy hook runs after your application has been deployed and started.
     deploy: |
         set -e
+        cp .versioned_backup/etc/* app/etc/
         php deploy.php
         php disable-cron-workers.php
 
