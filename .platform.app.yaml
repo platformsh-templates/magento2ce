@@ -40,9 +40,6 @@ mounts:
     "/var":
         source: local
         source_path: "var"
-    "/app/etc":
-        source: local
-        source_path: "etc"
     "/generated":
         source: local
         source_path: "generated"
