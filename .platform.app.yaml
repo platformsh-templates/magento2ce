@@ -59,7 +59,7 @@ hooks:
     # The build hook runs on your code to prepare it for an active environment.
     build: |
         set -e
-        mkdir .versioned_backup && cp app/etc/* .versioned_backup/etc/
+        mkdir -p .versioned_backup/etc && cp app/etc/* .versioned_backup/etc/
     # The deploy hook runs after your application has been deployed and started.
     deploy: |
         set -e
