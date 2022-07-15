@@ -91,7 +91,7 @@ web:
             root: "pub/static"
             allow: true
             scripts: false
-            passthru: "/static-versioned.php"
+            passthru: "/static.php"
             expires: 1y
             rules:
                 ^/static/version\d+/(?<resource>.*)$:
