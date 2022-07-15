@@ -33,6 +33,7 @@ $mainRoute = key($mainRouteInfo);
 /** Now, collect our services data */
 $database = $relationships['database'][0];
 $redis = $relationships['redis'][0];
+$search = $relationships['magento_search'][0];
 
 /** Check the state of our Magento installation */
 $isMagentoInstalled = file_exists($filePaths['installed']);
@@ -68,7 +69,10 @@ $deploymentArgs = [
     "--page-cache=redis",
     "--page-cache-redis-server={$redis["host"]}",
     "--page-cache-redis-port={$redis["port"]}",
-    "--page-cache-redis-db=2"
+    "--page-cache-redis-db=2",
+    "--search-engine=elasticsearch7",
+    "--elasticsearch-host={$search['host']}",
+    "--elasticsearch-port={$search['port']}",
 ];
 
 $initialSetupArgs = [

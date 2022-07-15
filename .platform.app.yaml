@@ -31,7 +31,7 @@ build:
 relationships:
     database: db:mysql
     redis: cache:redis
-    search: "magento_search:elasticsearch"
+    search: magento_search:elasticsearch
 
 # The size of the persistent disk of the application (in MB).
 disk: 2048
