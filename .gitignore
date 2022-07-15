@@ -70,3 +70,6 @@ atlassian*
 /generated/*
 !/generated/.htaccess
 .DS_Store
+
+# Platform.sh Patches
+.versioned_backup

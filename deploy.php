@@ -33,7 +33,7 @@ $mainRoute = key($mainRouteInfo);
 /** Now, collect our services data */
 $database = $relationships['database'][0];
 $redis = $relationships['redis'][0];
-$search = $relationships['magento_search'][0];
+$search = $relationships['search'][0];
 
 /** Check the state of our Magento installation */
 $isMagentoInstalled = file_exists($filePaths['installed']);
