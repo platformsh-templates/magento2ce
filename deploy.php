@@ -6,9 +6,9 @@
  */
 
 $filePaths = [
-    'installed' => '.config/installed',
-    'env.php' => '.config/env.php',
-    'config.php' => '.config/config.php',
+    'installed' => 'app/etc/installed',
+    'env.php' => 'app/etc/env.php',
+    'config.php' => 'app/etc/config.php',
 ];
 
 $relationships = json_decode(base64_decode($_ENV['PLATFORM_RELATIONSHIPS']), true);
