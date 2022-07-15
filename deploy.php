@@ -48,10 +48,10 @@ $magento24SetupPatch = "<?php return ['db' => [
         'table_prefix' => '',
         'connection' => [
             'default' => [
-                'host' => {$database['host']},
-                'dbname' => {$database['path']},
-                'username' => {$database['username']},
-                'password' => {$database['password']},
+                'host' => '{$database['host']}',
+                'dbname' => '{$database['path']}',
+                'username' => '{$database['username']}',
+                'password' => '{$database['password']}',
                 'model' => 'mysql4',
                 'engine' => 'innodb',
                 'initStatements' => 'SET NAMES utf8;',
