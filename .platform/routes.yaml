@@ -1,10 +1,3 @@
 https://{default}/:
     type: upstream
     upstream: app:http
-
-https://{default}/static/:
-    type: upstream
-    upstream: app:http
-    cache:
-        enabled: true
-        cookies: []
