@@ -4,3 +4,7 @@ db:
 
 cache:
     type: redis:3.2
+
+shared-magento-storage:
+    type: network-storage:2.0
+    disk: 1648

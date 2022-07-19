@@ -29,7 +29,7 @@ relationships:
     redis: cache:redis
 
 # The size of the persistent disk of the application (in MB).
-disk: 2048
+disk: 400
 
 # The 'mounts' describe writable, persistent filesystem mounts in the application.
 mounts:
@@ -37,16 +37,20 @@ mounts:
         source: local
         source_path: "var"
     "/generated":
-        source: local
+        source: service
+        service: shared-magento-storage
         source_path: "generated"
     "/pub/media":
-        source: local
+        source: service
+        service: shared-magento-storage
         source_path: "media"
     "/pub/static":
-        source: local
+        source: service
+        service: shared-magento-storage
         source_path: "static"
     "/.config":
-        source: local
+        source: service
+        service: shared-magento-storage
         source_path: "config"
 
 # The hooks executed at various points in the lifecycle of the application.
