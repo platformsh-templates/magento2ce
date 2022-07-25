@@ -1,43 +1,34 @@
-<!---
-    Thank you for contributing to Magento.
-    To help us process this pull request we recommend that you add the following information:
-     - Summary of the pull request,
-     - Issue(s) related to the changes made,
-     - Manual testing scenarios
-    Fields marked with (*) are required. Please don't remove the template.
--->
+## Description
+Please describe your changes in detail according to the information below
 
-<!--- Please provide a general summary of the Pull Request in the Title above -->
+## Related Issue
+This project only accepts pull requests related to open issues.
+- If suggesting a new feature or change, please discuss it in an issue first
+- If fixing a bug, there should be an issue describing it with steps to reproduce it following the bug report guide
+- If you're suggesting a feature, please follow the feature request guide by clicking on issues
 
-### Description (*)
-<!---
-    Please provide a description of the changes proposed in the pull request.
-    Letting us know what has changed and why it needed changing will help us validate this pull request.
--->
+### Please drop a link to the issue here:
 
-### Fixed Issues (if relevant)
-<!---
-    If relevant, please provide a list of fixed issues in the format magento/magento2#<issue_number>.
-    There could be 1 or more issues linked here and it will help us find some more information about the reasoning behind this change.
--->
-1. magento/magento2#<issue_number>: Issue title
+## Motivation and Context
+Why is this change required? What problem does it solve?
 
-### Manual testing scenarios (*)
-<!---
-    Please provide a set of unambiguous steps to test the proposed code change.
-    Giving us manual testing scenarios will help with the processing and validation process.
--->
-1. ...
-2. ...
+## How Has This Been Tested?
+Please describe in detail how you tested your changes. Include details of your testing environment, and the tests you ran to see how your change affects other areas of the code, etc.
 
-### Questions or comments
-<!---
-	If relevant, here you can ask questions or provide comments on your pull request for the reviewer
-	For example if you need assistance with writing tests or would like some feedback on one of your development ideas
--->
+## Screenshots (if appropriate):
 
-### Contribution checklist (*)
- - [ ] Pull request has a meaningful description of its purpose
- - [ ] All commits are accompanied by meaningful commit messages
- - [ ] All new or changed code is covered with unit/integration tests (if applicable)
- - [ ] All automated tests passed successfully (all builds are green)
+## Types of changes
+What types of changes does your code introduce? Put an `x` in all the boxes that apply:
+
+- [ ] Bug fix (non-breaking change which fixes an issue)
+- [ ] New feature (non-breaking change which adds functionality)
+- [ ] Breaking change (fix or feature that would cause existing functionality to change)
+
+## Checklist:
+ Go over all the following list, and put an `x` in all the boxes that apply. If you're unsure about what any of these mean, don't hesitate to ask. We're here to help!
+
+- [ ] I have read the contribution guide
+- [ ] I have created an issue following the issue guide
+- [ ] My code follows the code style of this project.
+- [ ] My change requires a change to the documentation.
+- [ ] I have updated the documentation accordingly.
