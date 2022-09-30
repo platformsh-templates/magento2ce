@@ -7,6 +7,7 @@
 namespace Magento\Setup\Console\Command;
 
 use Magento\Framework\Setup\ConsoleLogger;
+use Magento\Framework\Validation\ValidationException;
 use Magento\Setup\Model\AdminAccount;
 use Magento\Setup\Model\InstallerFactory;
 use Magento\User\Model\UserValidationRules;
@@ -81,7 +82,7 @@ class AdminUserCreateCommand extends AbstractSetupCommand
             $question = new Question('<question>Admin password:</question> ', '');
             $question->setHidden(true);
 
-            $question->setValidator(function ($value) use ($output) {
+            $question->setValidator(function ($value) {
                 $user = new \Magento\Framework\DataObject();
                 $user->setPassword($value);
 
@@ -90,7 +91,7 @@ class AdminUserCreateCommand extends AbstractSetupCommand
 
                 $validator->isValid($user);
                 foreach ($validator->getMessages() as $message) {
-                    throw new \Exception($message);
+                    throw new ValidationException(__($message));
                 }
 
                 return $value;
@@ -143,7 +144,7 @@ class AdminUserCreateCommand extends AbstractSetupCommand
     {
         $question->setValidator(function ($value) {
             if (trim($value) == '') {
-                throw new \Exception('The value cannot be empty');
+                throw new ValidationException(__('The value cannot be empty'));
             }
 
             return $value;
@@ -177,7 +178,6 @@ class AdminUserCreateCommand extends AbstractSetupCommand
      */
     public function getOptionsList($mode = InputOption::VALUE_REQUIRED)
     {
-        $mode = InputOption::VALUE_OPTIONAL;
         $requiredStr = ($mode === InputOption::VALUE_REQUIRED ? '(Required) ' : '');
 
         return [
@@ -222,7 +222,6 @@ class AdminUserCreateCommand extends AbstractSetupCommand
      */
     public function validate(InputInterface $input)
     {
-        return [];
         $errors = [];
         $user = new \Magento\Framework\DataObject();
         $user->setFirstname($input->getOption(AdminAccount::KEY_FIRST_NAME))

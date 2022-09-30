@@ -28,7 +28,7 @@ class Filter extends \Magento\Framework\Filter\Template
      * Whether to allow SID in store directive: NO
      *
      * @var bool
-     * @deprecated 103.0.5 SID query parameter is not used in URLs anymore.
+     * @deprecated SID query parameter is not used in URLs anymore.
      */
     protected $_useSessionInUrl = false;
 
@@ -81,7 +81,7 @@ class Filter extends \Magento\Framework\Filter\Template
      * @param bool $flag
      * @return $this
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
-     * @deprecated 103.0.5 SID query parameter is not used in URLs anymore.
+     * @deprecated SID query parameter is not used in URLs anymore.
      */
     public function setUseSessionInUrl($flag)
     {
@@ -108,7 +108,7 @@ class Filter extends \Magento\Framework\Filter\Template
          * The original intent of _absolute parameter was to simply append specified path to a base URL
          * bypassing any kind of processing.
          * For example, normally you would use {{view url="css/styles.css"}} directive which would automatically resolve
-         * into something like http://example.com/pub/static/area/theme/en_US/css/styles.css
+         * into something like http://example.com/static/area/theme/en_US/css/styles.css
          * But with _absolute, the expected behavior is this: {{view url="favicon.ico" _absolute=true}} should resolve
          * into something like http://example.com/favicon.ico
          *

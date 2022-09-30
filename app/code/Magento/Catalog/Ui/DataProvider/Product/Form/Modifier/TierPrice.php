@@ -118,6 +118,10 @@ class TierPrice extends AbstractModifier
                             'showLabel' => false,
                             'dataScope' => '',
                             'additionalClasses' => 'control-grouped',
+                            'imports' => [
+                                'currency' => '${ $.parentName }.website_id:currency',
+                                '__disableTmpl' => ['currency' => false],
+                            ],
                             'sortOrder' => isset($priceMeta['arguments']['data']['config']['sortOrder'])
                                 ? $priceMeta['arguments']['data']['config']['sortOrder'] : 40,
                         ],
@@ -138,6 +142,10 @@ class TierPrice extends AbstractModifier
                                             . ProductAttributeInterface::CODE_TIER_PRICE_FIELD_PRICE,
                                         ProductPriceOptionsInterface::VALUE_PERCENT => '${ $.parentName }.'
                                             . ProductAttributeInterface::CODE_TIER_PRICE_FIELD_PERCENTAGE_VALUE,
+                                        '__disableTmpl' => [
+                                            ProductPriceOptionsInterface::VALUE_FIXED => false,
+                                            ProductPriceOptionsInterface::VALUE_PERCENT => false,
+                                        ],
                                     ],
                                 ],
                             ],

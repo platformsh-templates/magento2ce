@@ -57,7 +57,7 @@ class ProductEntityAttributesForAst implements FieldEntityAttributesInterface
     {
         $productTypeSchema = $this->config->getConfigElement(self::PRODUCT_BASE_TYPE);
         if (!$productTypeSchema instanceof Type) {
-            throw new \LogicException(__(self::PRODUCT_BASE_TYPE . " type not defined in schema."));
+            throw new \LogicException(__("%1 type not defined in schema.", self::PRODUCT_BASE_TYPE));
         }
 
         $fields = [];

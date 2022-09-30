@@ -20,7 +20,7 @@ class RuleRepositoryTest extends WebapiAbstract
      */
     private $objectManager;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->objectManager = \Magento\TestFramework\Helper\Bootstrap::getObjectManager();
     }
@@ -124,7 +124,7 @@ class RuleRepositoryTest extends WebapiAbstract
         $this->assertEquals($inputData, $result);
 
         //test delete
-        $this->assertEquals(true, $this->deleteRule($ruleId));
+        $this->assertTrue($this->deleteRule($ruleId));
     }
 
     public function verifyGetList($ruleId)
@@ -212,6 +212,7 @@ class RuleRepositoryTest extends WebapiAbstract
         $searchCriteriaBuilder->addFilters([$filter1, $filter2]);
         $searchCriteriaBuilder->addFilters([$filter3]);
         $searchCriteriaBuilder->addSortOrder($sortOrder);
+        $searchCriteriaBuilder->setPageSize(20);
         $searchData = $searchCriteriaBuilder->create()->__toArray();
 
         $requestData = ['searchCriteria' => $searchData];

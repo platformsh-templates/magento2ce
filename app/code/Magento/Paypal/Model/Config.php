@@ -175,6 +175,11 @@ class Config extends AbstractConfig
     const XML_PATH_PAYPAL_EXPRESS_SKIP_ORDER_REVIEW_STEP_FLAG = 'payment/paypal_express/skip_order_review_step';
 
     /**
+     * PayPal PayLater
+     */
+    const PAYLATER = 'paypal_paylater';
+
+    /**
      * Instructions for generating proper BN code
      *
      * @var array
@@ -823,7 +828,7 @@ class Config extends AbstractConfig
         if ($countryCode === null) {
             return $countryMethods;
         }
-        return isset($countryMethods[$countryCode]) ? $countryMethods[$countryCode] : $countryMethods['other'];
+        return $countryMethods[$countryCode] ?? $countryMethods['other'];
     }
 
     /**
@@ -1330,6 +1335,7 @@ class Config extends AbstractConfig
      * @param string $code
      * @return bool
      * @SuppressWarnings(PHPMD.BooleanGetMethodName)
+     * phpcs:disable Magento2.Functions.StaticFunction
      */
     public static function getIsCreditCardMethod($code)
     {
@@ -1511,7 +1517,10 @@ class Config extends AbstractConfig
             case 'allow_ba_signup':
             case 'in_context':
             case 'merchant_id':
+            case 'client_id':
+            case 'sandbox_client_id':
             case 'supported_locales':
+            case 'smart_buttons_supported_locales':
                 return "payment/{$this->_methodCode}/{$fieldName}";
             default:
                 return $this->_mapMethodFieldset($fieldName);
@@ -1820,6 +1829,21 @@ class Config extends AbstractConfig
     {
         return $this->_scopeConfig->getValue(
             'payment/' . self::METHOD_WPP_BML . '/' . $section . '_size',
+            \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
+            $this->_storeId
+        );
+    }
+
+    /**
+     * Get PayLater config values
+     *
+     * @param string $fieldName
+     * @return mixed
+     */
+    public function getPayLaterConfigValue($fieldName)
+    {
+        return $this->_scopeConfig->getValue(
+            'payment/' . self::PAYLATER . '/' . $fieldName,
             \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
             $this->_storeId
         );

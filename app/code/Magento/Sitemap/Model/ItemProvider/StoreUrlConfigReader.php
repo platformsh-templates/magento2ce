@@ -17,8 +17,8 @@ class StoreUrlConfigReader implements ConfigReaderInterface
     /**#@+
      * Xpath config settings
      */
-    const XML_PATH_CHANGE_FREQUENCY = 'sitemap/page/changefreq';
-    const XML_PATH_PRIORITY = 'sitemap/page/priority';
+    const XML_PATH_CHANGE_FREQUENCY = 'sitemap/store/changefreq';
+    const XML_PATH_PRIORITY = 'sitemap/store/priority';
     /**#@-*/
 
     /**

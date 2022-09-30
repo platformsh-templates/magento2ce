@@ -3,8 +3,6 @@
  * Copyright © Magento, Inc. All rights reserved.
  * See COPYING.txt for license details.
  */
-declare(strict_types=1);
-
 namespace Magento\Catalog\Model\ResourceModel\Category;
 
 use Magento\Framework\Data\Tree\Dbp;
@@ -12,8 +10,6 @@ use Magento\Catalog\Api\Data\CategoryInterface;
 use Magento\Framework\EntityManager\MetadataPool;
 
 /**
- * Category Tree model.
- *
  * @api
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  * @since 100.0.2
@@ -27,6 +23,11 @@ class Tree extends Dbp
     const ORDER_FIELD = 'order';
 
     const LEVEL_FIELD = 'level';
+
+    /**
+     * @var array
+     */
+    private $_inactiveItems;
 
     /**
      * @var \Magento\Framework\Event\ManagerInterface
@@ -102,11 +103,6 @@ class Tree extends Dbp
      * @since 101.0.0
      */
     protected $metadataPool;
-
-    /**
-     * @var array
-     */
-    private $_inactiveItems = [];
 
     /**
      * Tree constructor.
@@ -299,7 +295,7 @@ class Tree extends Dbp
         foreach ($allIds as $id) {
             $parents = $this->getNodeById($id)->getPath();
             foreach ($parents as $parent) {
-                if (!$this->_getItemIsActive($parent->getId(), $storeId)) {
+                if (!$this->_getItemIsActive($parent->getId())) {
                     $disabledIds[] = $id;
                     continue;
                 }
@@ -492,14 +488,6 @@ class Tree extends Dbp
 
         foreach ($this->_conn->fetchAll($select) as $item) {
             $pathIds = explode('/', $item['path']);
-
-            array_walk(
-                $pathIds,
-                function (&$pathId) {
-                    $pathId = (int)$pathId;
-                }
-            );
-
             $level = (int)$item['level'];
             while ($level > 0) {
                 $pathIds[count($pathIds) - 1] = '%';
@@ -697,7 +685,7 @@ class Tree extends Dbp
     }
 
     /**
-     * Return MetadataPool object.
+     * Get entity methadata pool.
      *
      * @return \Magento\Framework\EntityManager\MetadataPool
      */

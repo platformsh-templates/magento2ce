@@ -26,7 +26,7 @@ class StoreUrl implements ItemProviderInterface
      * @var ConfigReaderInterface
      */
     private $configReader;
-
+    
     /**
      * StoreUrlSitemapItemResolver constructor.
      *

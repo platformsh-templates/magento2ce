@@ -4,15 +4,18 @@
  * See COPYING.txt for license details.
  */
 
-namespace Magento\Framework\Data\Form\Element;
-
-use Magento\Framework\UrlInterface;
-
 /**
  * Category form input image element
  *
  * @author     Magento Core Team <core@magentocommerce.com>
  */
+namespace Magento\Framework\Data\Form\Element;
+
+use Magento\Framework\App\ObjectManager;
+use Magento\Framework\Math\Random;
+use Magento\Framework\UrlInterface;
+use Magento\Framework\View\Helper\SecureHtmlRenderer;
+
 class Image extends \Magento\Framework\Data\Form\Element\AbstractElement
 {
     /**
@@ -21,22 +24,40 @@ class Image extends \Magento\Framework\Data\Form\Element\AbstractElement
     protected $_urlBuilder;
 
     /**
-     * @param \Magento\Framework\Data\Form\Element\Factory $factoryElement
-     * @param \Magento\Framework\Data\Form\Element\CollectionFactory $factoryCollection
+     * @var SecureHtmlRenderer
+     */
+    private $secureRenderer;
+
+    /**
+     * @var Random
+     */
+    private $random;
+
+    /**
+     * @param Factory $factoryElement
+     * @param CollectionFactory $factoryCollection
      * @param \Magento\Framework\Escaper $escaper
      * @param UrlInterface $urlBuilder
      * @param array $data
+     * @param SecureHtmlRenderer|null $secureRenderer
+     * @param Random|null $random
      */
     public function __construct(
-        \Magento\Framework\Data\Form\Element\Factory $factoryElement,
-        \Magento\Framework\Data\Form\Element\CollectionFactory $factoryCollection,
+        Factory $factoryElement,
+        CollectionFactory $factoryCollection,
         \Magento\Framework\Escaper $escaper,
         UrlInterface $urlBuilder,
-        $data = []
+        $data = [],
+        ?SecureHtmlRenderer $secureRenderer = null,
+        ?Random $random = null
     ) {
+        $secureRenderer = $secureRenderer ?? ObjectManager::getInstance()->get(SecureHtmlRenderer::class);
+        $random = $random ?? ObjectManager::getInstance()->get(Random::class);
         $this->_urlBuilder = $urlBuilder;
-        parent::__construct($factoryElement, $factoryCollection, $escaper, $data);
+        parent::__construct($factoryElement, $factoryCollection, $escaper, $data, $secureRenderer, $random);
         $this->setType('file');
+        $this->secureRenderer = $secureRenderer;
+        $this->random = $random;
     }
 
     /**
@@ -54,14 +75,11 @@ class Image extends \Magento\Framework\Data\Form\Element\AbstractElement
             if (!preg_match("/^http\:\/\/|https\:\/\//", $url)) {
                 $url = $this->_urlBuilder->getBaseUrl(['_type' => UrlInterface::URL_TYPE_MEDIA]) . $url;
             }
-            $url = $this->_escaper->escapeUrl($url);
 
-            $html = '<a href="' .
+            $linkId = 'linkId' .$this->random->getRandomString(8);
+            $html = '<a previewlinkid="' .$linkId .'" href="' .
                 $url .
-                '"' .
-                ' onclick="imagePreview(\'' .
-                $this->getHtmlId() .
-                '_image\'); return false;" ' .
+                '" ' .
                 $this->_getUiId(
                     'link'
                 ) .
@@ -71,14 +89,19 @@ class Image extends \Magento\Framework\Data\Form\Element\AbstractElement
                 '" id="' .
                 $this->getHtmlId() .
                 '_image" title="' .
-                $this->_escaper->escapeHtmlAttr($this->getValue()) .
+                $this->getValue() .
                 '"' .
                 ' alt="' .
-                $this->_escaper->escapeHtmlAttr($this->getValue()) .
+                $this->getValue() .
                 '" height="22" width="22" class="small-image-preview v-middle"  ' .
                 $this->_getUiId() .
                 ' />' .
                 '</a> ';
+            $html .= $this->secureRenderer->renderEventListenerAsTag(
+                'onclick',
+                "imagePreview('{$this->getHtmlId()}_image');\nreturn false;",
+                "*[previewlinkid='{$linkId}']"
+            );
         }
         $this->setClass('input-file');
         $html .= parent::getElementHtml();
@@ -128,8 +151,7 @@ class Image extends \Magento\Framework\Data\Form\Element\AbstractElement
      */
     protected function _getHiddenInput()
     {
-        return '<input type="hidden" name="' . parent::getName() . '[value]" value="' .
-            $this->_escaper->escapeHtmlAttr($this->getValue()) . '" />';
+        return '<input type="hidden" name="' . parent::getName() . '[value]" value="' . $this->getValue() . '" />';
     }
 
     /**

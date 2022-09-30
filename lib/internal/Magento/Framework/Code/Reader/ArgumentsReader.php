@@ -5,11 +5,12 @@
  */
 namespace Magento\Framework\Code\Reader;
 
-use Laminas\Code\Reflection\MethodReflection;
-use Laminas\Code\Reflection\ParameterReflection;
+use ReflectionClass;
+use ReflectionException;
+use ReflectionParameter;
 
 /**
- * Reader for a class arguments
+ * The class arguments reader
  */
 class ArgumentsReader
 {
@@ -46,7 +47,6 @@ class ArgumentsReader
      * @return array
      * @SuppressWarnings(PHPMD.CyclomaticComplexity)
      * @SuppressWarnings(PHPMD.NPathComplexity)
-     * @throws \ReflectionException
      */
     public function getConstructorArguments(\ReflectionClass $class, $groupByPosition = false, $inherited = false)
     {
@@ -61,7 +61,7 @@ class ArgumentsReader
             return $output;
         }
 
-        $constructor = new MethodReflection($class->getName(), '__construct');
+        $constructor = new \Laminas\Code\Reflection\MethodReflection($class->getName(), '__construct');
         foreach ($constructor->getParameters() as $parameter) {
             $name = $parameter->getName();
             $position = $parameter->getPosition();
@@ -97,16 +97,18 @@ class ArgumentsReader
      * Process argument type.
      *
      * @param \ReflectionClass $class
-     * @param ParameterReflection $parameter
+     * @param \Laminas\Code\Reflection\ParameterReflection $parameter
      * @return string
      */
-    private function processType(\ReflectionClass $class, ParameterReflection $parameter)
+    private function processType(\ReflectionClass $class, \Laminas\Code\Reflection\ParameterReflection $parameter)
     {
-        if ($parameter->getClass()) {
-            return NamespaceResolver::NS_SEPARATOR . $parameter->getClass()->getName();
+        $parameterClass = $this->getParameterClass($parameter);
+
+        if ($parameterClass) {
+            return NamespaceResolver::NS_SEPARATOR . $parameterClass->getName();
         }
 
-        $type =  $parameter->detectType();
+        $type = $parameter->detectType();
 
         if ($type === 'null') {
             return null;
@@ -123,6 +125,22 @@ class ArgumentsReader
         }
 
         return $type;
+    }
+
+    /**
+     * Get class by reflection parameter
+     *
+     * @param ReflectionParameter $reflectionParameter
+     * @return ReflectionClass|null
+     * @throws ReflectionException
+     */
+    private function getParameterClass(ReflectionParameter $reflectionParameter): ?ReflectionClass
+    {
+        $parameterType = $reflectionParameter->getType();
+
+        return $parameterType && !$parameterType->isBuiltin()
+            ? new ReflectionClass($parameterType->getName())
+            : null;
     }
 
     /**

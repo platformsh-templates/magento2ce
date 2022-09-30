@@ -14,7 +14,7 @@ use Magento\Customer\Api\MetadataManagementInterface;
 use Magento\Customer\Model\Indexer\Attribute\Filter;
 
 /**
- * Class AttributeRepository
+ * Attribute Repository Managment
  */
 class AttributeRepository
 {
@@ -143,9 +143,13 @@ class AttributeRepository
     {
         /** @var \Magento\Customer\Api\Data\OptionInterface $option */
         foreach ($options as &$option) {
+            $value = $option->getValue();
+            if (is_array($option->getOptions())) {
+                $value = $this->getOptionArray($option->getOptions());
+            }
             $option = [
                 'label' => (string)$option->getLabel(),
-                'value' => $option->getValue(),
+                'value' => $value,
                 '__disableTmpl' => true
             ];
         }
@@ -156,10 +160,10 @@ class AttributeRepository
      * Return customer group's metadata by given group code
      *
      * @param string $code
-     * @return []
+     * @return array | null
      */
     public function getMetadataByCode($code)
     {
-        return isset($this->getList()[$code]) ? $this->getList()[$code] : null;
+        return $this->getList()[$code] ?? null;
     }
 }

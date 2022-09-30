@@ -8,11 +8,6 @@ namespace Magento\PageCache\Controller\Block;
 
 use Magento\Framework\App\Action\HttpGetActionInterface;
 
-/**
- * Page cache render controller
- *
- * @deprecated 100.3.4
- */
 class Render extends \Magento\PageCache\Controller\Block implements HttpGetActionInterface
 {
     /**
@@ -34,13 +29,15 @@ class Render extends \Magento\PageCache\Controller\Block implements HttpGetActio
         $currentRequestUri = $this->getRequest()->getRequestUri();
 
         $origRequest = $this->getRequest()->getParam('originalRequest');
-        if ($origRequest && is_string($origRequest)) {
-            $origRequest = json_decode($origRequest, true);
+        if ($origRequest !== null) {
+            if ($origRequest && is_string($origRequest)) {
+                $origRequest = json_decode($origRequest, true);
+            }
+            $this->getRequest()->setRouteName($origRequest['route']);
+            $this->getRequest()->setControllerName($origRequest['controller']);
+            $this->getRequest()->setActionName($origRequest['action']);
+            $this->getRequest()->setRequestUri($origRequest['uri']);
         }
-        $this->getRequest()->setRouteName($origRequest['route']);
-        $this->getRequest()->setControllerName($origRequest['controller']);
-        $this->getRequest()->setActionName($origRequest['action']);
-        $this->getRequest()->setRequestUri($origRequest['uri']);
 
         /** @var \Magento\Framework\View\Element\BlockInterface[] $blocks */
         $blocks = $this->_getBlocks();

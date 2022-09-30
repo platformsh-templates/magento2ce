@@ -16,8 +16,6 @@ use Magento\Framework\Url\Helper\Data as UrlHelper;
  * Remove SID, from_store, store from target url.
  *
  * Used in store-switching process in HTML frontend.
- *
- * @SuppressWarnings(PHPMD.CookieAndSessionMisuse)
  */
 class CleanTargetUrl implements StoreSwitcherInterface
 {
@@ -28,14 +26,9 @@ class CleanTargetUrl implements StoreSwitcherInterface
 
     /**
      * @param UrlHelper $urlHelper
-     * @param \Magento\Framework\Session\Generic $session
-     * @param \Magento\Framework\Session\SidResolverInterface $sidResolver
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function __construct(
-        UrlHelper $urlHelper,
-        \Magento\Framework\Session\Generic $session,
-        \Magento\Framework\Session\SidResolverInterface $sidResolver
+        UrlHelper $urlHelper
     ) {
         $this->urlHelper = $urlHelper;
     }

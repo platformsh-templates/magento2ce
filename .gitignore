@@ -58,6 +58,8 @@ atlassian*
 /pub/media/tmp/*
 !/pub/media/tmp/.htaccess
 /pub/media/captcha/*
+/pub/media/sitemap/*
+!/pub/media/sitemap/.htaccess
 /pub/static/*
 !/pub/static/.htaccess
 
@@ -68,3 +70,6 @@ atlassian*
 /generated/*
 !/generated/.htaccess
 .DS_Store
+
+# Platform.sh Patches
+.versioned_backup

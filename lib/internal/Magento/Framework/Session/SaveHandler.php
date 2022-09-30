@@ -3,16 +3,24 @@
  * Copyright © Magento, Inc. All rights reserved.
  * See COPYING.txt for license details.
  */
+
 namespace Magento\Framework\Session;
 
-use Magento\Framework\Session\Config\ConfigInterface;
+use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\SessionException;
+use Magento\Framework\Session\Config\ConfigInterface;
+use Psr\Log\LoggerInterface;
 
 /**
- * Magento session save handler
+ * Magento session save handler.
  */
 class SaveHandler implements SaveHandlerInterface
 {
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
     /**
      * Session handler
      *
@@ -36,22 +44,33 @@ class SaveHandler implements SaveHandlerInterface
     private $defaultHandler;
 
     /**
+     * @var SessionMaxSizeConfig
+     */
+    private $sessionMaxSizeConfig;
+
+    /**
      * @param SaveHandlerFactory $saveHandlerFactory
      * @param ConfigInterface $sessionConfig
+     * @param LoggerInterface $logger
+     * @param SessionMaxSizeConfig $sessionMaxSizeConfigs
      * @param string $default
      */
     public function __construct(
         SaveHandlerFactory $saveHandlerFactory,
         ConfigInterface $sessionConfig,
+        LoggerInterface $logger,
+        SessionMaxSizeConfig $sessionMaxSizeConfigs,
         $default = self::DEFAULT_HANDLER
     ) {
         $this->saveHandlerFactory = $saveHandlerFactory;
         $this->sessionConfig = $sessionConfig;
+        $this->logger = $logger;
         $this->defaultHandler = $default;
+        $this->sessionMaxSizeConfig = $sessionMaxSizeConfigs;
     }
 
     /**
-     * Open Session - retrieve resources
+     * Open Session - retrieve resources.
      *
      * @param string $savePath
      * @param string $name
@@ -63,7 +82,7 @@ class SaveHandler implements SaveHandlerInterface
     }
 
     /**
-     * Close Session - free resources
+     * Close Session - free resources.
      *
      * @return bool
      */
@@ -73,7 +92,7 @@ class SaveHandler implements SaveHandlerInterface
     }
 
     /**
-     * Read session data
+     * Read session data.
      *
      * @param string $sessionId
      * @return string
@@ -84,19 +103,35 @@ class SaveHandler implements SaveHandlerInterface
     }
 
     /**
-     * Write Session - commit data to resource
+     * Write Session - commit data to resource.
      *
      * @param string $sessionId
      * @param string $data
      * @return bool
+     * @throws LocalizedException
      */
     public function write($sessionId, $data)
     {
-        return $this->callSafely('write', $sessionId, $data);
+        $sessionMaxSize = $this->sessionMaxSizeConfig->getSessionMaxSize();
+        $sessionSize = strlen($data);
+
+        if ($sessionMaxSize === null || $sessionMaxSize >= $sessionSize) {
+            return $this->callSafely('write', $sessionId, $data);
+        }
+
+        $this->logger->warning(
+            sprintf(
+                'Session size of %d exceeded allowed session max size of %d.',
+                $sessionSize,
+                $sessionMaxSize
+            )
+        );
+
+        return $this->callSafely('write', $sessionId, $this->read($sessionId));
     }
 
     /**
-     * Destroy Session - remove data from resource for given session id
+     * Destroy Session - remove data from resource for given session id.
      *
      * @param string $sessionId
      * @return bool
@@ -107,7 +142,7 @@ class SaveHandler implements SaveHandlerInterface
     }
 
     /**
-     * Garbage Collection - remove old session data older than $maxLifetime (in seconds)
+     * Garbage Collection - remove old session data older than $maxLifetime (in seconds).
      *
      * @param int $maxLifetime
      * @return bool

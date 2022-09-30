@@ -16,7 +16,7 @@ use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 /**
- * Tests \Magento\Persistent\Model\Layout\DepersonalizePlugin.
+ * Unit tests for \Magento\Persistent\Model\Layout\DepersonalizePlugin class.
  */
 class DepersonalizePluginTest extends TestCase
 {
@@ -24,11 +24,6 @@ class DepersonalizePluginTest extends TestCase
      * @var PersistentSession|MockObject
      */
     private $persistentSessionMock;
-
-    /**
-     * @var ObjectManagerHelper
-     */
-    private $objectManager;
 
     /**
      * @var DepersonalizePlugin
@@ -48,15 +43,16 @@ class DepersonalizePluginTest extends TestCase
     /**
      * @inheritdoc
      */
-    protected function setUp()
+    protected function setUp(): void
     {
-        $this->objectManager = new ObjectManagerHelper($this);
-
         $this->layoutMock = $this->getMockForAbstractClass(LayoutInterface::class);
-        $this->persistentSessionMock = $this->createPartialMock(PersistentSession::class, ['setCustomerId']);
+        $this->persistentSessionMock = $this->getMockBuilder(PersistentSession::class)
+            ->addMethods(['setCustomerId'])
+            ->disableOriginalConstructor()
+            ->getMock();
         $this->depersonalizeCheckerMock = $this->createMock(DepersonalizeChecker::class);
 
-        $this->plugin = $this->objectManager->getObject(
+        $this->plugin = (new ObjectManagerHelper($this))->getObject(
             DepersonalizePlugin::class,
             [
                 'depersonalizeChecker' => $this->depersonalizeCheckerMock,

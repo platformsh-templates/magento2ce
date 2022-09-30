@@ -16,7 +16,7 @@ class FormTest extends \PHPUnit\Framework\TestCase
      */
     protected $objectManager;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->objectManager = \Magento\TestFramework\Helper\Bootstrap::getObjectManager();
     }
@@ -75,7 +75,7 @@ class FormTest extends \PHPUnit\Framework\TestCase
             );
         }
         $form = $this->_getFormInstance($args);
-        $this->assertContains($action, $form->getAction());
+        $this->assertStringContainsString($action, $form->getAction());
 
         $this->assertEquals($requestPath, $form->getElement('request_path')->getValue());
         $this->assertEquals($targetPath, $form->getElement('target_path')->getValue());
@@ -239,11 +239,9 @@ class FormTest extends \PHPUnit\Framework\TestCase
                     ['label' => 'Main Website', 'value' => [], '__disableTmpl' => true],
                     [
                         'label' => '    Main Website Store',
-                        'value' => [
-                            ['label' => '    Default Store View', 'value' => 1, '__disableTmpl' => true],
-                        ],
-                        '__disableTmpl' => true,
-                    ],
+                        'value' => [['label' => '    Default Store View', 'value' => 1]],
+                        '__disableTmpl' => true
+                    ]
                 ],
             ],
             [
@@ -253,12 +251,10 @@ class FormTest extends \PHPUnit\Framework\TestCase
                     ['label' => 'Main Website', 'value' => [], '__disableTmpl' => true],
                     [
                         'label' => '    Main Website Store',
-                        'value' => [
-                            ['label' => '    Default Store View', 'value' => 1, '__disableTmpl' => true],
-                        ],
-                        '__disableTmpl' => true,
-                    ],
-                ],
+                        'value' => [['label' => '    Default Store View', 'value' => 1]],
+                        '__disableTmpl' => true
+                    ]
+                ]
             ],
             [
                 ['entity_id' => 2, 'name' => 'product2', 'url_key' => 'product2', 'store_ids' => [1]],
@@ -267,13 +263,11 @@ class FormTest extends \PHPUnit\Framework\TestCase
                     ['label' => 'Main Website', 'value' => [], '__disableTmpl' => true],
                     [
                         'label' => '    Main Website Store',
-                        'value' => [
-                            ['label' => '    Default Store View', 'value' => 1, '__disableTmpl' => true],
-                        ],
-                        '__disableTmpl' => true,
-                    ],
-                ],
-            ],
+                        'value' => [['label' => '    Default Store View', 'value' => 1]],
+                        '__disableTmpl' => true
+                    ]
+                ]
+            ]
         ];
     }
 }

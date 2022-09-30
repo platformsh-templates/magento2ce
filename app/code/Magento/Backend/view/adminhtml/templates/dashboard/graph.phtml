@@ -3,12 +3,17 @@
  * Copyright © Magento, Inc. All rights reserved.
  * See COPYING.txt for license details.
  */
+/**
+ * @deprecated dashboard graphs were migrated to dynamic chart.js solution
+ * @see Magento_Backend::dashboard/chart.phtml
+ * @phpcs:ignoreFile
+ */
 ?>
 <div class="dashboard-diagram">
     <div class="dashboard-diagram-switcher">
-        <label for="order_<?= /* @noEscape */ $block->getHtmlId() ?>_period"
+        <label for="order_<?= $block->getHtmlId() ?>_period"
                class="label"><?= $block->escapeHtml(__('Select Range:')) ?></label>
-        <select name="period" id="order_<?= /* @noEscape */ $block->getHtmlId() ?>_period"
+        <select name="period" id="order_<?= $block->getHtmlId() ?>_period"
                 onchange="changeDiagramsPeriod(this);" class="admin__control-select">
             <?php //phpcs:disable ?>
             <?php foreach ($this->helper(\Magento\Backend\Helper\Dashboard\Data::class)->getDatePeriods() as $value => $label) : ?>

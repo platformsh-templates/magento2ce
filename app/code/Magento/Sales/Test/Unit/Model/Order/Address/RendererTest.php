@@ -3,18 +3,26 @@
  * Copyright © Magento, Inc. All rights reserved.
  * See COPYING.txt for license details.
  */
+declare(strict_types=1);
+
 namespace Magento\Sales\Test\Unit\Model\Order\Address;
 
-use Magento\Sales\Model\Order\Address\Renderer as OrderAddressRenderer;
-use Magento\Framework\TestFramework\Unit\Helper\ObjectManager as ObjectManagerHelper;
-use Magento\Customer\Model\Address\Config as CustomerAddressConfig;
-use Magento\Framework\Event\ManagerInterface as EventManager;
-use Magento\Sales\Model\Order\Address as OrderAddress;
-use Magento\Sales\Model\Order;
 use Magento\Customer\Block\Address\Renderer\RendererInterface as CustomerAddressBlockRenderer;
+use Magento\Customer\Model\Address\Config as CustomerAddressConfig;
+use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\DataObject;
+use Magento\Framework\Event\ManagerInterface as EventManager;
+use Magento\Framework\TestFramework\Unit\Helper\ObjectManager as ObjectManagerHelper;
+use Magento\Sales\Model\Order;
+use Magento\Sales\Model\Order\Address as OrderAddress;
+use Magento\Sales\Model\Order\Address\Renderer as OrderAddressRenderer;
+use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\TestCase;
 
-class RendererTest extends \PHPUnit\Framework\TestCase
+/**
+ * Test for \Magento\Sales\Model\Order\Address\Renderer.
+ */
+class RendererTest extends TestCase
 {
     /**
      * @var OrderAddressRenderer
@@ -27,31 +35,39 @@ class RendererTest extends \PHPUnit\Framework\TestCase
     private $objectManagerHelper;
 
     /**
-     * @var CustomerAddressConfig|\PHPUnit_Framework_MockObject_MockObject
+     * @var CustomerAddressConfig|MockObject
      */
     private $customerAddressConfigMock;
 
     /**
-     * @var EventManager|\PHPUnit_Framework_MockObject_MockObject
+     * @var EventManager|MockObject
      */
     private $eventManagerMock;
 
     /**
-     * @var OrderAddress|\PHPUnit_Framework_MockObject_MockObject
+     * @var OrderAddress|MockObject
      */
     private $orderAddressMock;
 
     /**
-     * @var Order|\PHPUnit_Framework_MockObject_MockObject
+     * @var Order|MockObject
      */
     private $orderMock;
 
     /**
-     * @var CustomerAddressBlockRenderer|\PHPUnit_Framework_MockObject_MockObject
+     * @var CustomerAddressBlockRenderer|MockObject
      */
     private $customerAddressBlockRendererMock;
 
-    protected function setUp()
+    /**
+     * @var ScopeConfigInterface|MockObject
+     */
+    private $storeConfigMock;
+
+    /**
+     * @ingeritdoc
+     */
+    protected function setUp(): void
     {
         $this->customerAddressConfigMock = $this->getMockBuilder(CustomerAddressConfig::class)
             ->disableOriginalConstructor()
@@ -71,12 +87,15 @@ class RendererTest extends \PHPUnit\Framework\TestCase
             ->method('getOrder')
             ->willReturn($this->orderMock);
 
+        $this->storeConfigMock = $this->createMock(ScopeConfigInterface::class);
+
         $this->objectManagerHelper = new ObjectManagerHelper($this);
         $this->orderAddressRenderer = $this->objectManagerHelper->getObject(
             OrderAddressRenderer::class,
             [
                 'addressConfig' => $this->customerAddressConfigMock,
-                'eventManager' => $this->eventManagerMock
+                'eventManager' => $this->eventManagerMock,
+                'scopeConfig' => $this->storeConfigMock
             ]
         );
     }
@@ -85,7 +104,7 @@ class RendererTest extends \PHPUnit\Framework\TestCase
     {
         $type = 'html';
         $formatType = new DataObject(['renderer' => $this->customerAddressBlockRendererMock]);
-        $addressData = ['address', 'data'];
+        $addressData = ['address', 'data', 'locale' => 1];
         $result = 'result string';
 
         $this->setStoreExpectations(1);
@@ -99,6 +118,9 @@ class RendererTest extends \PHPUnit\Framework\TestCase
         $this->orderAddressMock->expects(static::atLeastOnce())
             ->method('getData')
             ->willReturn($addressData);
+        $this->storeConfigMock->expects($this->once())
+            ->method('getValue')
+            ->willReturn(1);
         $this->customerAddressBlockRendererMock->expects(static::once())
             ->method('renderArray')
             ->with($addressData, null)
@@ -119,7 +141,7 @@ class RendererTest extends \PHPUnit\Framework\TestCase
         $this->eventManagerMock->expects(static::never())
             ->method('dispatch');
 
-        $this->assertEquals(null, $this->orderAddressRenderer->format($this->orderAddressMock, $type));
+        $this->assertNull($this->orderAddressRenderer->format($this->orderAddressMock, $type));
     }
 
     /**

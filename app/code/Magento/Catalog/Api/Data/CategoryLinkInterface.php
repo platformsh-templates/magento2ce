@@ -15,16 +15,12 @@ use Magento\Framework\Api\ExtensibleDataInterface;
 interface CategoryLinkInterface extends ExtensibleDataInterface
 {
     /**
-     * Get position
-     *
      * @return int|null
      * @since 102.0.0
      */
     public function getPosition();
 
     /**
-     * Set position
-     *
      * @param int $position
      * @return $this
      * @since 102.0.0

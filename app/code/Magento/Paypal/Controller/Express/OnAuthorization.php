@@ -10,6 +10,7 @@ namespace Magento\Paypal\Controller\Express;
 use Magento\Framework\Controller\ResultFactory;
 use Magento\Framework\App\Action\HttpPostActionInterface;
 use Magento\Framework\Controller\ResultInterface;
+use Magento\Framework\Exception\LocalizedException;
 use Magento\Paypal\Model\Config as PayPalConfig;
 use Magento\Paypal\Model\Express\Checkout as PayPalCheckout;
 use Magento\Paypal\Model\Api\ProcessableException as ApiProcessableException;
@@ -113,17 +114,11 @@ class OnAuthorization extends AbstractExpress implements HttpPostActionInterface
     public function execute(): ResultInterface
     {
         $controllerResult = $this->resultFactory->create(ResultFactory::TYPE_JSON);
-        $quoteId = $this->getRequest()->getParam('quoteId');
         $payerId = $this->getRequest()->getParam('payerId');
         $tokenId = $this->getRequest()->getParam('paymentToken');
-        $customerId = $this->getRequest()->getParam('customerId') ?: $this->_customerSession->getId();
 
         try {
-            if ($quoteId) {
-                $quote = $customerId ? $this->cartRepository->get($quoteId) : $this->guestCartRepository->get($quoteId);
-            } else {
-                $quote = $this->_getQuote();
-            }
+            $quote = $this->_getQuote();
 
             $responseContent = [
                 'success' => true,
@@ -160,12 +155,16 @@ class OnAuthorization extends AbstractExpress implements HttpPostActionInterface
         } catch (ApiProcessableException $e) {
             $responseContent['success'] = false;
             $responseContent['error_message'] = $e->getUserMessage();
-        } catch (\Magento\Framework\Exception\LocalizedException $e) {
+        } catch (LocalizedException $e) {
             $responseContent['success'] = false;
             $responseContent['error_message'] = $e->getMessage();
         } catch (\Exception $e) {
             $responseContent['success'] = false;
             $responseContent['error_message'] = __('We can\'t process Express Checkout approval.');
+        }
+
+        if (!$responseContent['success']) {
+            $this->messageManager->addErrorMessage($responseContent['error_message']);
         }
 
         return $controllerResult->setData($responseContent);

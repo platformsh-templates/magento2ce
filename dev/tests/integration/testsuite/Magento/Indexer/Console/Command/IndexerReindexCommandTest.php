@@ -7,10 +7,11 @@ declare(strict_types=1);
 
 namespace Magento\Indexer\Console\Command;
 
+use Magento\Framework\Console\Cli;
 use Magento\Framework\ObjectManagerInterface;
-use Magento\Indexer\Model\Indexer\CollectionFactory as IndexerCollectionFactory;
 use Magento\TestFramework\Helper\Bootstrap;
-use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\MockObject\MockObject as Mock;
+use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -20,7 +21,7 @@ use Symfony\Component\Console\Output\OutputInterface;
  * @magentoDbIsolation disabled
  * @magentoAppIsolation enabled
  */
-class IndexerReindexCommandTest extends \PHPUnit\Framework\TestCase
+class IndexerReindexCommandTest extends TestCase
 {
     /**
      * @var ObjectManagerInterface
@@ -28,12 +29,12 @@ class IndexerReindexCommandTest extends \PHPUnit\Framework\TestCase
     private $objectManager;
 
     /**
-     * @var InputInterface|MockObject
+     * @var InputInterface|Mock
      */
     private $inputMock;
 
     /**
-     * @var OutputInterface|MockObject
+     * @var OutputInterface|Mock
      */
     private $outputMock;
 
@@ -43,14 +44,9 @@ class IndexerReindexCommandTest extends \PHPUnit\Framework\TestCase
     private $command;
 
     /**
-     * @var IndexerCollectionFactory
-     */
-    private $indexerCollectionFactory;
-
-    /**
      * @inheritdoc
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->objectManager = Bootstrap::getObjectManager();
 
@@ -58,33 +54,27 @@ class IndexerReindexCommandTest extends \PHPUnit\Framework\TestCase
         $this->outputMock = $this->getMockBuilder(OutputInterface::class)->getMockForAbstractClass();
 
         $this->command = $this->objectManager->get(IndexerReindexCommand::class);
-        $this->indexerCollectionFactory = $this->objectManager->create(IndexerCollectionFactory::class);
     }
 
     /**
      * @magentoDataFixture Magento/Store/_files/second_store_group_with_second_website.php
+     * @return void
      */
-    public function testReindexAll()
+    public function testReindexAll(): void
     {
         $status = $this->command->run($this->inputMock, $this->outputMock);
-        $this->assertEquals(
-            \Magento\Framework\Console\Cli::RETURN_SUCCESS,
-            $status,
-            'Index wasn\'t success'
-        );
+        $this->assertEquals(Cli::RETURN_SUCCESS, $status, 'Index wasn\'t success');
+    }
 
-        $notValidIndexers = [];
-        $indexers = $this->indexerCollectionFactory->create()->getItems();
-        foreach ($indexers as $indexer) {
-            if ($indexer->isValid()) {
-                continue;
-            }
-
-            $notValidIndexers[] = $indexer->getId();
-        }
-        $this->assertEmpty(
-            $notValidIndexers,
-            'Following indexers are not valid: ' . implode(', ', $notValidIndexers)
-        );
+    /**
+     * Check that 'indexer:reindex' command return right code.
+     *
+     * @magentoDataFixture Magento/Indexer/_files/wrong_config_data.php
+     * @return void
+     */
+    public function testReindexAllWhenSomethingIsWrong(): void
+    {
+        $status = $this->command->run($this->inputMock, $this->outputMock);
+        $this->assertEquals(Cli::RETURN_FAILURE, $status, 'Index didn\'t return failure code');
     }
 }
