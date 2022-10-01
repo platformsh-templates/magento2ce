@@ -216,9 +216,6 @@ class MagentoDeployer
                     '--page-cache-redis-server='.$redis['host'],
                     '--page-cache-redis-port='.$redis['port'],
                     '--page-cache-redis-db=2',
-//                    '--search-engine=elasticsearch7',
-//                    '--elasticsearch-host='.$search['host'],
-//                    '--elasticsearch-port='.$search['port'],
                     '--admin-firstname=admin',
                     '--admin-lastname=admin',
                     '--admin-email=admin@admin.com',
@@ -271,13 +268,13 @@ class MagentoDeployer
                 'args' => ['web/unsecure/base_url', self::getMainRoute()],
             ],
             'Ensuring Magento deployment uses the latest configured Elasticsearch service' => [
-                'only_if' => self::isMagentoInstalled(),
+                'only_if' => true,
                 'cmd' => 'php bin/magento config:set catalog/search/engine elasticsearch7'
                     ."  && php bin/magento config:set catalog/search/elasticsearch7_server_hostname {$search['host']}"
                     ."  && php bin/magento config:set catalog/search/elasticsearch7_server_port {$search['port']}",
             ],
             'Clearing Magento\'s cache to ensure we use the values that were just set' => [
-                'only_if' => self::isMagentoInstalled(),
+                'only_if' => true,
                 'cmd' => 'php bin/magento cache:flush',
             ],
             'Ensuring Magento is in production mode' => [
@@ -298,7 +295,7 @@ class MagentoDeployer
                 'cmd' => 'php bin/magento setup:di:compile',
             ],
             'Deploying Magento\'s static files' => [
-                'only_if' => self::isMagentoInstalled(),
+                'only_if' => true,
                 'cmd' => 'php bin/magento setup:static-content:deploy',
             ],
             'Exiting maintenance mode' => [
