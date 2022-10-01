@@ -24,7 +24,7 @@ class ConverterTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         $objectManager = new ObjectManagerHelper($this);
 
@@ -54,7 +54,7 @@ class ConverterTest extends \PHPUnit\Framework\TestCase
     {
         return [
             ['string', 'string'],
-            ['float', 'float'],
+            ['float', 'double'],
             ['integer', 'integer'],
         ];
     }

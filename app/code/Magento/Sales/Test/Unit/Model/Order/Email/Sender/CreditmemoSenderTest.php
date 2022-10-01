@@ -12,22 +12,26 @@ use Magento\Sales\Model\Order\Email\Sender\CreditmemoSender;
  */
 class CreditmemoSenderTest extends AbstractSenderTest
 {
+    private const CREDITMEMO_ID = 1;
+
+    private const ORDER_ID = 1;
+
     /**
      * @var \Magento\Sales\Model\Order\Email\Sender\CreditmemoSender
      */
     protected $sender;
 
     /**
-     * @var \Magento\Sales\Model\Order\Creditmemo|\PHPUnit_Framework_MockObject_MockObject
+     * @var \Magento\Sales\Model\Order\Creditmemo|\PHPUnit\Framework\MockObject\MockObject
      */
     protected $creditmemoMock;
 
     /**
-     * @var \Magento\Sales\Model\ResourceModel\EntityAbstract|\PHPUnit_Framework_MockObject_MockObject
+     * @var \Magento\Sales\Model\ResourceModel\EntityAbstract|\PHPUnit\Framework\MockObject\MockObject
      */
     protected $creditmemoResourceMock;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->stepMockSetup();
 
@@ -40,6 +44,7 @@ class CreditmemoSenderTest extends AbstractSenderTest
             \Magento\Sales\Model\Order\Creditmemo::class,
             [
                 'getStore',
+                'getId',
                 '__wakeup',
                 'getOrder',
                 'setSendEmail',
@@ -50,10 +55,14 @@ class CreditmemoSenderTest extends AbstractSenderTest
         );
         $this->creditmemoMock->expects($this->any())
             ->method('getStore')
-            ->will($this->returnValue($this->storeMock));
+            ->willReturn($this->storeMock);
         $this->creditmemoMock->expects($this->any())
             ->method('getOrder')
-            ->will($this->returnValue($this->orderMock));
+            ->willReturn($this->orderMock);
+        $this->creditmemoMock->method('getId')
+            ->willReturn(self::CREDITMEMO_ID);
+        $this->orderMock->method('getId')
+            ->willReturn(self::ORDER_ID);
 
         $this->identityContainerMock = $this->createPartialMock(
             \Magento\Sales\Model\Order\Email\Container\CreditmemoIdentity::class,
@@ -61,7 +70,7 @@ class CreditmemoSenderTest extends AbstractSenderTest
         );
         $this->identityContainerMock->expects($this->any())
             ->method('getStore')
-            ->will($this->returnValue($this->storeMock));
+            ->willReturn($this->storeMock);
 
         $this->sender = new CreditmemoSender(
             $this->templateContainerMock,
@@ -142,7 +151,9 @@ class CreditmemoSenderTest extends AbstractSenderTest
                 ->with(
                     [
                         'order' => $this->orderMock,
+                        'order_id' => self::ORDER_ID,
                         'creditmemo' => $this->creditmemoMock,
+                        'creditmemo_id' => self::CREDITMEMO_ID,
                         'comment' => $customerNoteNotify ? $comment : '',
                         'billing' => $addressMock,
                         'payment_html' => 'payment',
@@ -285,7 +296,9 @@ class CreditmemoSenderTest extends AbstractSenderTest
             ->with(
                 [
                     'order' => $this->orderMock,
+                    'order_id' => self::ORDER_ID,
                     'creditmemo' => $this->creditmemoMock,
+                    'creditmemo_id' => self::CREDITMEMO_ID,
                     'comment' => '',
                     'billing' => $addressMock,
                     'payment_html' => 'payment',

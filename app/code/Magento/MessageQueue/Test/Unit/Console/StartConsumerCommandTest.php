@@ -16,12 +16,12 @@ use Magento\Framework\Lock\LockManagerInterface;
 class StartConsumerCommandTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * @var \Magento\Framework\MessageQueue\ConsumerFactory|\PHPUnit_Framework_MockObject_MockObject
+     * @var \Magento\Framework\MessageQueue\ConsumerFactory|\PHPUnit\Framework\MockObject\MockObject
      */
     private $consumerFactory;
 
     /**
-     * @var \Magento\Framework\App\State|\PHPUnit_Framework_MockObject_MockObject
+     * @var \Magento\Framework\App\State|\PHPUnit\Framework\MockObject\MockObject
      */
     private $appState;
 
@@ -31,12 +31,12 @@ class StartConsumerCommandTest extends \PHPUnit\Framework\TestCase
     private $objectManager;
 
     /**
-     * @var WriteFactory|\PHPUnit_Framework_MockObject_MockObject
+     * @var WriteFactory|\PHPUnit\Framework\MockObject\MockObject
      */
     private $writeFactoryMock;
 
     /**
-     * @var LockManagerInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var LockManagerInterface|\PHPUnit\Framework\MockObject\MockObject
      */
     private $lockManagerMock;
 
@@ -48,7 +48,7 @@ class StartConsumerCommandTest extends \PHPUnit\Framework\TestCase
     /**
      * {@inheritdoc}
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->lockManagerMock = $this->getMockBuilder(LockManagerInterface::class)
             ->getMockForAbstractClass();
@@ -91,7 +91,6 @@ class StartConsumerCommandTest extends \PHPUnit\Framework\TestCase
         $pidFilePath,
         $singleThread,
         $lockExpects,
-        $isLockedExpects,
         $isLocked,
         $unlockExpects,
         $runProcessExpects,
@@ -129,14 +128,11 @@ class StartConsumerCommandTest extends \PHPUnit\Framework\TestCase
             ->method('get')->with($consumerName, $batchSize)->willReturn($consumer);
         $consumer->expects($this->exactly($runProcessExpects))->method('process')->with($numberOfMessages);
 
-        $this->lockManagerMock->expects($this->exactly($isLockedExpects))
-            ->method('isLocked')
-            ->with(md5($consumerName)) //phpcs:ignore
-            ->willReturn($isLocked);
-
         $this->lockManagerMock->expects($this->exactly($lockExpects))
             ->method('lock')
-            ->with(md5($consumerName)); //phpcs:ignore
+            ->with(md5($consumerName))//phpcs:ignore
+            ->willReturn($isLocked);
+
         $this->lockManagerMock->expects($this->exactly($unlockExpects))
             ->method('unlock')
             ->with(md5($consumerName)); //phpcs:ignore
@@ -157,8 +153,7 @@ class StartConsumerCommandTest extends \PHPUnit\Framework\TestCase
                 'pidFilePath' => null,
                 'singleThread' => false,
                 'lockExpects' => 0,
-                'isLockedExpects' => 0,
-                'isLocked' => false,
+                'isLocked' => true,
                 'unlockExpects' => 0,
                 'runProcessExpects' => 1,
                 'expectedReturn' => \Magento\Framework\Console\Cli::RETURN_SUCCESS,
@@ -167,8 +162,7 @@ class StartConsumerCommandTest extends \PHPUnit\Framework\TestCase
                 'pidFilePath' => '/var/consumer.pid',
                 'singleThread' => true,
                 'lockExpects' => 1,
-                'isLockedExpects' => 1,
-                'isLocked' => false,
+                'isLocked' => true,
                 'unlockExpects' => 1,
                 'runProcessExpects' => 1,
                 'expectedReturn' => \Magento\Framework\Console\Cli::RETURN_SUCCESS,
@@ -176,9 +170,8 @@ class StartConsumerCommandTest extends \PHPUnit\Framework\TestCase
             [
                 'pidFilePath' => '/var/consumer.pid',
                 'singleThread' => true,
-                'lockExpects' => 0,
-                'isLockedExpects' => 1,
-                'isLocked' => true,
+                'lockExpects' => 1,
+                'isLocked' => false,
                 'unlockExpects' => 0,
                 'runProcessExpects' => 0,
                 'expectedReturn' => \Magento\Framework\Console\Cli::RETURN_FAILURE,
@@ -201,6 +194,6 @@ class StartConsumerCommandTest extends \PHPUnit\Framework\TestCase
         $this->command->getDefinition()->getOption(StartConsumerCommand::OPTION_AREACODE);
         $this->command->getDefinition()->getOption(StartConsumerCommand::PID_FILE_PATH);
         $this->command->getDefinition()->getOption(StartConsumerCommand::OPTION_SINGLE_THREAD);
-        $this->assertContains('To start consumer which will process', $this->command->getHelp());
+        $this->assertStringContainsString('To start consumer which will process', $this->command->getHelp());
     }
 }

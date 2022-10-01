@@ -30,13 +30,14 @@ use Magento\Sales\Model\Order;
 use Magento\Sales\Model\Order\Item as OrderItem;
 use Magento\Sales\Model\ResourceModel\Order\Item\Collection as ItemCollection;
 use Magento\Store\Api\Data\StoreInterface;
-use PHPUnit_Framework_MockObject_MockObject as MockObject;
+use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\MockObject\MockObject;
 
 /**
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  * @SuppressWarnings(PHPMD.TooManyFields)
  */
-class CreateTest extends \PHPUnit\Framework\TestCase
+class CreateTest extends TestCase
 {
     const CUSTOMER_ID = 1;
 
@@ -46,12 +47,12 @@ class CreateTest extends \PHPUnit\Framework\TestCase
     private $adminOrderCreate;
 
     /**
-     * @var CartRepositoryInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var CartRepositoryInterface|MockObject
      */
     private $quoteRepository;
 
     /**
-     * @var QuoteFactory|\PHPUnit_Framework_MockObject_MockObject
+     * @var QuoteFactory|MockObject
      */
     private $quoteFactory;
 
@@ -98,7 +99,7 @@ class CreateTest extends \PHPUnit\Framework\TestCase
     /**
      * @inheritdoc
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->formFactory = $this->createPartialMock(FormFactory::class, ['create']);
         $this->quoteFactory = $this->createPartialMock(QuoteFactory::class, ['create']);
@@ -111,7 +112,7 @@ class CreateTest extends \PHPUnit\Framework\TestCase
             ->setMethods(['getForCustomer'])
             ->getMockForAbstractClass();
 
-        $this->sessionQuote = $this->getMockBuilder(\Magento\Backend\Model\Session\Quote::class)
+        $this->sessionQuote = $this->getMockBuilder(SessionQuote::class)
             ->disableOriginalConstructor()
             ->setMethods(
                 [
@@ -191,7 +192,7 @@ class CreateTest extends \PHPUnit\Framework\TestCase
         $attributeMocks = [];
 
         foreach ($attributes as $value) {
-            $attribute = $this->createMock(AttributeMetadataInterface::class);
+            $attribute = $this->getMockForAbstractClass(AttributeMetadataInterface::class);
             $attribute->method('getAttributeCode')
                 ->willReturn($value[0]);
 
@@ -212,9 +213,9 @@ class CreateTest extends \PHPUnit\Framework\TestCase
             ->willReturn(['group_id' => 1]);
 
         $customerForm->method('prepareRequest')
-            ->willReturn($this->createMock(RequestInterface::class));
+            ->willReturn($this->getMockForAbstractClass(RequestInterface::class));
 
-        $customer = $this->createMock(CustomerInterface::class);
+        $customer = $this->getMockForAbstractClass(CustomerInterface::class);
         $this->customerMapper->expects(self::atLeastOnce())
             ->method('toFlatArray')
             ->willReturn(['group_id' => 1]);
@@ -227,6 +228,7 @@ class CreateTest extends \PHPUnit\Framework\TestCase
                 'customer_tax_class_id' => $taxClassId
             ]
         );
+        $quote->method('getStoreId')->willReturn(1);
         $this->dataObjectHelper->method('populateWithArray')
             ->with(
                 $customer,
@@ -244,6 +246,10 @@ class CreateTest extends \PHPUnit\Framework\TestCase
 
         $this->groupRepository->method('getById')
             ->willReturn($customerGroup);
+
+        $customer->expects($this->once())
+            ->method('setStoreId')
+            ->with(1);
 
         $this->adminOrderCreate->setAccountData(['group_id' => 1]);
     }

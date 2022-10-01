@@ -6,7 +6,11 @@
 namespace Magento\Framework\File;
 
 use Magento\Framework\App\Filesystem\DirectoryList;
+use Magento\Framework\App\ObjectManager;
 use Magento\Framework\Exception\FileSystemException;
+use Magento\Framework\Filesystem;
+use Magento\Framework\Filesystem\DriverInterface;
+use Magento\Framework\Filesystem\DriverPool;
 use Magento\Framework\Validation\ValidationException;
 
 /**
@@ -16,6 +20,7 @@ use Magento\Framework\Validation\ValidationException;
  * validation by protected file extension list to extended class
  *
  * @SuppressWarnings(PHPMD.TooManyFields)
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  *
  * @api
  * @since 100.0.2
@@ -128,6 +133,11 @@ class Uploader
      */
     private $fileMime;
 
+    /**
+     * @var Filesystem
+     */
+    private $filesystem;
+
     /**#@+
      * File upload type (multiple or single)
      */
@@ -144,15 +154,13 @@ class Uploader
 
     /**
      * Maximum Image Width resolution in pixels. For image resizing on client side
-     * @deprecated
-     * @see \Magento\Framework\Image\Adapter\UploadConfigInterface::getMaxWidth()
+     * @deprecated @see \Magento\Framework\Image\Adapter\UploadConfigInterface::getMaxWidth()
      */
     const MAX_IMAGE_WIDTH = 1920;
 
     /**
      * Maximum Image Height resolution in pixels. For image resizing on client side
-     * @deprecated
-     * @see \Magento\Framework\Image\Adapter\UploadConfigInterface::getMaxHeight()
+     * @deprecated @see \Magento\Framework\Image\Adapter\UploadConfigInterface::getMaxHeight()
      */
     const MAX_IMAGE_HEIGHT = 1200;
 
@@ -170,21 +178,35 @@ class Uploader
     private $directoryList;
 
     /**
+     * @var DriverPool|null
+     */
+    private $driverPool;
+
+    /**
+     * @var DriverInterface|null
+     */
+    private $fileDriver;
+
+    /**
      * Init upload
      *
      * @param string|array $fileId
      * @param \Magento\Framework\File\Mime|null $fileMime
      * @param DirectoryList|null $directoryList
+     * @param DriverPool|null $driverPool
+     * @param Filesystem $filesystem
      * @throws \DomainException
      */
     public function __construct(
         $fileId,
         Mime $fileMime = null,
-        DirectoryList $directoryList = null
+        DirectoryList $directoryList = null,
+        DriverPool $driverPool = null,
+        Filesystem $filesystem = null
     ) {
-        $this->directoryList= $directoryList ?: \Magento\Framework\App\ObjectManager::getInstance()
-            ->get(DirectoryList::class);
+        $this->directoryList= $directoryList ?: ObjectManager::getInstance()->get(DirectoryList::class);
 
+        $this->filesystem = $filesystem ?: ObjectManager::getInstance()->get(FileSystem::class);
         $this->_setUploadFileId($fileId);
         if (!file_exists($this->_file['tmp_name'])) {
             $code = empty($this->_file['tmp_name']) ? self::TMP_NAME_EMPTY : 0;
@@ -192,7 +214,8 @@ class Uploader
         } else {
             $this->_fileExists = true;
         }
-        $this->fileMime = $fileMime ?: \Magento\Framework\App\ObjectManager::getInstance()->get(Mime::class);
+        $this->fileMime = $fileMime ?: ObjectManager::getInstance()->get(Mime::class);
+        $this->driverPool = $driverPool;
     }
 
     /**
@@ -230,7 +253,7 @@ class Uploader
             $this->setAllowCreateFolders(true);
             $this->_dispretionPath = static::getDispersionPath($fileName);
             $destinationFile .= $this->_dispretionPath;
-            $this->_createDestinationFolder($destinationFile);
+            $this->createDestinationFolder($destinationFile);
         }
 
         if ($this->_allowRenameFiles) {
@@ -275,13 +298,11 @@ class Uploader
      * @return void
      * @throws FileSystemException
      */
-    private function validateDestination($destinationFolder)
+    private function validateDestination(string $destinationFolder): void
     {
         if ($this->_allowCreateFolders) {
-            $this->_createDestinationFolder($destinationFolder);
-        }
-
-        if (!is_writable($destinationFolder)) {
+            $this->createDestinationFolder($destinationFolder);
+        } elseif (!$this->getFileDriver()->isWritable($destinationFolder)) {
             throw new FileSystemException(__('Destination folder is not writable or does not exists.'));
         }
     }
@@ -612,31 +633,31 @@ class Uploader
         if (isset($fileId['tmp_name'])) {
             $tmpName = trim($fileId['tmp_name']);
 
-            if (preg_match('/\.\.(\\\|\/)/', $tmpName) !== 1) {
-                $allowedFolders = [
-                    sys_get_temp_dir(),
-                    $this->directoryList->getPath(DirectoryList::MEDIA),
-                    $this->directoryList->getPath(DirectoryList::VAR_DIR),
-                    $this->directoryList->getPath(DirectoryList::TMP),
-                    $this->directoryList->getPath(DirectoryList::UPLOAD),
-                ];
+            $allowedFolders = [
+                sys_get_temp_dir(),
+                $this->directoryList->getPath(DirectoryList::MEDIA),
+                $this->directoryList->getPath(DirectoryList::VAR_DIR),
+                $this->directoryList->getPath(DirectoryList::TMP),
+                $this->directoryList->getPath(DirectoryList::UPLOAD),
+            ];
 
-                $disallowedFolders = [
-                    $this->directoryList->getPath(DirectoryList::LOG),
-                ];
+            $disallowedFolders = [
+                $this->directoryList->getPath(DirectoryList::LOG),
+            ];
 
-                foreach ($allowedFolders as $allowedFolder) {
-                    if (stripos($tmpName, $allowedFolder) === 0) {
-                        $isValid = true;
-                        break;
-                    }
+            foreach ($allowedFolders as $allowedFolder) {
+                $dir = $this->filesystem->getDirectoryReadByPath($allowedFolder);
+                if ($dir->isExist($tmpName)) {
+                    $isValid = true;
+                    break;
                 }
+            }
 
-                foreach ($disallowedFolders as $disallowedFolder) {
-                    if (stripos($tmpName, $disallowedFolder) === 0) {
-                        $isValid = false;
-                        break;
-                    }
+            foreach ($disallowedFolders as $disallowedFolder) {
+                $dir = $this->filesystem->getDirectoryReadByPath($disallowedFolder);
+                if ($dir->isExist($tmpName)) {
+                    $isValid = false;
+                    break;
                 }
             }
         }
@@ -655,7 +676,7 @@ class Uploader
      * @return \Magento\Framework\File\Uploader
      * @throws FileSystemException
      */
-    private function _createDestinationFolder($destinationFolder)
+    private function createDestinationFolder(string $destinationFolder)
     {
         if (!$destinationFolder) {
             return $this;
@@ -665,11 +686,13 @@ class Uploader
             $destinationFolder = substr($destinationFolder, 0, -1);
         }
 
-        if (!(@is_dir($destinationFolder)
-            || @mkdir($destinationFolder, 0777, true)
-        )) {
-            throw new FileSystemException(__('Unable to create directory %1.', $destinationFolder));
+        if (!$this->getFileDriver()->isDirectory($destinationFolder)) {
+            $result = $this->getFileDriver()->createDirectory($destinationFolder);
+            if (!$result) {
+                throw new FileSystemException(__('Unable to create directory %1.', $destinationFolder));
+            }
         }
+
         return $this;
     }
 
@@ -731,5 +754,21 @@ class Uploader
             $char++;
         }
         return $dispersionPath;
+    }
+
+    /**
+     * Get driver for file
+     *
+     * @deprecated
+     * @return DriverInterface
+     */
+    private function getFileDriver(): DriverInterface
+    {
+        if (!$this->fileDriver) {
+            $this->driverPool = $this->driverPool ?: ObjectManager::getInstance()->get(DriverPool::class);
+            $this->fileDriver = $this->driverPool->getDriver(DriverPool::FILE);
+        }
+
+        return $this->fileDriver;
     }
 }

@@ -15,6 +15,7 @@ use Magento\Catalog\Model\Product\Media\Config;
 use Magento\Catalog\Model\ResourceModel\Product as ProductResource;
 use Magento\Catalog\Model\ResourceModel\Product\Gallery;
 use Magento\Framework\App\Filesystem\DirectoryList;
+use Magento\Framework\Exception\ValidatorException;
 use Magento\Framework\Filesystem;
 use Magento\Framework\Filesystem\Directory\WriteInterface;
 use Magento\Framework\ObjectManagerInterface;
@@ -78,11 +79,15 @@ class UpdateHandlerTest extends \PHPUnit\Framework\TestCase
      * @var int
      */
     private $mediaAttributeId;
+    /**
+     * @var \Magento\Eav\Model\ResourceModel\UpdateHandler
+     */
+    private $eavUpdateHandler;
 
     /**
      * @inheritdoc
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->fileName = 'image.txt';
         $this->objectManager = Bootstrap::getObjectManager();
@@ -96,6 +101,8 @@ class UpdateHandlerTest extends \PHPUnit\Framework\TestCase
         $this->mediaDirectory = $this->objectManager->get(Filesystem::class)
             ->getDirectoryWrite(DirectoryList::MEDIA);
         $this->mediaDirectory->writeFile($this->fileName, 'Test');
+        $this->updateHandler = $this->objectManager->create(UpdateHandler::class);
+        $this->eavUpdateHandler = $this->objectManager->create(\Magento\Eav\Model\ResourceModel\UpdateHandler::class);
     }
 
     /**
@@ -108,6 +115,7 @@ class UpdateHandlerTest extends \PHPUnit\Framework\TestCase
      */
     public function testExecuteWithIllegalFilename(): void
     {
+        $this->expectException(ValidatorException::class);
         $product = $this->getProduct();
         $product->setData(
             'media_gallery',
@@ -115,7 +123,7 @@ class UpdateHandlerTest extends \PHPUnit\Framework\TestCase
                 'images' => [
                     'image' => [
                         'value_id' => '100',
-                        'file' => '/../..' . DIRECTORY_SEPARATOR . $this->fileName,
+                        'file' => '/../../..' . DIRECTORY_SEPARATOR . $this->fileName,
                         'label' => 'New image',
                         'removed' => 1,
                     ],
@@ -140,7 +148,7 @@ class UpdateHandlerTest extends \PHPUnit\Framework\TestCase
         $this->updateHandler->execute($product);
         $productImages = $this->galleryResource->loadProductGalleryByAttributeId($product, $this->mediaAttributeId);
         $updatedImage = reset($productImages);
-        $this->assertTrue(is_array($updatedImage));
+        $this->assertIsArray($updatedImage);
         $this->assertEquals('New image', $updatedImage['label']);
         $this->assertEquals('New image', $updatedImage['label_default']);
         $this->assertEquals('1', $updatedImage['disabled']);
@@ -185,6 +193,15 @@ class UpdateHandlerTest extends \PHPUnit\Framework\TestCase
         $secondStoreId = (int)$this->storeRepository->get('fixture_second_store')->getId();
         $imageRoles = ['image', 'small_image', 'thumbnail', 'swatch_image'];
         $product = $this->getProduct($secondStoreId);
+        $entityIdField = $product->getResource()->getLinkField();
+        $entityData = [];
+        $entityData['store_id'] = $product->getStoreId();
+        $entityData[$entityIdField] = $product->getData($entityIdField);
+        $entityData = array_merge($entityData, $roles);
+        $this->eavUpdateHandler->execute(
+            \Magento\Catalog\Api\Data\ProductInterface::class,
+            $entityData
+        );
         $product->addData($roles);
         $this->updateHandler->execute($product);
 
@@ -274,7 +291,7 @@ class UpdateHandlerTest extends \PHPUnit\Framework\TestCase
         $this->updateHandler->execute($product);
         $productImages = $this->galleryResource->loadProductGalleryByAttributeId($product, $this->mediaAttributeId);
         $this->assertCount(0, $productImages);
-        $this->assertFileNotExists(
+        $this->assertFileDoesNotExist(
             $this->mediaDirectory->getAbsolutePath($this->config->getBaseMediaPath() . $image)
         );
         $defaultImages = $this->productResource->getAttributeRawValue(
@@ -342,7 +359,7 @@ class UpdateHandlerTest extends \PHPUnit\Framework\TestCase
     /**
      * @inheritdoc
      */
-    protected function tearDown()
+    protected function tearDown(): void
     {
         parent::tearDown();
         $this->mediaDirectory->getDriver()->deleteFile($this->mediaDirectory->getAbsolutePath($this->fileName));

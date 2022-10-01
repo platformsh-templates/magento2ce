@@ -13,7 +13,7 @@ use Magento\Framework\Filesystem\Driver\File;
 use Symfony\Component\Console\Input\ArgvInput;
 use Zend\ServiceManager\ServiceManager;
 use Magento\Setup\Console\CompilerPreparation;
-use PHPUnit_Framework_MockObject_MockObject as Mock;
+use PHPUnit\Framework\MockObject\MockObject as Mock;
 
 class CompilerPreparationTest extends \PHPUnit\Framework\TestCase
 {
@@ -45,7 +45,7 @@ class CompilerPreparationTest extends \PHPUnit\Framework\TestCase
     /**
      * @inheritdoc
      */
-    public function setUp()
+    protected function setUp(): void
     {
         $this->serviceManagerMock = $this->getMockBuilder(ServiceManager::class)
             ->disableOriginalConstructor()
@@ -136,7 +136,25 @@ class CompilerPreparationTest extends \PHPUnit\Framework\TestCase
                 'commandName' => 'not:a:compiler',
                 'isCompileCommand' => false,
                 'isHelpOption' => false,
-            ]
+            ],
+            'ST compiler, directory exists, abbreviation 1' => [
+                'commandName' => 's:d:c',
+                'isCompileCommand' => true,
+                'isHelpOption' => false,
+                'dirExists' => true
+            ],
+            'ST compiler, directory exists, abbreviation 2' => [
+                'commandName' => 'se:di:co',
+                'isCompileCommand' => true,
+                'isHelpOption' => false,
+                'dirExists' => true
+            ],
+            'ST compiler, directory exists, abbreviation ambiguous' => [
+                'commandName' => 'se:di',
+                'isCompileCommand' => false,
+                'isHelpOption' => false,
+                'dirExists' => true
+            ],
         ];
     }
 

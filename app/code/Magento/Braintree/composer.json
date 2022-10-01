@@ -1,11 +1,17 @@
 {
     "name": "magento/module-braintree",
     "description": "N/A",
+    "type": "magento2-module",
+    "license": [
+        "OSL-3.0",
+        "AFL-3.0"
+    ],
     "config": {
         "sort-packages": true
     },
+    "version": "100.3.7",
     "require": {
-        "php": "~7.1.3||~7.2.0||~7.3.0",
+        "php": "~7.3.0||~7.4.0",
         "braintree/braintree_php": "3.35.0",
         "magento/framework": "102.0.*",
         "magento/magento-composer-installer": "*",
@@ -28,11 +34,6 @@
     "suggest": {
         "magento/module-checkout-agreements": "100.3.*"
     },
-    "type": "magento2-module",
-    "license": [
-        "OSL-3.0",
-        "AFL-3.0"
-    ],
     "autoload": {
         "files": [
             "registration.php"
@@ -40,6 +41,6 @@
         "psr-4": {
             "Magento\\Braintree\\": ""
         }
-    },
-    "version": "100.3.5"
+    }
 }
+

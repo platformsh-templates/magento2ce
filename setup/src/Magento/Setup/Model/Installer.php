@@ -501,7 +501,6 @@ class Installer
      */
     public function checkInstallationFilePermissions()
     {
-        return;
         $this->throwExceptionForNotWritablePaths(
             $this->filePermissions->getMissingWritablePathsForInstallation()
         );
@@ -818,6 +817,28 @@ class Installer
     }
 
     /**
+     * Clear memory tables
+     *
+     * Memory tables that used in old versions of Magento for indexing purposes should be cleaned
+     * Otherwise some supported DB solutions like Galeracluster may have replication error
+     * when memory engine will be switched to InnoDb
+     *
+     * @param SchemaSetupInterface $setup
+     * @return void
+     */
+    private function cleanMemoryTables(SchemaSetupInterface $setup)
+    {
+        $connection = $setup->getConnection();
+        $tables = $connection->getTables();
+        foreach ($tables as $table) {
+            $tableData = $connection->showTableStatus($table);
+            if (isset($tableData['Engine']) && $tableData['Engine'] === 'MEMORY') {
+                $connection->truncateTable($table);
+            }
+        }
+    }
+
+    /**
      * Installs DB schema
      *
      * @param array $request
@@ -835,6 +856,7 @@ class Installer
         $setup = $this->setupFactory->create($this->context->getResources());
         $this->setupModuleRegistry($setup);
         $this->setupCoreTables($setup);
+        $this->cleanMemoryTables($setup);
         $this->log->log('Schema creation/updates:');
         $this->declarativeInstallSchema($request);
         $this->handleDBSchemaData($setup, 'schema', $request);
@@ -903,7 +925,6 @@ class Installer
      */
     public function checkFilePermissionsForDbUpgrade()
     {
-        return;
         $this->throwExceptionForNotWritablePaths(
             $this->filePermissions->getMissingWritableDirectoriesForDbUpgrade()
         );

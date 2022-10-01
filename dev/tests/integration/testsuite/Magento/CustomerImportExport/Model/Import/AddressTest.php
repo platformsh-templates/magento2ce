@@ -9,11 +9,20 @@
  */
 namespace Magento\CustomerImportExport\Model\Import;
 
+use Magento\Customer\Api\AddressRepositoryInterface;
+use Magento\Customer\Api\CustomerRepositoryInterface;
+use Magento\Customer\Api\Data\AddressInterface;
+use Magento\Customer\Api\Data\CustomerInterface;
+use Magento\Customer\Model\AddressRegistry;
+use Magento\Framework\Api\SearchCriteriaBuilder;
 use Magento\Framework\App\Filesystem\DirectoryList;
 use Magento\Framework\Filesystem;
 use Magento\ImportExport\Model\Import as ImportModel;
 use Magento\ImportExport\Model\Import\Adapter as ImportAdapter;
+use Magento\ImportExport\Model\Import\ErrorProcessing\ProcessingErrorAggregatorInterface;
+use Magento\ImportExport\Model\Import\Source\Csv;
 use Magento\TestFramework\Helper\Bootstrap;
+use Magento\Framework\Indexer\StateInterface;
 
 /**
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
@@ -85,9 +94,14 @@ class AddressTest extends \PHPUnit\Framework\TestCase
     protected $customerResource;
 
     /**
+     * @var \Magento\Customer\Model\Indexer\Processor
+     */
+    private $indexerProcessor;
+
+    /**
      * Init new instance of address entity adapter
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         /** @var \Magento\Catalog\Model\ResourceModel\Product $productResource */
         $this->customerResource = Bootstrap::getObjectManager()->get(
@@ -96,53 +110,9 @@ class AddressTest extends \PHPUnit\Framework\TestCase
         $this->_entityAdapter = Bootstrap::getObjectManager()->create(
             $this->_testClassName
         );
-    }
-
-    /**
-     * Test constructor
-     *
-     * @magentoDataFixture Magento/Customer/_files/import_export/customer_with_addresses.php
-     */
-    public function testConstruct()
-    {
-        // check entity table
-        $this->assertAttributeInternalType(
-            'string',
-            '_entityTable',
-            $this->_entityAdapter,
-            'Entity table must be a string.'
+        $this->indexerProcessor = Bootstrap::getObjectManager()->create(
+            \Magento\Customer\Model\Indexer\Processor::class
         );
-        $this->assertAttributeNotEmpty('_entityTable', $this->_entityAdapter, 'Entity table must not be empty');
-
-        // check message templates
-        $this->assertAttributeInternalType(
-            'array',
-            'errorMessageTemplates',
-            $this->_entityAdapter,
-            'Templates must be an array.'
-        );
-        $this->assertAttributeNotEmpty('errorMessageTemplates', $this->_entityAdapter, 'Templates must not be empty');
-
-        // check attributes
-        $this->assertAttributeInternalType(
-            'array',
-            '_attributes',
-            $this->_entityAdapter,
-            'Attributes must be an array.'
-        );
-        $this->assertAttributeNotEmpty('_attributes', $this->_entityAdapter, 'Attributes must not be empty');
-
-        // check country regions and regions
-        $this->assertAttributeInternalType(
-            'array',
-            '_countryRegions',
-            $this->_entityAdapter,
-            'Country regions must be an array.'
-        );
-        $this->assertAttributeNotEmpty('_countryRegions', $this->_entityAdapter, 'Country regions must not be empty');
-
-        $this->assertAttributeInternalType('array', '_regions', $this->_entityAdapter, 'Regions must be an array.');
-        $this->assertAttributeNotEmpty('_regions', $this->_entityAdapter, 'Regions must not be empty');
     }
 
     /**
@@ -353,6 +323,7 @@ class AddressTest extends \PHPUnit\Framework\TestCase
         $requiredAttributes[] = $keyAttribute;
         foreach (['update', 'remove'] as $action) {
             foreach ($this->_updateData[$action] as $attributes) {
+                // phpcs:ignore Magento2.Performance.ForeachArrayMerge
                 $requiredAttributes = array_merge($requiredAttributes, array_keys($attributes));
             }
         }
@@ -493,5 +464,238 @@ class AddressTest extends \PHPUnit\Framework\TestCase
         //Import
         $imported = $this->_entityAdapter->importData();
         $this->assertTrue($imported, 'Must be successfully imported');
+    }
+
+    /**
+     * Test customer indexer gets invalidated after import when Update on Schedule mode is set
+     *
+     * @magentoDbIsolation enabled
+     */
+    public function testCustomerIndexer(): void
+    {
+        $file = __DIR__ . '/_files/address_import_update.csv';
+        $filesystem = Bootstrap::getObjectManager()->create(Filesystem::class);
+        $directoryWrite = $filesystem->getDirectoryWrite(DirectoryList::ROOT);
+        $source = new \Magento\ImportExport\Model\Import\Source\Csv($file, $directoryWrite);
+        $this->_entityAdapter
+            ->setParameters(['behavior' => ImportModel::BEHAVIOR_ADD_UPDATE])
+            ->setSource($source)
+            ->validateData()
+            ->hasToBeTerminated();
+        $this->indexerProcessor->getIndexer()->reindexAll();
+        $statusBeforeImport = $this->indexerProcessor->getIndexer()->getStatus();
+        $this->indexerProcessor->getIndexer()->setScheduled(true);
+        $this->_entityAdapter->importData();
+        $statusAfterImport = $this->indexerProcessor->getIndexer()->getStatus();
+        $this->assertEquals(StateInterface::STATUS_VALID, $statusBeforeImport);
+        $this->assertEquals(StateInterface::STATUS_INVALID, $statusAfterImport);
+    }
+
+    /**
+     * Test import address with region for a country that does not have regions defined
+     *
+     * @magentoAppIsolation enabled
+     * @magentoDataFixture Magento/Customer/_files/import_export/customer_with_addresses.php
+     */
+    public function testImportAddressWithOptionalRegion()
+    {
+        $customer = $this->getCustomer('BetsyParker@example.com');
+        $file = __DIR__ . '/_files/import_uk_address.csv';
+        $errors = $this->doImport($file);
+        $this->assertImportValidationPassed($errors);
+        $address = $this->getAddresses(
+            [
+                'parent_id' => $customer->getId(),
+                'country_id' => 'GB',
+            ]
+        );
+        $this->assertCount(1, $address);
+        $this->assertNull($address[0]->getRegionId());
+        $this->assertEquals('Liverpool', $address[0]->getRegion()->getRegion());
+    }
+
+    /**
+     * Test update first name and last name
+     *
+     * @magentoAppIsolation enabled
+     * @magentoDataFixture Magento/Customer/_files/import_export/customer_with_addresses.php
+     */
+    public function testUpdateFirstAndLastName()
+    {
+        $customer = $this->getCustomer('BetsyParker@example.com');
+        $addresses = $this->getAddresses(
+            [
+                'parent_id' => $customer->getId(),
+            ]
+        );
+        $this->assertCount(1, $addresses);
+        $address = $addresses[0];
+        $row = [
+            '_website' => 'base',
+            '_email' => $customer->getEmail(),
+            '_entity_id' => $address->getId(),
+            'firstname' => 'Mark',
+            'lastname' => 'Antony',
+        ];
+        $file = $this->generateImportFile([$row]);
+        $errors = $this->doImport($file);
+        $this->assertImportValidationPassed($errors);
+        $objectManager = Bootstrap::getObjectManager();
+        //clear cache
+        $objectManager->get(AddressRegistry::class)->remove($address->getId());
+        $addresses = $this->getAddresses(
+            [
+                'parent_id' => $customer->getId(),
+                'entity_id' => $address->getId(),
+            ]
+        );
+        $this->assertCount(1, $addresses);
+        $updatedAddress = $addresses[0];
+        //assert that firstname and lastname were updated
+        $this->assertEquals($row['firstname'], $updatedAddress->getFirstname());
+        $this->assertEquals($row['lastname'], $updatedAddress->getLastname());
+        //assert other values have not changed
+        $this->assertEquals($address->getStreet(), $updatedAddress->getStreet());
+        $this->assertEquals($address->getCity(), $updatedAddress->getCity());
+        $this->assertEquals($address->getCountryId(), $updatedAddress->getCountryId());
+        $this->assertEquals($address->getPostcode(), $updatedAddress->getPostcode());
+        $this->assertEquals($address->getTelephone(), $updatedAddress->getTelephone());
+        $this->assertEquals($address->getRegionId(), $updatedAddress->getRegionId());
+    }
+
+    /**
+     * Get Addresses by filter
+     *
+     * @param array $filter
+     * @return AddressInterface[]
+     */
+    private function getAddresses(array $filter): array
+    {
+        $objectManager = Bootstrap::getObjectManager();
+        /** @var AddressRepositoryInterface $repository */
+        $repository = $objectManager->create(AddressRepositoryInterface::class);
+        /** @var SearchCriteriaBuilder $searchCriteriaBuilder */
+        $searchCriteriaBuilder = $objectManager->get(SearchCriteriaBuilder::class);
+        foreach ($filter as $attr => $value) {
+            $searchCriteriaBuilder->addFilter($attr, $value);
+        }
+        return $repository->getList($searchCriteriaBuilder->create())->getItems();
+    }
+
+    /**
+     * @param string $email
+     * @return CustomerInterface
+     */
+    private function getCustomer(string $email): CustomerInterface
+    {
+        $objectManager = Bootstrap::getObjectManager();
+        $customerRepository = $objectManager->get(CustomerRepositoryInterface::class);
+        return $customerRepository->get($email);
+    }
+
+    /**
+     * @param string $file
+     * @param string $behavior
+     * @param bool $validateOnly
+     * @return ProcessingErrorAggregatorInterface
+     */
+    private function doImport(
+        string $file,
+        string $behavior = ImportModel::BEHAVIOR_ADD_UPDATE,
+        bool $validateOnly = false
+    ): ProcessingErrorAggregatorInterface {
+        $objectManager = Bootstrap::getObjectManager();
+        /** @var Filesystem $filesystem */
+        $filesystem = $objectManager->create(Filesystem::class);
+        $directoryWrite = $filesystem->getDirectoryWrite(DirectoryList::ROOT);
+        $source = ImportAdapter::findAdapterFor($file, $directoryWrite);
+        $errors = $this->_entityAdapter
+            ->setParameters(['behavior' => $behavior])
+            ->setSource($source)
+            ->validateData();
+        if (!$validateOnly && !$errors->getAllErrors()) {
+            $this->_entityAdapter->importData();
+        }
+        return $errors;
+    }
+
+    /**
+     * @param array $data
+     * @return string
+     */
+    private function generateImportFile(array $data): string
+    {
+        $objectManager = Bootstrap::getObjectManager();
+        /** @var Filesystem $filesystem */
+        $filesystem = $objectManager->get(Filesystem::class);
+        $tmpDir = $filesystem->getDirectoryWrite(DirectoryList::TMP);
+        $tmpFilename = uniqid('test_import_address_') . '.csv';
+        $stream = $tmpDir->openFile($tmpFilename, 'w+');
+        $stream->lock();
+        $stream->writeCsv($this->getFields());
+        $emptyRow = array_fill_keys($this->getFields(), '');
+        foreach ($data as $row) {
+            $row = array_replace($emptyRow, $row);
+            $stream->writeCsv($row);
+        }
+        $stream->unlock();
+        $stream->close();
+        return $tmpDir->getAbsolutePath($tmpFilename);
+    }
+
+    /**
+     * @param ProcessingErrorAggregatorInterface $errors
+     */
+    private function assertImportValidationPassed(ProcessingErrorAggregatorInterface $errors): void
+    {
+        if ($errors->getAllErrors()) {
+            $messages = [];
+            $messages[] = 'Import validation failed';
+            $messages[] = '';
+            foreach ($errors->getAllErrors() as $error) {
+                $messages[] = sprintf(
+                    '%s: #%d [%s] %s: %s',
+                    strtoupper($error->getErrorLevel()),
+                    $error->getRowNumber(),
+                    $error->getErrorCode(),
+                    $error->getErrorMessage(),
+                    $error->getErrorDescription()
+                );
+            }
+            $this->fail(implode("\n", $messages));
+        }
+    }
+
+    /**
+     * @return array
+     */
+    private function getFields(): array
+    {
+        return [
+            '_website',
+            '_email',
+            '_entity_id',
+            'city',
+            'company',
+            'country_id',
+            'fax',
+            'firstname',
+            'lastname',
+            'middlename',
+            'postcode',
+            'prefix',
+            'region',
+            'region_id',
+            'street',
+            'suffix',
+            'telephone',
+            'vat_id',
+            'vat_is_valid',
+            'vat_request_date',
+            'vat_request_id',
+            'vat_request_success',
+            '_address_default_billing_',
+            '_address_default_shipping_',
+        ];
     }
 }

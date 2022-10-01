@@ -21,10 +21,10 @@ class SensitiveCookieMetadataTest extends \PHPUnit\Framework\TestCase
     /** @var SensitiveCookieMetadata */
     private $sensitiveCookieMetadata;
 
-    /** @var  \Magento\Framework\App\Request\Http | \PHPUnit_Framework_MockObject_MockObject */
+    /** @var  \Magento\Framework\App\Request\Http | \PHPUnit\Framework\MockObject\MockObject */
     private $requestMock;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->objectManager = new ObjectManager($this);
         $this->requestMock = $this->getMockBuilder(\Magento\Framework\App\Request\Http::class)
@@ -184,6 +184,7 @@ class SensitiveCookieMetadataTest extends \PHPUnit\Framework\TestCase
                     SensitiveCookieMetadata::KEY_DOMAIN => 'domain',
                     SensitiveCookieMetadata::KEY_PATH => 'path',
                     SensitiveCookieMetadata::KEY_HTTP_ONLY => 1,
+                    SensitiveCookieMetadata::KEY_SAME_SITE => 'Lax',
                 ],
                 0,
             ],
@@ -198,6 +199,7 @@ class SensitiveCookieMetadataTest extends \PHPUnit\Framework\TestCase
                     SensitiveCookieMetadata::KEY_DOMAIN => 'domain',
                     SensitiveCookieMetadata::KEY_PATH => 'path',
                     SensitiveCookieMetadata::KEY_HTTP_ONLY => 1,
+                    SensitiveCookieMetadata::KEY_SAME_SITE => 'Lax',
                 ],
             ],
             'without secure 2' => [
@@ -211,6 +213,7 @@ class SensitiveCookieMetadataTest extends \PHPUnit\Framework\TestCase
                     SensitiveCookieMetadata::KEY_DOMAIN => 'domain',
                     SensitiveCookieMetadata::KEY_PATH => 'path',
                     SensitiveCookieMetadata::KEY_HTTP_ONLY => 1,
+                    SensitiveCookieMetadata::KEY_SAME_SITE => 'Lax',
                 ],
             ],
         ];

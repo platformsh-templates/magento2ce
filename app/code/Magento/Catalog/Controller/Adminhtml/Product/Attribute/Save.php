@@ -185,6 +185,9 @@ class Save extends Attribute implements HttpPostActionInterface
             }
 
             $attributeId = $this->getRequest()->getParam('attribute_id');
+            if (!empty($data['attribute_id']) && $data['attribute_id'] != $attributeId) {
+                $attributeId = $data['attribute_id'];
+            }
 
             /** @var ProductAttributeInterface $model */
             $model = $this->attributeFactory->create();
@@ -194,7 +197,12 @@ class Save extends Attribute implements HttpPostActionInterface
             $attributeCode = $model && $model->getId()
                 ? $model->getAttributeCode()
                 : $this->getRequest()->getParam('attribute_code');
-            $attributeCode = $attributeCode ?: $this->generateCode($this->getRequest()->getParam('frontend_label')[0]);
+
+            if (!$attributeCode) {
+                $frontendLabel = $this->getRequest()->getParam('frontend_label')[0] ?? '';
+                $attributeCode = $this->generateCode($frontendLabel);
+            }
+
             $data['attribute_code'] = $attributeCode;
 
             //validate frontend_input
