@@ -389,8 +389,8 @@ class MagentoDeployer
       */
      private static function abortBuild(string $message, int $exitStatus): void
      {
-         $setBoldOutputCmd = 'echo $(tput -T "xterm-256color" bold)';
-         $resetOutputCmd = 'echo $(tput -T "xterm-256color" sgr0)';
+         $setBoldOutputCmd = 'echo "------ $(tput -T "xterm-256color" bold) \n"';
+         $resetOutputCmd = 'echo "\n------ $(tput -T "xterm-256color" sgr0)';
 
          self::run("figlet -f standard 'DEPLOYMENT ABORTED'");
          self::run($setBoldOutputCmd);
