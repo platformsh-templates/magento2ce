@@ -23,6 +23,7 @@ Magento is a fully integrated ecommerce system and web store written in PHP.  Th
 ## Platform.sh Requirements
 
 * Medium plan or greater.
+* Magento 2.3.7 - This Magento 2.4 requires different services versions and slightly modified setup/install commands.
 
 ## Post-install
 
