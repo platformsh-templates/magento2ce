@@ -25,6 +25,13 @@ runtime:
         - xsl
         - sodium
 
+# Customize your PHP.ini.
+# See: https://docs.platform.sh/languages/php/ini.html
+variables:
+    php:
+        # Include Magento's out-of-the-box settings
+        include: /app/.user.ini
+
 # Configuration of the build of this application.
 build:
     flavor: composer
