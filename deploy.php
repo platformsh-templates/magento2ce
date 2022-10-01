@@ -324,6 +324,9 @@ class MagentoDeployer
             'Ensuring that the Magento does not block deployments by launching workers from the cron job' => [
                 'only_if' => true,
                 'cmd' => self::disableWorkersFromCrons()
+            ],
+            'Ensuring Magento search and catalog is up-to-date in case of search changes' => [
+                'bin/magento indexer:reindex'
             ]
         ];
     }
