@@ -50,12 +50,12 @@ class MagentoDeployer
     public static function getMainRouteInfo(): array
     {
         return array_filter(static::getRoutes(), function ($value) {
-            return array_key_exists('id', $value) && strtolower($value['id']) === 'main';
+            return array_key_exists('id', $value) && strtolower($value['id']) === 'magento_route';
         });
     }
 
     /**
-     * Fetch the URL assigned to the route with ID of "main" from $PLATFORM_ROUTES environment variable
+     * Fetch the URL assigned to the route with ID of "magento_route" from $PLATFORM_ROUTES environment variable
      *
      * @return string
      */
@@ -90,7 +90,7 @@ class MagentoDeployer
     public static function ValidateEnvironment(): void
     {
         if (! static::getMainRouteInfo()) {
-            self::abortBuild('Cannot find the main route for Magento. Please add `id: main` to your routes.yaml.', 1);
+            self::abortBuild('Cannot find the main route for Magento. Please add `id: magento_route` to your routes.yaml.', 1);
         }
 
         if (! array_key_exists('database', static::getRelationships())) {
@@ -390,12 +390,12 @@ class MagentoDeployer
      private static function abortBuild(string $message, int $exitStatus): void
      {
          $setBoldOutputCmd = 'echo "------ $(tput -T "xterm-256color" bold) \n"';
-         $resetOutputCmd = 'echo "\n------ $(tput -T "xterm-256color" sgr0)';
+         $resetOutputCmd = 'echo "\n------ $(tput -T "xterm-256color" sgr0)"';
 
-         self::run("figlet -f standard 'DEPLOYMENT ABORTED'");
-         self::run($setBoldOutputCmd);
+         passthru("figlet -f standard 'DEPLOYMENT ABORTED'");
+         passthru($setBoldOutputCmd);
          echo $message . PHP_EOL;
-         self::run($resetOutputCmd);
+         passthru($resetOutputCmd);
 
          exit($exitStatus);
      }
