@@ -70,12 +70,6 @@ hooks:
         php deploy.php
         php disable-cron-workers.php
 
-# The configuration of scheduled execution.
-crons:
-    magento:
-        spec: "* * * * *"
-        cmd: "php bin/magento cron:run"
-
 # The configuration of app when it is exposed to the web.
 web:
     locations:
@@ -87,8 +81,10 @@ web:
             scripts: true
             allow: false
             rules:
-                \.(css|js|gif|jpe?g|svg):
+                \.(css|js|map|hbs|gif|jpe?g|png|tiff|wbmp|ico|jng|bmp|svgz|midi?|mp?ga|mp2|mp3|m4a|ra|weba|3gpp?|mp4|mpe?g|mpe|ogv|mov|webm|flv|mng|asx|asf|wmv|avi|ogx|swf|jar|ttf|eot|woff|otf|html?)$:
                     allow: true
+                ^/sitemap(.*)\.xml$:
+                    passthru: "/media/sitemap$1.xml"
         '/media':
             root: "pub/media"
             allow: true
@@ -105,6 +101,13 @@ web:
                 ^/static/version\d+/(?<resource>.*)$:
                     passthru: "/static/$resource"
 
+# The configuration of scheduled execution.
+crons:
+    magento:
+        spec: "*/5 * * * *"
+        cmd: "php bin/magento cron:run"
+
+#
 workers:
     queue:
         size: S
