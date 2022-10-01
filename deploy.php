@@ -133,43 +133,6 @@ class MagentoDeployer
     }
 
     /**
-     * @deprecated
-     *
-     * Workaround for Magento 2.4 bug that expects a DB to be defined before setup:install.
-     * Marking as deprecated as we should be confirming if this is still required with
-     * each Magento version update.
-     *
-     * @return void
-     */
-    public static function applyMagento24SetupInstallPatch(): void
-    {
-        $database = self::getRelationship('database');
-        $magento24SetupPatch = "<?php return ['db' => [
-        'table_prefix' => '',
-        'connection' => [
-            'default' => [
-                'host' => '{$database['host']}',
-                'dbname' => '{$database['path']}',
-                'username' => '{$database['username']}',
-                'password' => '{$database['password']}',
-                'model' => 'mysql4',
-                'engine' => 'innodb',
-                'initStatements' => 'SET NAMES utf8;',
-                'active' => '1',
-                'driver_options' => [
-                    1014 => false
-                ]
-            ]
-        ]
-    ],];";
-
-        /** Let's reset our Magento env.php since we are redeploying */
-        if (self::isEnvConfigured()) {
-            self::resetFileFileContent(self::$FILE_PATHS['env.php'], $magento24SetupPatch);
-        }
-    }
-
-    /**
      * By default, Magento launches workers from cron jobs. This blocks Platform.sh deployments because the workers
      * never stop running. We have a dedicated worker, so we are going to disable this cron feature.
      * @return void
@@ -202,13 +165,7 @@ class MagentoDeployer
         $installFile = self::$FILE_PATHS['installed'];
 
         return [
-            'Installing Magento 2.4 setup:install bugfix' => [
-                'only_if' => static::isFreshInstall(),
-                'cmd' => function () {
-                    self::applyMagento24SetupInstallPatch();
-                },
-            ],
-            'Installing Magento 2.4' => [
+            'Installing Magento 2.3' => [
                 'only_if' => static::isFreshInstall(),
                 'cmd' => 'php bin/magento setup:install',
                 'args' => [
