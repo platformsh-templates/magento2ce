@@ -4,16 +4,26 @@
 # See https://docs.platform.sh/user_guide/reference/platform-app-yaml.html
 
 # The name of this app. Must be unique within a project.
-name: app
+name: magento
 
 # The runtime the application uses.
-type: php:7.2
+type: php:7.4
 
+dependencies:
+    php:
+        composer/composer: "^1"
+
+###
 # Specify additional PHP extensions that should be loaded.
+# To determine what you need to enable
+#   1. run locally: composer check-platform-reqs | grep "ext-\|php"
+#   2. Compare to https://docs.platform.sh/languages/php/extensions.html
+#      - "Def" = Already Enabled
+#      - "Avail" = Available, but you need to enable below.
 runtime:
     extensions:
-    - xsl
-    - sodium
+        - xsl
+        - sodium
 
 # Configuration of the build of this application.
 build:
@@ -25,8 +35,9 @@ build:
 # to the application in the PLATFORM_RELATIONSHIPS variable. The right-hand
 # side is in the form `<service name>:<endpoint name>`.
 relationships:
-    database: db:mysql
-    redis: cache:redis
+    database: magento_database:mysql
+    redis: magento_redis:redis
+    search: magento_search:opensearch
 
 # The size of the persistent disk of the application (in MB).
 disk: 2048
@@ -45,21 +56,21 @@ mounts:
     "/pub/static":
         source: local
         source_path: "static"
-    "/.config":
+    "/app/etc":
         source: local
-        source_path: "config"
+        source_path: "etc"
 
 # The hooks executed at various points in the lifecycle of the application.
 hooks:
     # The build hook runs on your code to prepare it for an active environment.
     build: |
         set -e
-        ln -sfn "$PLATFORM_APP_DIR"/.config/env.php "$PLATFORM_APP_DIR"/app/etc/env.php
-        ln -sfn "$PLATFORM_APP_DIR"/.config/config.php "$PLATFORM_APP_DIR"/app/etc/config.php
+        mkdir -p .versioned_backup/etc && cp app/etc/* .versioned_backup/etc/
     # The deploy hook runs after your application has been deployed and started.
     deploy: |
         set -e
-        ./deploy
+        cp .versioned_backup/etc/* app/etc/
+        php deploy.php
         php disable-cron-workers.php
 
 # The configuration of scheduled execution.
@@ -75,7 +86,7 @@ web:
             root: "pub"
             passthru: "/index.php"
             index:
-            - index.php
+                - index.php
             scripts: true
             allow: false
             rules:
@@ -91,7 +102,7 @@ web:
             root: "pub/static"
             allow: true
             scripts: false
-            passthru: "/static-versioned.php"
+            passthru: "/static.php"
             expires: 1y
             rules:
                 ^/static/version\d+/(?<resource>.*)$:
