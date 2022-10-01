@@ -106,7 +106,6 @@ crons:
         spec: "*/5 * * * *"
         cmd: "php bin/magento cron:run"
 
-#
 workers:
     queue:
         size: S
