@@ -389,17 +389,13 @@ class MagentoDeployer
       */
      private static function abortBuild(string $message, int $exitStatus): void
      {
-         $setOutputColor = "\033[1;33m";
-         $errorOutputColor = "\033[1;32m";
-         $resetColor = "\033[0m";
+         $setBoldOutputCmd = 'echo $(tput bold)';
+         $resetOutputCmd = 'echo $(tput sgr0)';
 
-         if ($exitStatus !== 0) {
-             $setOutputColor = $errorOutputColor;
-         }
-
-         echo $setOutputColor;
          self::run("figlet -f standard 'DEPLOYMENT ABORTED'");
-         echo $message . PHP_EOL . $resetColor;
+         self::run($setBoldOutputCmd);
+         echo $message . PHP_EOL;
+         self::run($resetOutputCmd);
 
          exit($exitStatus);
      }
