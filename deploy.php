@@ -90,17 +90,14 @@ class MagentoDeployer
     public static function ValidateEnvironment(): void
     {
         if (! static::getMainRouteInfo()) {
-            echo 'Cannot find the main route for Magento. Please add `id: main` to your routes.yaml.'.PHP_EOL;
-            exit(1);
+            self::abortBuild('Cannot find the main route for Magento. Please add `id: main` to your routes.yaml.', 1);
         }
 
         if (! array_key_exists('database', static::getRelationships())) {
-            echo 'Cannot find the database service for Magento. Please update your .platform.app.yaml or .platform/applications.yaml to use the relationship name "database" or modify deploy.php to use the new name.'.PHP_EOL;
-            exit(1);
+            self::abortBuild('Cannot find the database service for Magento. Please update your .platform.app.yaml or .platform/applications.yaml to use the relationship name "database" or modify deploy.php to use the new name.', 1);
         }
         if (! array_key_exists('redis', static::getRelationships())) {
-            echo 'Cannot find the main redis service for Magento. Please update your .platform.app.yaml or .platform/applications.yaml to use the relationship name "redis" or modify deploy.php to use the new name.'.PHP_EOL;
-            exit(1);
+            self::abortBuild('Cannot find the main redis service for Magento. Please update your .platform.app.yaml or .platform/applications.yaml to use the relationship name "redis" or modify deploy.php to use the new name.', 1);
         }
     }
 
@@ -392,7 +389,21 @@ class MagentoDeployer
       */
      private static function abortBuild(string $message, int $exitStatus): void
      {
-         echo $message.PHP_EOL;
+         $outColorDefault = '\033[1;33m';
+         $outColorRed = '\033[1;32m';
+         $endOutColor = '\033[0m';
+
+         if ($exitStatus !== 0) {
+             $outColorDefault = $outColorRed;
+         }
+
+         self::run("
+            printf $outColorDefault
+            && echo \"{$message}\"
+            && figlet -f standard 'DEPLOYMENT ABORTED'
+            && printf $endOutColor
+        ");
+
          exit($exitStatus);
      }
 
