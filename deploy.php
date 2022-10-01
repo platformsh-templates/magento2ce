@@ -287,6 +287,10 @@ class MagentoDeployer
                 'only_if' => true,
                 'cmd' => function () { self::disableWorkersFromCrons(); }
             ],
+            'Clearing Magento\'s Full Page cache'  => [
+                'only_if' => true,
+                'cmd' => 'php bin/magento cache:flush full_page block_html config',
+            ],
             'Ensuring Magento search and catalog is up-to-date in case of search changes' => [
                 'only_if' => true,
                 'cmd' => 'bin/magento indexer:reindex'
