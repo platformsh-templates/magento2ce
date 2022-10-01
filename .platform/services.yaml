@@ -1,5 +1,5 @@
 # Magento's Database
-magento_db:
+magento_database:
     type: mariadb:10.3
     disk: 2048
 
