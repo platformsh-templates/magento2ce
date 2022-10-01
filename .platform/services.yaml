@@ -5,7 +5,8 @@ magento_database:
 
 # Magento's cache & session redis instance
 magento_redis:
-    type: redis:6.0
+    type: redis-persistent:6.0
+    disk: 256
 
 # Magento's Elasticsearch-compatible OpenSearch instance.
 magento_search:
