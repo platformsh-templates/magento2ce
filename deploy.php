@@ -169,6 +169,11 @@ class MagentoDeployer
         }
     }
 
+    /**
+     * By default, Magento launches workers from cron jobs. This blocks Platform.sh deployments because the workers
+     * never stop running. We have a dedicated worker, so we are going to disable this cron feature.
+     * @return void
+     */
     public static function disableWorkersFromCrons(): void {
         $magentoEnvConfig = include self::$FILE_PATHS['env.php'];
 
@@ -326,7 +331,8 @@ class MagentoDeployer
                 'cmd' => self::disableWorkersFromCrons()
             ],
             'Ensuring Magento search and catalog is up-to-date in case of search changes' => [
-                'bin/magento indexer:reindex'
+                'only_if' => true,
+                'cmd' => 'bin/magento indexer:reindex'
             ]
         ];
     }
