@@ -1,4 +1,4 @@
 https://{default}/:
     id: magento_app
     type: upstream
-    upstream: app:http
+    upstream: magento:http
