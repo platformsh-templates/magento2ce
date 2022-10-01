@@ -169,6 +169,21 @@ class MagentoDeployer
         }
     }
 
+    public static function disableWorkersFromCrons(): void {
+        $magentoEnvConfig = include self::$FILE_PATHS['env.php'];
+
+        $magentoEnvConfig['cron_consumers_runner'] = [
+            'cron_run' => false,
+        ];
+
+        $modifiedEnv = var_export($magentoEnvConfig, 1);
+
+        $newEnvContents = "<?php
+        return $modifiedEnv;";
+
+        self::resetFileFileContent(self::$FILE_PATHS['env.php'], $newEnvContents);
+    }
+
     /**
      * Defines a sequential list of commands to run and the conditions required to run them.
      *
@@ -306,6 +321,10 @@ class MagentoDeployer
                 'only_if' => true, // any time this setup runs successfully we should make sure this file is in place
                 'cmd' => "echo \"Welcome to Platform.sh! Your Magento site has been deployed!\" >> {$installFile}",
             ],
+            'Ensuring that the Magento does not block deployments by launching workers from the cron job' => [
+                'only_if' => true,
+                'cmd' => self::disableWorkersFromCrons()
+            ]
         ];
     }
 

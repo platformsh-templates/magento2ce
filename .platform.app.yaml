@@ -68,7 +68,6 @@ hooks:
         set -e
         cp .versioned_backup/etc/* app/etc/
         php deploy.php
-        php disable-cron-workers.php
 
 # The configuration of app when it is exposed to the web.
 web:
