@@ -51,21 +51,11 @@ disk: 2048
 
 # The 'mounts' describe writable, persistent filesystem mounts in the application.
 mounts:
-    "/var":
-        source: local
-        source_path: "var"
-    "/generated":
-        source: local
-        source_path: "generated"
-    "/pub/media":
-        source: local
-        source_path: "media"
-    "/pub/static":
-        source: local
-        source_path: "static"
-    "/app/etc":
-        source: local
-        source_path: "etc"
+    "var": "shared:files/var"
+    "generated": "shared:files/generated"
+    "app/etc": "shared:files/etc"
+    "pub/media": "shared:files/media"
+    "pub/static": "shared:files/static"
 
 # The hooks executed at various points in the lifecycle of the application.
 hooks:
