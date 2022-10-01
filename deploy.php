@@ -352,7 +352,7 @@ class MagentoDeployer
             return;
         }
 
-        echo "{$summary}".PHP_EOL;
+        echo "\n\n ================= \n > Install Step: {$summary}".PHP_EOL;
 
         if (self::isPHPFunction($installStep['cmd'])) {
             $installStep['cmd']();
