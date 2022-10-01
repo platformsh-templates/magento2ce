@@ -12,12 +12,17 @@ Magento is a fully integrated ecommerce system and web store written in PHP.  Th
 
 ## Features
 
-* PHP 7.2
-* MariaDB 10.2
-* Redis 3.2
+* PHP 7.4
+* MariaDB 10.3
+* Redis 6.0
+* OpenSearch 1.2
 * Dedicated worker instance for background processing
 * Automatic TLS certificates
 * Composer-based build
+
+## Platform.sh Requirements
+
+* Medium plan or greater.
 
 ## Post-install
 
@@ -28,11 +33,10 @@ Magento is a fully integrated ecommerce system and web store written in PHP.  Th
 The following changes have been made relative to Magento 2 as it is downloaded from Magento.com.  If using this project as a reference for your own existing project, replicate the changes below to your project.
 
 * The `.platform.app.yaml`, `.platform/services.yaml`, and `.platform/routes.yaml` files have been added.  These provide Platform.sh-specific configuration and are present in all projects on Platform.sh.  You may customize them as you see fit.
-* An additional front controller is included in `pub/static-versioned.php` to serve static files.
-* A custom deploy script, written in Python, is provided in the `deploy` file and called from the deploy hook in `.platform.app.yaml`.  The `deploy` script handles installing Magento on first run, including populating the administrator account.  It also handles Magento self-updates on normal point release updates.  Do not modify or remove this file.
+* A custom deploy script is provided in the `deploy.php` file and called from the deploy hook in `.platform.app.yaml`.  The `deploy` script handles installing Magento on first run, including populating the administrator account.  It also handles Magento self-updates on normal point release updates.
 * The installer has been patched to not ask for information that is already provided by Platform.sh, such as database credentials, file paths, or the initial administrator account.  These changes should have no impact post-installation.  See the [patch file](https://github.com/platformsh/template-builder/blob/master/templates/magento2ce/platformsh.patch) for details.
-* An additional script has been added to force the cron process to not start background workers. See [disable-cron-workers.php](disable-cron-workers.php) for details. It runs on deploy and modifies the `.config/env.php` file.
-* A worker container is also created to handle background processing.  That means that Magento cannot be run on a production plan smaller than Medium.
+* An additional step has been added to the `deploy.php` file to force the cron process to not start background workers. See [disable-cron-workers.php](disable-cron-workers.php) for details. It runs on deploy and modifies the `.config/env.php` file.
+* A worker container is also created to handle background processing. That means that Magento cannot be run on a production plan smaller than Medium.
 
 ## References
 

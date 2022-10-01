@@ -4,6 +4,7 @@ magento_database:
     disk: 2048
 
 # Magento's cache & session redis instance
+# Since our sessions will be sent here, we want to enable persistence so customers are not logged out when we deploy
 magento_redis:
     type: redis-persistent:6.0
     disk: 256
