@@ -36,7 +36,7 @@ The following changes have been made relative to Magento 2 as it is downloaded f
 * The `.platform.app.yaml`, `.platform/services.yaml`, and `.platform/routes.yaml` files have been added.  These provide Platform.sh-specific configuration and are present in all projects on Platform.sh.  You may customize them as you see fit.
 * A custom deploy script is provided in the `deploy.php` file and called from the deploy hook in `.platform.app.yaml`.  The `deploy` script handles installing Magento on first run, including populating the administrator account.  It also handles Magento self-updates on normal point release updates.
 * The installer has been patched to not ask for information that is already provided by Platform.sh, such as database credentials, file paths, or the initial administrator account.  These changes should have no impact post-installation.  See the [patch file](https://github.com/platformsh/template-builder/blob/master/templates/magento2ce/platformsh.patch) for details.
-* An additional step has been added to the `deploy.php` file to force the cron process to not start background workers. See [disable-cron-workers.php](disable-cron-workers.php) for details. It runs on deploy and modifies the `.config/env.php` file.
+* An additional step has been added to the `deploy.php` file to force the cron process to not start background workers since we already have workers defined. This ensures that deployments are not blocked by the cron job.
 * A worker container is also created to handle background processing. That means that Magento cannot be run on a production plan smaller than Medium.
 
 ## References
