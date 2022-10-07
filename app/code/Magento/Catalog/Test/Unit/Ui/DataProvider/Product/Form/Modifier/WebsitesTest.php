@@ -6,17 +6,16 @@
 namespace Magento\Catalog\Test\Unit\Ui\DataProvider\Product\Form\Modifier;
 
 use Magento\Catalog\Ui\DataProvider\Product\Form\Modifier\Websites;
-use Magento\Store\Api\WebsiteRepositoryInterface;
 use Magento\Store\Api\GroupRepositoryInterface;
 use Magento\Store\Api\StoreRepositoryInterface;
-use Magento\Store\Model\StoreManagerInterface;
-use Magento\Framework\TestFramework\Unit\Helper\ObjectManager;
-use Magento\Store\Model\Website;
-use Magento\Store\Model\Store as StoreView;
+use Magento\Store\Api\WebsiteRepositoryInterface;
 use Magento\Store\Model\Group;
+use Magento\Store\Model\Store as StoreView;
+use Magento\Store\Model\StoreManagerInterface;
+use Magento\Store\Model\Website;
 
 /**
- * Class WebsitesTest
+ * Class WebsitesTest test the meta data and website data for different websites
  *
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  */
@@ -30,32 +29,32 @@ class WebsitesTest extends AbstractModifierTest
     const SECOND_WEBSITE_ID = 2;
 
     /**
-     * @var WebsiteRepositoryInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var WebsiteRepositoryInterface|\PHPUnit\Framework\MockObject\MockObject
      */
     protected $websiteRepositoryMock;
 
     /**
-     * @var GroupRepositoryInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var GroupRepositoryInterface|\PHPUnit\Framework\MockObject\MockObject
      */
     protected $groupRepositoryMock;
 
     /**
-     * @var StoreRepositoryInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var StoreRepositoryInterface|\PHPUnit\Framework\MockObject\MockObject
      */
     protected $storeRepositoryMock;
 
     /**
-     * @var StoreManagerInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var StoreManagerInterface|\PHPUnit\Framework\MockObject\MockObject
      */
     protected $storeManagerMock;
 
     /**
-     * @var Website|\PHPUnit_Framework_MockObject_MockObject
+     * @var Website|\PHPUnit\Framework\MockObject\MockObject
      */
     protected $websiteMock;
 
     /**
-     * @var Website|\PHPUnit_Framework_MockObject_MockObject
+     * @var Website|\PHPUnit\Framework\MockObject\MockObject
      */
     protected $secondWebsiteMock;
 
@@ -65,19 +64,19 @@ class WebsitesTest extends AbstractModifierTest
     protected $assignedWebsites;
 
     /**
-     * @var Group|\PHPUnit_Framework_MockObject_MockObject
+     * @var Group|\PHPUnit\Framework\MockObject\MockObject
      */
     protected $groupMock;
 
     /**
-     * @var StoreView|\PHPUnit_Framework_MockObject_MockObject
+     * @var StoreView|\PHPUnit\Framework\MockObject\MockObject
      */
     protected $storeViewMock;
 
     /**
      * @inheritdoc
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
         $this->productMock->expects($this->any())
@@ -111,7 +110,7 @@ class WebsitesTest extends AbstractModifierTest
             ->method('getWebsiteIds')
             ->willReturn($this->assignedWebsites);
         $this->storeManagerMock = $this->getMockBuilder(\Magento\Store\Model\StoreManagerInterface::class)
-            ->setMethods(['isSingleStoreMode', 'getWesites'])
+            ->setMethods(['isSingleStoreMode', 'getWebsites'])
             ->getMockForAbstractClass();
         $this->storeManagerMock->method('getWebsites')
             ->willReturn([$this->websiteMock, $this->secondWebsiteMock]);
@@ -182,6 +181,14 @@ class WebsitesTest extends AbstractModifierTest
         $this->assertTrue(isset($meta['websites']['children'][self::SECOND_WEBSITE_ID]));
         $this->assertTrue(isset($meta['websites']['children'][self::WEBSITE_ID]));
         $this->assertTrue(isset($meta['websites']['children']['copy_to_stores.' . self::WEBSITE_ID]));
+        $this->assertEquals(
+            $meta['websites']['children'][self::SECOND_WEBSITE_ID]['arguments']['data']['config']['value'],
+            (string) self::SECOND_WEBSITE_ID
+        );
+        $this->assertEquals(
+            $meta['websites']['children'][self::WEBSITE_ID]['arguments']['data']['config']['value'],
+            "0"
+        );
     }
 
     /**

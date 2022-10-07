@@ -7,16 +7,16 @@ declare(strict_types=1);
 
 namespace Magento\ImportExport\Test\Unit\Controller\Adminhtml\Export\File;
 
-use Magento\Framework\Filesystem;
 use Magento\Backend\App\Action\Context;
-use Magento\Framework\App\Request\Http;
-use Magento\Framework\App\ResponseInterface;
-use PHPUnit\Framework\MockObject\MockObject;
-use Magento\Framework\Filesystem\Directory\Read;
 use Magento\Framework\App\Filesystem\DirectoryList;
+use Magento\Framework\App\Request\Http;
 use Magento\Framework\App\Response\Http\FileFactory;
-use Magento\ImportExport\Controller\Adminhtml\Export\File\Download;
+use Magento\Framework\App\ResponseInterface;
+use Magento\Framework\Filesystem;
+use Magento\Framework\Filesystem\Directory\Read;
 use Magento\Framework\TestFramework\Unit\Helper\ObjectManager as ObjectManagerHelper;
+use Magento\ImportExport\Controller\Adminhtml\Export\File\Download;
+use PHPUnit\Framework\MockObject\MockObject;
 
 /**
  * Unit tests for \Magento\ImportExport\Controller\Adminhtml\Export\File\Download.
@@ -56,12 +56,12 @@ class DownloadTest extends \PHPUnit\Framework\TestCase
     /**
      * @var Read|MockObject
      */
-    private $readMock;
+    private $directoryMock;
 
     /**
      * @inheritdoc
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->objectManager = new ObjectManagerHelper($this);
 
@@ -70,9 +70,11 @@ class DownloadTest extends \PHPUnit\Framework\TestCase
             ['getRequest', 'getObjectManager', 'getResultRedirectFactory']
         );
         $this->fileFactoryMock = $this->createPartialMock(FileFactory::class, ['create']);
-        $this->fileSystemMock = $this->createPartialMock(Filesystem::class, ['getDirectoryRead']);
+        $this->fileSystemMock = $this->getMockBuilder(Filesystem::class)
+            ->disableOriginalConstructor()
+            ->getMock();
         $this->requestMock = $this->createPartialMock(Http::class, ['getParam']);
-        $this->readMock = $this->createPartialMock(Read::class, ['isFile', 'readFile']);
+        $this->directoryMock = $this->createPartialMock(Read::class, ['isFile', 'readFile','isExist']);
 
         $this->contextMock->expects($this->once())->method('getRequest')->willReturn($this->requestMock);
 
@@ -98,8 +100,8 @@ class DownloadTest extends \PHPUnit\Framework\TestCase
         $fileContent = 'content';
 
         $this->processDownloadAction($fileName, $path);
-        $this->readMock->expects($this->once())->method('readFile')->with($path)->willReturn($fileContent);
-        $response = $this->createMock(ResponseInterface::class);
+        $this->directoryMock->expects($this->once())->method('readFile')->with($path)->willReturn($fileContent);
+        $response = $this->getMockForAbstractClass(ResponseInterface::class);
         $this->fileFactoryMock->expects($this->once())
             ->method('create')
             ->with($path, $fileContent, DirectoryList::VAR_DIR)
@@ -111,12 +113,13 @@ class DownloadTest extends \PHPUnit\Framework\TestCase
     /**
      * Check behavior with incorrect filename.
      *
-     * @expectedException \Magento\Framework\Exception\LocalizedException
-     * @expectedExceptionMessage Please provide valid export file name
      * @return void
      */
     public function testExecuteWithEmptyFileName(): void
     {
+        $this->expectException(\Magento\Framework\Exception\LocalizedException::class);
+        $this->expectExceptionMessage('Please provide valid export file name');
+
         $this->requestMock->expects($this->once())->method('getParam')->with('filename')->willReturn('');
 
         $this->controller->execute();
@@ -125,17 +128,18 @@ class DownloadTest extends \PHPUnit\Framework\TestCase
     /**
      * Check behavior when method throw exception.
      *
-     * @expectedException \Magento\Framework\Exception\LocalizedException
-     * @expectedExceptionMessage There are no export file with such name customer.csv
      * @return void
      */
     public function testExecuteWithNonExistanceFile(): void
     {
+        $this->expectException(\Magento\Framework\Exception\LocalizedException::class);
+        $this->expectExceptionMessage('There are no export file with such name customer.csv');
+
         $fileName = 'customer.csv';
         $path = 'export/' . $fileName;
 
         $this->processDownloadAction($fileName, $path);
-        $this->readMock->expects($this->once())
+        $this->directoryMock->expects($this->once())
             ->method('readFile')
             ->with($path)
             ->willThrowException(new \Exception('Message'));
@@ -153,10 +157,10 @@ class DownloadTest extends \PHPUnit\Framework\TestCase
     private function processDownloadAction(string $fileName, string $path): void
     {
         $this->requestMock->expects($this->once())->method('getParam')->with('filename')->willReturn($fileName);
-        $this->fileSystemMock->expects($this->once())
+        $this->fileSystemMock->expects($this->any())
             ->method('getDirectoryRead')
-            ->with(DirectoryList::VAR_DIR)
-            ->willReturn($this->readMock);
-        $this->readMock->expects($this->once())->method('isFile')->with($path)->willReturn(true);
+            ->willReturn($this->directoryMock);
+        $this->directoryMock->expects($this->once())->method('isExist')->willReturn(true);
+        $this->directoryMock->expects($this->once())->method('isFile')->with($path)->willReturn(true);
     }
 }

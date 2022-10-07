@@ -26,7 +26,7 @@ class AddressTest extends \PHPUnit\Framework\TestCase
     /**
      * Customer address entity adapter mock
      *
-     * @var Address|\PHPUnit_Framework_MockObject_MockObject
+     * @var Address|\PHPUnit\Framework\MockObject\MockObject
      */
     protected $_model;
 
@@ -37,7 +37,7 @@ class AddressTest extends \PHPUnit\Framework\TestCase
      */
     protected $_websites = [1 => 'website1', 2 => 'website2'];
 
-    /** @var \PHPUnit_Framework_MockObject_MockObject |\Magento\Store\Model\StoreManager  */
+    /** @var \PHPUnit\Framework\MockObject\MockObject |\Magento\Store\Model\StoreManager  */
     protected $_storeManager;
 
     /**
@@ -115,19 +115,19 @@ class AddressTest extends \PHPUnit\Framework\TestCase
 
     /**
      * @var \Magento\ImportExport\Model\Import\ErrorProcessing\ProcessingErrorAggregatorInterface
-     * |\PHPUnit_Framework_MockObject_MockObject
+     * |\PHPUnit\Framework\MockObject\MockObject
      */
     protected $errorAggregator;
 
     /**
-     * @var AddressAttribute\Source\CountryWithWebsites|\PHPUnit_Framework_MockObject_MockObject
+     * @var AddressAttribute\Source\CountryWithWebsites|\PHPUnit\Framework\MockObject\MockObject
      */
     private $countryWithWebsites;
 
     /**
      * Init entity adapter model
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->_objectManagerMock = new \Magento\Framework\TestFramework\Unit\Helper\ObjectManager($this);
         $this->_stringLib = new \Magento\Framework\Stdlib\StringUtils();
@@ -137,7 +137,7 @@ class AddressTest extends \PHPUnit\Framework\TestCase
             ->getMock();
         $this->_storeManager->expects($this->any())
             ->method('getWebsites')
-            ->will($this->returnCallback([$this, 'getWebsites']));
+            ->willReturnCallback([$this, 'getWebsites']);
         $this->countryWithWebsites = $this
             ->getMockBuilder(AddressAttribute\Source\CountryWithWebsites::class)
             ->disableOriginalConstructor()
@@ -156,7 +156,7 @@ class AddressTest extends \PHPUnit\Framework\TestCase
     /**
      * Unset entity adapter model
      */
-    protected function tearDown()
+    protected function tearDown(): void
     {
         unset($this->_model);
     }
@@ -208,7 +208,7 @@ class AddressTest extends \PHPUnit\Framework\TestCase
     /**
      * Create mock of attribute collection, so it can be used for tests
      *
-     * @return \PHPUnit_Framework_MockObject_MockObject|\Magento\Framework\Data\Collection
+     * @return \PHPUnit\Framework\MockObject\MockObject|\Magento\Framework\Data\Collection
      */
     protected function _createAttrCollectionMock()
     {
@@ -240,8 +240,8 @@ class AddressTest extends \PHPUnit\Framework\TestCase
                 true,
                 ['_construct', 'getBackend', 'getTable']
             );
-            $attribute->expects($this->any())->method('getBackend')->will($this->returnSelf());
-            $attribute->expects($this->any())->method('getTable')->will($this->returnValue($attributeData['table']));
+            $attribute->expects($this->any())->method('getBackend')->willReturnSelf();
+            $attribute->expects($this->any())->method('getTable')->willReturn($attributeData['table']);
             $attributeCollection->addItem($attribute);
         }
         return $attributeCollection;
@@ -250,11 +250,11 @@ class AddressTest extends \PHPUnit\Framework\TestCase
     /**
      * Create mock of customer storage, so it can be used for tests
      *
-     * @return \PHPUnit_Framework_MockObject_MockObject
+     * @return \PHPUnit\Framework\MockObject\MockObject
      */
     protected function _createCustomerStorageMock()
     {
-        /** @var $customerStorage Storage|\PHPUnit_Framework_MockObject_MockObject */
+        /** @var $customerStorage Storage|\PHPUnit\Framework\MockObject\MockObject */
         $customerStorage = $this->createMock(Storage::class);
         $customerStorage->expects($this->any())
             ->method('getCustomerId')
@@ -279,13 +279,13 @@ class AddressTest extends \PHPUnit\Framework\TestCase
     /**
      * Create simple mock of customer entity, so it can be used for tests
      *
-     * @return \PHPUnit_Framework_MockObject_MockObject
+     * @return \PHPUnit\Framework\MockObject\MockObject
      */
     protected function _createCustomerEntityMock()
     {
         $customerEntity = $this->createPartialMock(\stdClass::class, ['filterEntityCollection', 'setParameters']);
-        $customerEntity->expects($this->any())->method('filterEntityCollection')->will($this->returnArgument(0));
-        $customerEntity->expects($this->any())->method('setParameters')->will($this->returnSelf());
+        $customerEntity->expects($this->any())->method('filterEntityCollection')->willReturnArgument(0);
+        $customerEntity->expects($this->any())->method('setParameters')->willReturnSelf();
         return $customerEntity;
     }
 
@@ -298,9 +298,6 @@ class AddressTest extends \PHPUnit\Framework\TestCase
     public function getWebsites($withDefault = false)
     {
         $websites = [];
-        if (!$withDefault) {
-            unset($websites[0]);
-        }
         foreach ($this->_websites as $id => $code) {
             if (!$withDefault && $id == \Magento\Store\Model\Store::DEFAULT_STORE_ID) {
                 continue;
@@ -331,100 +328,9 @@ class AddressTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Create mock for custom behavior test
-     *
-     * @return Address|\PHPUnit_Framework_MockObject_MockObject
-     */
-    protected function _getModelMockForTestImportDataWithCustomBehaviour()
-    {
-        // input data
-        $customBehaviorRows = [
-            [
-                AbstractEntity::COLUMN_ACTION => 'update',
-                Address::COLUMN_ADDRESS_ID => $this->_customBehaviour['update_id'],
-            ],
-            [
-                AbstractEntity::COLUMN_ACTION => AbstractEntity::COLUMN_ACTION_VALUE_DELETE,
-                Address::COLUMN_ADDRESS_ID => $this->_customBehaviour['delete_id']
-            ],
-        ];
-        $updateResult = [
-            'entity_row_new' => [],
-            'entity_row_update' => $this->_customBehaviour['update_id'],
-            'attributes' => [],
-            'defaults' => [],
-        ];
-        // entity adapter mock
-        $modelMock = $this->createPartialMock(
-            \Magento\CustomerImportExport\Model\Import\Address::class,
-            [
-                'validateRow',
-                '_prepareDataForUpdate',
-                '_saveAddressEntities',
-                '_saveAddressAttributes',
-                '_saveCustomerDefaults',
-                '_deleteAddressEntities',
-                '_mergeEntityAttributes',
-                'getErrorAggregator',
-                'getCustomerStorage',
-                'prepareCustomerData',
-            ]
-        );
-        //Adding behaviours
-        $availableBehaviors = new \ReflectionProperty($modelMock, '_availableBehaviors');
-        $availableBehaviors->setAccessible(true);
-        $availableBehaviors->setValue($modelMock, $this->_availableBehaviors);
-        // mock to imitate data source model
-        $dataSourceMock = $this->createPartialMock(
-            \Magento\ImportExport\Model\ResourceModel\Import\Data::class,
-            ['getNextBunch', '__wakeup', 'getIterator']
-        );
-        $dataSourceMock->expects($this->at(0))->method('getNextBunch')->will($this->returnValue($customBehaviorRows));
-        $dataSourceMock->expects($this->at(1))->method('getNextBunch')->will($this->returnValue(null));
-        $dataSourceMock->expects($this->any())
-            ->method('getIterator')
-            ->willReturn($this->getMockForAbstractClass(\Iterator::class));
-
-        $dataSourceModel = new \ReflectionProperty(
-            \Magento\CustomerImportExport\Model\Import\Address::class,
-            '_dataSourceModel'
-        );
-        $dataSourceModel->setAccessible(true);
-        $dataSourceModel->setValue($modelMock, $dataSourceMock);
-        // mock expects for entity adapter
-        $modelMock->expects($this->any())->method('validateRow')->will($this->returnValue(true));
-        $modelMock->expects($this->any())
-            ->method('getErrorAggregator')
-            ->will($this->returnValue($this->errorAggregator));
-        $modelMock->expects($this->any())->method('_prepareDataForUpdate')->will($this->returnValue($updateResult));
-        $modelMock->expects(
-            $this->any()
-        )->method(
-            '_saveAddressEntities'
-        )->will(
-            $this->returnCallback([$this, 'validateSaveAddressEntities'])
-        );
-        $modelMock->expects($this->any())->method('_saveAddressAttributes')->will($this->returnValue($modelMock));
-        $modelMock->expects($this->any())->method('_saveCustomerDefaults')->will($this->returnValue($modelMock));
-        $modelMock->expects(
-            $this->any()
-        )->method(
-            '_deleteAddressEntities'
-        )->will(
-            $this->returnCallback([$this, 'validateDeleteAddressEntities'])
-        );
-        $modelMock->expects($this->any())->method('_mergeEntityAttributes')->will($this->returnValue([]));
-        $modelMock->expects($this->any())
-            ->method('getCustomerStorage')
-            ->willReturn($this->_createCustomerStorageMock());
-
-        return $modelMock;
-    }
-
-    /**
      * Create mock for customer address model class
      *
-     * @return Address|\PHPUnit_Framework_MockObject_MockObject
+     * @return Address|\PHPUnit\Framework\MockObject\MockObject
      */
     protected function _getModelMock()
     {
@@ -449,7 +355,9 @@ class AddressTest extends \PHPUnit\Framework\TestCase
             new \Magento\Framework\Stdlib\DateTime(),
             $this->createMock(\Magento\Customer\Model\Address\Validator\Postcode::class),
             $this->_getModelDependencies(),
-            $this->countryWithWebsites
+            $this->countryWithWebsites,
+            $this->createMock(\Magento\CustomerImportExport\Model\ResourceModel\Import\Address\Storage::class),
+            $this->createMock(\Magento\Customer\Model\Indexer\Processor::class)
         );
 
         $property = new \ReflectionProperty($modelMock, '_availableBehaviors');
@@ -593,7 +501,7 @@ class AddressTest extends \PHPUnit\Framework\TestCase
     public function testGetDefaultAddressAttributeMapping()
     {
         $attributeMapping = $this->_model->getDefaultAddressAttributeMapping();
-        $this->assertInternalType('array', $attributeMapping, 'Default address attribute mapping must be an array.');
+        $this->assertIsArray($attributeMapping, 'Default address attribute mapping must be an array.');
         $this->assertArrayHasKey(
             Address::COLUMN_DEFAULT_BILLING,
             $attributeMapping,
@@ -607,25 +515,11 @@ class AddressTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test if correct methods are invoked according to different custom behaviours
-     *
-     * @covers \Magento\CustomerImportExport\Model\Import\Address::_importData
-     */
-    public function testImportDataWithCustomBehaviour()
-    {
-        $this->_model = $this->_getModelMockForTestImportDataWithCustomBehaviour();
-        $this->_model->setParameters(['behavior' => \Magento\ImportExport\Model\Import::BEHAVIOR_CUSTOM]);
-
-        // validation in validateSaveAddressEntities and validateDeleteAddressEntities
-        $this->_model->importData();
-    }
-
-    /**
      * Validation method for _saveAddressEntities (callback for _saveAddressEntities)
      *
      * @param array $addRows
      * @param array $updateRows
-     * @return Address|\PHPUnit_Framework_MockObject_MockObject
+     * @return Address|\PHPUnit\Framework\MockObject\MockObject
      */
     public function validateSaveAddressEntities(array $addRows, array $updateRows)
     {
@@ -639,7 +533,7 @@ class AddressTest extends \PHPUnit\Framework\TestCase
      * Validation method for _deleteAddressEntities (callback for _deleteAddressEntities)
      *
      * @param array $deleteRowIds
-     * @return Address|\PHPUnit_Framework_MockObject_MockObject
+     * @return Address|\PHPUnit\Framework\MockObject\MockObject
      */
     public function validateDeleteAddressEntities(array $deleteRowIds)
     {

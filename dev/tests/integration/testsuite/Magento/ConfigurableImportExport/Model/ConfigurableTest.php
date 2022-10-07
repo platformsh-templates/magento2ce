@@ -15,21 +15,21 @@ class ConfigurableTest extends AbstractProductExportImportTestCase
     public function exportImportDataProvider(): array
     {
         return [
-            'configurable-product' => [
-                [
-                    'Magento/ConfigurableProduct/_files/product_configurable.php'
-                ],
-                [
-                    'configurable',
-                ],
-                ['_cache_instance_products', '_cache_instance_configurable_attributes'],
-            ],
             'configurable-product-12345' => [
                 [
                     'Magento/ConfigurableProduct/_files/product_configurable_12345.php'
                 ],
                 [
                     '12345',
+                ],
+                ['_cache_instance_products', '_cache_instance_configurable_attributes'],
+            ],
+            'configurable-product' => [
+                [
+                    'Magento/ConfigurableProduct/_files/product_configurable.php'
+                ],
+                [
+                    'configurable',
                 ],
                 ['_cache_instance_products', '_cache_instance_configurable_attributes'],
             ],
@@ -100,15 +100,19 @@ class ConfigurableTest extends AbstractProductExportImportTestCase
     }
 
     /**
-     * @inheritdoc
+     * @magentoAppArea adminhtml
+     * @magentoDbIsolation disabled
+     * @magentoAppIsolation enabled
+     *
+     * @param array $fixtures
+     * @param string[] $skus
+     * @param string[] $skippedAttributes
+     * @dataProvider importReplaceDataProvider
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
-    protected function executeImportReplaceTest(
-        $skus,
-        $skippedAttributes,
-        $usePagination = false,
-        string $csvfile = null
-    ) {
-        $skippedAttributes = array_merge($skippedAttributes, ['_cache_instance_product_set_attributes']);
-        parent::executeImportReplaceTest($skus, $skippedAttributes, $usePagination, $csvfile);
+    public function testImportReplaceWithPagination(array $fixtures, array $skus, array $skippedAttributes = [])
+    {
+        $skippedAttributesExtended = array_merge($skippedAttributes, ['_cache_instance_product_set_attributes']);
+        parent::testImportReplaceWithPagination($fixtures, $skus, $skippedAttributesExtended);
     }
 }

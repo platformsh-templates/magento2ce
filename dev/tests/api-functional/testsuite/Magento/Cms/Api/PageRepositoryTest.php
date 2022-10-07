@@ -72,7 +72,7 @@ class PageRepositoryTest extends WebapiAbstract
     /**
      * Execute per test initialization.
      */
-    public function setUp()
+    protected function setUp(): void
     {
         $this->pageFactory = Bootstrap::getObjectManager()->create(\Magento\Cms\Api\Data\PageInterfaceFactory::class);
         $this->pageRepository = Bootstrap::getObjectManager()->create(\Magento\Cms\Api\PageRepositoryInterface::class);
@@ -87,7 +87,7 @@ class PageRepositoryTest extends WebapiAbstract
     /**
      * Clear temporary data
      */
-    public function tearDown()
+    protected function tearDown(): void
     {
         if ($this->currentPage) {
             $this->pageRepository->delete($this->currentPage);
@@ -209,10 +209,11 @@ class PageRepositoryTest extends WebapiAbstract
 
     /**
      * Test delete \Magento\Cms\Api\Data\PageInterface
-     * @expectedException \Magento\Framework\Exception\NoSuchEntityException
      */
     public function testDelete()
     {
+        $this->expectException(\Magento\Framework\Exception\NoSuchEntityException::class);
+
         $pageTitle = 'Page title';
         $pageIdentifier = 'page-title' . uniqid();
         /** @var  \Magento\Cms\Api\Data\PageInterface $pageDataObject */
@@ -302,7 +303,7 @@ class PageRepositoryTest extends WebapiAbstract
 
         $searchResult = $this->_webApiCall($serviceInfo, $requestData);
         $this->assertEquals(2, $searchResult['total_count']);
-        $this->assertEquals(1, count($searchResult['items']));
+        $this->assertCount(1, $searchResult['items']);
         $this->assertEquals(
             $searchResult['items'][0][PageInterface::IDENTIFIER],
             $cmsPages['third']->getIdentifier()
@@ -421,7 +422,7 @@ class PageRepositoryTest extends WebapiAbstract
         /** @var Rules $rules */
         $rules = $this->rulesFactory->create();
         $rules->setRoleId($role->getId());
-        $rules->setResources(['Magento_Cms::page']);
+        $rules->setResources(['Magento_Cms::save']);
         $rules->saveRel();
         //Using the admin user with custom role.
         $token = $this->adminTokens->createAdminAccessToken(
@@ -471,7 +472,7 @@ class PageRepositoryTest extends WebapiAbstract
         /** @var Rules $rules */
         $rules = Bootstrap::getObjectManager()->create(Rules::class);
         $rules->setRoleId($role->getId());
-        $rules->setResources(['Magento_Cms::page', 'Magento_Cms::save_design']);
+        $rules->setResources(['Magento_Cms::save', 'Magento_Cms::save_design']);
         $rules->saveRel();
         //Making the same request with design settings.
         $result = $this->_webApiCall($serviceInfo, $requestData);
@@ -486,7 +487,7 @@ class PageRepositoryTest extends WebapiAbstract
         /** @var Rules $rules */
         $rules = Bootstrap::getObjectManager()->create(Rules::class);
         $rules->setRoleId($role->getId());
-        $rules->setResources(['Magento_Cms::page']);
+        $rules->setResources(['Magento_Cms::save']);
         $rules->saveRel();
         //Updating the page but with the same design properties values.
         $result = $this->_webApiCall($serviceInfo, $requestData);

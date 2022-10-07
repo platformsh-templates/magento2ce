@@ -5,6 +5,8 @@
  */
 namespace Magento\Setup\Test\Unit\Console\Command;
 
+use Magento\Deploy\Process\TimeoutException;
+use Magento\Framework\Console\Cli;
 use Magento\Setup\Console\Command\DeployStaticContentCommand;
 use Magento\Setup\Model\ObjectManagerProvider;
 
@@ -20,8 +22,11 @@ use Magento\Framework\TestFramework\Unit\Helper\ObjectManager;
 
 use Symfony\Component\Console\Tester\CommandTester;
 
-use PHPUnit_Framework_MockObject_MockObject as Mock;
+use PHPUnit\Framework\MockObject\MockObject as Mock;
 
+/**
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ */
 class DeployStaticContentCommandTest extends \PHPUnit\Framework\TestCase
 {
     /**
@@ -65,7 +70,7 @@ class DeployStaticContentCommandTest extends \PHPUnit\Framework\TestCase
     /**
      * @inheritdoc
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->inputValidator = $this->createMock(InputValidator::class);
         $this->consoleLoggerFactory = $this->createMock(ConsoleLoggerFactory::class);
@@ -108,7 +113,8 @@ class DeployStaticContentCommandTest extends \PHPUnit\Framework\TestCase
         $this->deployService->expects($this->once())->method('deploy');
 
         $tester = new CommandTester($this->command);
-        $tester->execute($input);
+        $exitCode = $tester->execute($input);
+        $this->assertEquals(Cli::RETURN_SUCCESS, $exitCode);
     }
 
     /**
@@ -127,13 +133,44 @@ class DeployStaticContentCommandTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * @return void
+     */
+    public function testExecuteWithError()
+    {
+        $this->appState->expects($this->once())
+            ->method('getMode')
+            ->willReturn(State::MODE_PRODUCTION);
+
+        $this->inputValidator->expects($this->once())
+            ->method('validate');
+
+        $this->consoleLoggerFactory->expects($this->once())
+            ->method('getLogger')
+            ->willReturn($this->logger);
+        $this->logger->expects($this->once())
+            ->method('error');
+
+        $this->objectManager->expects($this->once())
+            ->method('create')
+            ->willReturn($this->deployService);
+        $this->deployService->expects($this->once())
+            ->method('deploy')
+            ->willThrowException(new TimeoutException());
+
+        $tester = new CommandTester($this->command);
+        $exitCode = $tester->execute([]);
+        $this->assertEquals(Cli::RETURN_FAILURE, $exitCode);
+    }
+
+    /**
      * @param string $mode
      * @return void
-     * @expectedException  \Magento\Framework\Exception\LocalizedException
      * @dataProvider executionInNonProductionModeDataProvider
      */
     public function testExecuteInNonProductionMode($mode)
     {
+        $this->expectException(\Magento\Framework\Exception\LocalizedException::class);
+
         $this->appState->expects($this->any())->method('getMode')->willReturn($mode);
         $this->objectManager->expects($this->never())->method('create');
 

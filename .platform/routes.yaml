@@ -1,10 +1,4 @@
 https://{default}/:
+    id: magento_route
     type: upstream
-    upstream: app:http
-
-https://{default}/static/:
-    type: upstream
-    upstream: app:http
-    cache:
-        enabled: true
-        cookies: []
+    upstream: magento:http
