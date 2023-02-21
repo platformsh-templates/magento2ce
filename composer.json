@@ -8,7 +8,12 @@
     ],
     "config": {
         "preferred-install": "dist",
-        "sort-packages": true
+        "sort-packages": true,
+        "allow-plugins": {
+            "laminas/laminas-dependency-plugin": true,
+            "magento/magento-composer-installer": true,
+            "dealerdirect/phpcodesniffer-composer-installer": true
+        }
     },
     "version": "2.3.7",
     "require": {
@@ -352,4 +357,3 @@
         }
     }
 }
-
