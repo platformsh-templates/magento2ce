@@ -104,7 +104,8 @@ web:
 crons:
     magento:
         spec: "*/5 * * * *"
-        cmd: "php bin/magento cron:run"
+        commands:
+            start: "php bin/magento cron:run"
 
 workers:
     queue:
