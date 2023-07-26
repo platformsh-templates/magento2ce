@@ -1,20 +1,27 @@
+# The services of the project.
+#
+# Each service listed will be deployed
+# to power your Platform.sh project.
+# More information: https://docs.platform.sh/add-services.html
+# Full list of available services: https://docs.platform.sh/add-services.html#available-services
+
 # Magento's Database
 magento_database:
-    type: mariadb:10.3
-    disk: 2048
+  type: mariadb:10.3
+  disk: 2048
 
 # Magento's cache & session redis instance
 # Since our sessions will be sent here, we want to enable persistence so customers are not logged out when we deploy
 magento_redis:
-    type: redis-persistent:6.0
-    disk: 256
+  type: redis-persistent:6.0
+  disk: 256
 
 # Magento's Elasticsearch-compatible OpenSearch instance.
 magento_search:
-    # Magento 2.3.7 is also compatible with elasticsearch:7.9
-    type: opensearch:1.2
-    disk: 256
-    configuration:
-        plugins:
-            - analysis-icu
-            - analysis-phonetic
+  # Magento 2.3.7 is also compatible with elasticsearch:7.9
+  type: opensearch:1.2
+  disk: 256
+  configuration:
+    plugins:
+      - analysis-icu
+      - analysis-phonetic
