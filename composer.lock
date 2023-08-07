@@ -6439,16 +6439,16 @@
         },
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.277.9",
+            "version": "3.277.10",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "f2437a755b70756425bf8f1bd588a7c583891900"
+                "reference": "efb08ad9e89946eb124ec8f6e9852ac1da6d324c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/f2437a755b70756425bf8f1bd588a7c583891900",
-                "reference": "f2437a755b70756425bf8f1bd588a7c583891900",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/efb08ad9e89946eb124ec8f6e9852ac1da6d324c",
+                "reference": "efb08ad9e89946eb124ec8f6e9852ac1da6d324c",
                 "shasum": ""
             },
             "require": {
@@ -6525,7 +6525,7 @@
                 "s3",
                 "sdk"
             ],
-            "time": "2023-08-04T18:16:19+00:00"
+            "time": "2023-08-07T18:11:45+00:00"
         },
         {
             "name": "behat/gherkin",
