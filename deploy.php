@@ -176,6 +176,7 @@ class MagentoDeployer
                     '--db-host='.$database['host'],
                     '--db-name='.$database['path'],
                     '--db-user='.$database['username'],
+                    '--db-password='.$database['password'],
                     '--backend-frontname=admin',
                     '--language=en_US',
                     '--currency=USD',
