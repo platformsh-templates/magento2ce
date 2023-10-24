@@ -6389,16 +6389,16 @@
         },
         {
             "name": "aws/aws-crt-php",
-            "version": "v1.2.2",
+            "version": "v1.2.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/awslabs/aws-crt-php.git",
-                "reference": "2f1dc7b7eda080498be96a4a6d683a41583030e9"
+                "reference": "5545a4fa310aec39f54279fdacebcce33b3ff382"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/awslabs/aws-crt-php/zipball/2f1dc7b7eda080498be96a4a6d683a41583030e9",
-                "reference": "2f1dc7b7eda080498be96a4a6d683a41583030e9",
+                "url": "https://api.github.com/repos/awslabs/aws-crt-php/zipball/5545a4fa310aec39f54279fdacebcce33b3ff382",
+                "reference": "5545a4fa310aec39f54279fdacebcce33b3ff382",
                 "shasum": ""
             },
             "require": {
@@ -6435,20 +6435,20 @@
                 "crt",
                 "sdk"
             ],
-            "time": "2023-07-20T16:49:55+00:00"
+            "time": "2023-10-16T20:10:06+00:00"
         },
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.283.9",
+            "version": "3.283.10",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "0233b9f3f2155dac35c829ce4fc1b7cdb6ff8c0a"
+                "reference": "ae611a2d1d32bb2d14c1653e3d2c309cfed42883"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/0233b9f3f2155dac35c829ce4fc1b7cdb6ff8c0a",
-                "reference": "0233b9f3f2155dac35c829ce4fc1b7cdb6ff8c0a",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/ae611a2d1d32bb2d14c1653e3d2c309cfed42883",
+                "reference": "ae611a2d1d32bb2d14c1653e3d2c309cfed42883",
                 "shasum": ""
             },
             "require": {
@@ -6525,7 +6525,7 @@
                 "s3",
                 "sdk"
             ],
-            "time": "2023-10-20T20:03:26+00:00"
+            "time": "2023-10-23T18:08:46+00:00"
         },
         {
             "name": "behat/gherkin",
