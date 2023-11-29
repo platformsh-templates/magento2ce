@@ -6440,16 +6440,16 @@
         },
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.291.0",
+            "version": "3.292.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "c114ca013dd99d79d61914def93ecf80665b6df9"
+                "reference": "99105bc4617ff6c6113d413b94b596ad6645ffff"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/c114ca013dd99d79d61914def93ecf80665b6df9",
-                "reference": "c114ca013dd99d79d61914def93ecf80665b6df9",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/99105bc4617ff6c6113d413b94b596ad6645ffff",
+                "reference": "99105bc4617ff6c6113d413b94b596ad6645ffff",
                 "shasum": ""
             },
             "require": {
@@ -6526,7 +6526,7 @@
                 "s3",
                 "sdk"
             ],
-            "time": "2023-11-28T20:23:07+00:00"
+            "time": "2023-11-29T18:47:15+00:00"
         },
         {
             "name": "behat/gherkin",
@@ -10889,16 +10889,16 @@
         },
         {
             "name": "symfony/dependency-injection",
-            "version": "v5.4.31",
+            "version": "v5.4.32",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/dependency-injection.git",
-                "reference": "eb1bcafa54e00ed218e1b733b8b6ad1c9ff83d20"
+                "reference": "d5d48f215ed73f7973d01256b9a2fac729bef759"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/dependency-injection/zipball/eb1bcafa54e00ed218e1b733b8b6ad1c9ff83d20",
-                "reference": "eb1bcafa54e00ed218e1b733b8b6ad1c9ff83d20",
+                "url": "https://api.github.com/repos/symfony/dependency-injection/zipball/d5d48f215ed73f7973d01256b9a2fac729bef759",
+                "reference": "d5d48f215ed73f7973d01256b9a2fac729bef759",
                 "shasum": ""
             },
             "require": {
@@ -10971,20 +10971,20 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2023-10-31T07:58:33+00:00"
+            "time": "2023-11-29T06:58:28+00:00"
         },
         {
             "name": "symfony/http-foundation",
-            "version": "v5.4.31",
+            "version": "v5.4.32",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/http-foundation.git",
-                "reference": "f84fd4fd8311a541ceb2ae3f257841d002450a90"
+                "reference": "cbcd80a4c36f59772d62860fdb0cb6a38da63fd2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/http-foundation/zipball/f84fd4fd8311a541ceb2ae3f257841d002450a90",
-                "reference": "f84fd4fd8311a541ceb2ae3f257841d002450a90",
+                "url": "https://api.github.com/repos/symfony/http-foundation/zipball/cbcd80a4c36f59772d62860fdb0cb6a38da63fd2",
+                "reference": "cbcd80a4c36f59772d62860fdb0cb6a38da63fd2",
                 "shasum": ""
             },
             "require": {
@@ -11044,7 +11044,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2023-11-06T22:05:57+00:00"
+            "time": "2023-11-20T15:40:25+00:00"
         },
         {
             "name": "symfony/mime",
