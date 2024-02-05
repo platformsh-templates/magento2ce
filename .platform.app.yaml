@@ -104,7 +104,7 @@ build:
 # More information: https://docs.platform.sh/create-apps/app-reference.html#dependencies
 dependencies:
   php:
-    composer/composer: "^1"
+    composer/composer: "2.2.22"
 
 # Hooks allow you to customize your code/environment as the project moves through the build and deploy stages
 # More information: https://docs.platform.sh/create-apps/app-reference.html#hooks
