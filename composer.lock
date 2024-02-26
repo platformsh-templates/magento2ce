@@ -4582,16 +4582,16 @@
         },
         {
             "name": "phpseclib/phpseclib",
-            "version": "2.0.46",
+            "version": "2.0.47",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpseclib/phpseclib.git",
-                "reference": "498e67a0c82bd5791fda9b0dd0f4ec8e8aebb02d"
+                "reference": "b7d7d90ee7df7f33a664b4aea32d50a305d35adb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpseclib/phpseclib/zipball/498e67a0c82bd5791fda9b0dd0f4ec8e8aebb02d",
-                "reference": "498e67a0c82bd5791fda9b0dd0f4ec8e8aebb02d",
+                "url": "https://api.github.com/repos/phpseclib/phpseclib/zipball/b7d7d90ee7df7f33a664b4aea32d50a305d35adb",
+                "reference": "b7d7d90ee7df7f33a664b4aea32d50a305d35adb",
                 "shasum": ""
             },
             "require": {
@@ -4672,7 +4672,7 @@
             ],
             "support": {
                 "issues": "https://github.com/phpseclib/phpseclib/issues",
-                "source": "https://github.com/phpseclib/phpseclib/tree/2.0.46"
+                "source": "https://github.com/phpseclib/phpseclib/tree/2.0.47"
             },
             "funding": [
                 {
@@ -4688,7 +4688,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2023-12-29T01:52:43+00:00"
+            "time": "2024-02-26T04:55:38+00:00"
         },
         {
             "name": "psr/container",
@@ -6953,16 +6953,16 @@
         },
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.300.4",
+            "version": "3.300.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "27d59c22c121ce9c0041c563dc9d7270e180925c"
+                "reference": "9e0cfc4ce77df934b5f0ced6ffac29fd88237266"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/27d59c22c121ce9c0041c563dc9d7270e180925c",
-                "reference": "27d59c22c121ce9c0041c563dc9d7270e180925c",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/9e0cfc4ce77df934b5f0ced6ffac29fd88237266",
+                "reference": "9e0cfc4ce77df934b5f0ced6ffac29fd88237266",
                 "shasum": ""
             },
             "require": {
@@ -7042,9 +7042,9 @@
             "support": {
                 "forum": "https://forums.aws.amazon.com/forum.jspa?forumID=80",
                 "issues": "https://github.com/aws/aws-sdk-php/issues",
-                "source": "https://github.com/aws/aws-sdk-php/tree/3.300.4"
+                "source": "https://github.com/aws/aws-sdk-php/tree/3.300.5"
             },
-            "time": "2024-02-23T19:10:30+00:00"
+            "time": "2024-02-26T19:10:06+00:00"
         },
         {
             "name": "behat/gherkin",
