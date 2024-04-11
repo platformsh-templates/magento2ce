@@ -6963,16 +6963,16 @@
         },
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.304.0",
+            "version": "3.304.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "29a79bac02997f3053559f6961a0e83622a14f88"
+                "reference": "2435079c3e1a08148d955de15ec090018114f35a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/29a79bac02997f3053559f6961a0e83622a14f88",
-                "reference": "29a79bac02997f3053559f6961a0e83622a14f88",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/2435079c3e1a08148d955de15ec090018114f35a",
+                "reference": "2435079c3e1a08148d955de15ec090018114f35a",
                 "shasum": ""
             },
             "require": {
@@ -7052,9 +7052,9 @@
             "support": {
                 "forum": "https://forums.aws.amazon.com/forum.jspa?forumID=80",
                 "issues": "https://github.com/aws/aws-sdk-php/issues",
-                "source": "https://github.com/aws/aws-sdk-php/tree/3.304.0"
+                "source": "https://github.com/aws/aws-sdk-php/tree/3.304.2"
             },
-            "time": "2024-04-08T18:03:38+00:00"
+            "time": "2024-04-10T18:05:32+00:00"
         },
         {
             "name": "behat/gherkin",
