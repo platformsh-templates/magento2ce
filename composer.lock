@@ -6963,16 +6963,16 @@
         },
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.307.0",
+            "version": "3.308.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "2cff93427287ec2bcb1ff6eeddd5ca98feeccdfc"
+                "reference": "806ad75dcb72b6e6569848159e7a350003526bc9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/2cff93427287ec2bcb1ff6eeddd5ca98feeccdfc",
-                "reference": "2cff93427287ec2bcb1ff6eeddd5ca98feeccdfc",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/806ad75dcb72b6e6569848159e7a350003526bc9",
+                "reference": "806ad75dcb72b6e6569848159e7a350003526bc9",
                 "shasum": ""
             },
             "require": {
@@ -7052,9 +7052,9 @@
             "support": {
                 "forum": "https://forums.aws.amazon.com/forum.jspa?forumID=80",
                 "issues": "https://github.com/aws/aws-sdk-php/issues",
-                "source": "https://github.com/aws/aws-sdk-php/tree/3.307.0"
+                "source": "https://github.com/aws/aws-sdk-php/tree/3.308.0"
             },
-            "time": "2024-05-16T18:06:49+00:00"
+            "time": "2024-05-21T18:06:10+00:00"
         },
         {
             "name": "behat/gherkin",
@@ -9656,16 +9656,16 @@
         },
         {
             "name": "phpdocumentor/reflection-docblock",
-            "version": "5.4.0",
+            "version": "5.4.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpDocumentor/ReflectionDocBlock.git",
-                "reference": "298d2febfe79d03fe714eb871d5538da55205b1a"
+                "reference": "9d07b3f7fdcf5efec5d1609cba3c19c5ea2bdc9c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpDocumentor/ReflectionDocBlock/zipball/298d2febfe79d03fe714eb871d5538da55205b1a",
-                "reference": "298d2febfe79d03fe714eb871d5538da55205b1a",
+                "url": "https://api.github.com/repos/phpDocumentor/ReflectionDocBlock/zipball/9d07b3f7fdcf5efec5d1609cba3c19c5ea2bdc9c",
+                "reference": "9d07b3f7fdcf5efec5d1609cba3c19c5ea2bdc9c",
                 "shasum": ""
             },
             "require": {
@@ -9714,9 +9714,9 @@
             "description": "With this component, a library can provide support for annotations via DocBlocks or otherwise retrieve information that is embedded in a DocBlock.",
             "support": {
                 "issues": "https://github.com/phpDocumentor/ReflectionDocBlock/issues",
-                "source": "https://github.com/phpDocumentor/ReflectionDocBlock/tree/5.4.0"
+                "source": "https://github.com/phpDocumentor/ReflectionDocBlock/tree/5.4.1"
             },
-            "time": "2024-04-09T21:13:58+00:00"
+            "time": "2024-05-21T05:55:05+00:00"
         },
         {
             "name": "phpdocumentor/type-resolver",
