@@ -5563,16 +5563,16 @@
         },
         {
             "name": "symfony/filesystem",
-            "version": "v5.4.40",
+            "version": "v5.4.41",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/filesystem.git",
-                "reference": "26dd9912df6940810ea00f8f53ad48d6a3424995"
+                "reference": "6d29dd9340b372fa603f04e6df4dd76bb808591e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/filesystem/zipball/26dd9912df6940810ea00f8f53ad48d6a3424995",
-                "reference": "26dd9912df6940810ea00f8f53ad48d6a3424995",
+                "url": "https://api.github.com/repos/symfony/filesystem/zipball/6d29dd9340b372fa603f04e6df4dd76bb808591e",
+                "reference": "6d29dd9340b372fa603f04e6df4dd76bb808591e",
                 "shasum": ""
             },
             "require": {
@@ -5610,7 +5610,7 @@
             "description": "Provides basic utilities for the filesystem",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/filesystem/tree/v5.4.40"
+                "source": "https://github.com/symfony/filesystem/tree/v5.4.41"
             },
             "funding": [
                 {
@@ -5626,7 +5626,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2024-05-31T14:33:22+00:00"
+            "time": "2024-06-28T09:36:24+00:00"
         },
         {
             "name": "symfony/finder",
@@ -6966,16 +6966,16 @@
         },
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.315.0",
+            "version": "3.315.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "a7f6026f00771025c32548dac321541face0dedc"
+                "reference": "3f9ec5e5115947843f586284bdbfe7310479688d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/a7f6026f00771025c32548dac321541face0dedc",
-                "reference": "a7f6026f00771025c32548dac321541face0dedc",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/3f9ec5e5115947843f586284bdbfe7310479688d",
+                "reference": "3f9ec5e5115947843f586284bdbfe7310479688d",
                 "shasum": ""
             },
             "require": {
@@ -7055,9 +7055,9 @@
             "support": {
                 "forum": "https://forums.aws.amazon.com/forum.jspa?forumID=80",
                 "issues": "https://github.com/aws/aws-sdk-php/issues",
-                "source": "https://github.com/aws/aws-sdk-php/tree/3.315.0"
+                "source": "https://github.com/aws/aws-sdk-php/tree/3.315.3"
             },
-            "time": "2024-06-26T18:08:22+00:00"
+            "time": "2024-07-01T20:07:58+00:00"
         },
         {
             "name": "behat/gherkin",
@@ -11901,16 +11901,16 @@
         },
         {
             "name": "symfony/mime",
-            "version": "v5.4.40",
+            "version": "v5.4.41",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/mime.git",
-                "reference": "8c6dc1fb0b1f990aa15086abcde66dbde3a9bdad"
+                "reference": "c71c7a1aeed60b22d05e738197e31daf2120bd42"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/mime/zipball/8c6dc1fb0b1f990aa15086abcde66dbde3a9bdad",
-                "reference": "8c6dc1fb0b1f990aa15086abcde66dbde3a9bdad",
+                "url": "https://api.github.com/repos/symfony/mime/zipball/c71c7a1aeed60b22d05e738197e31daf2120bd42",
+                "reference": "c71c7a1aeed60b22d05e738197e31daf2120bd42",
                 "shasum": ""
             },
             "require": {
@@ -11966,7 +11966,7 @@
                 "mime-type"
             ],
             "support": {
-                "source": "https://github.com/symfony/mime/tree/v5.4.40"
+                "source": "https://github.com/symfony/mime/tree/v5.4.41"
             },
             "funding": [
                 {
@@ -11982,7 +11982,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2024-05-31T14:33:22+00:00"
+            "time": "2024-06-28T09:36:24+00:00"
         },
         {
             "name": "symfony/options-resolver",
