@@ -2838,6 +2838,7 @@
                     "type": "community_bridge"
                 }
             ],
+            "abandoned": "symfony/mailer",
             "time": "2022-02-23T21:08:17+00:00"
         },
         {
@@ -6962,16 +6963,16 @@
         },
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.321.3",
+            "version": "3.321.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "92e5d5fbfd3b29522b763d49d8f2fdf32e58fc1e"
+                "reference": "8cd434985ca76335c5de9d5cf76f42c380252dd2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/92e5d5fbfd3b29522b763d49d8f2fdf32e58fc1e",
-                "reference": "92e5d5fbfd3b29522b763d49d8f2fdf32e58fc1e",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/8cd434985ca76335c5de9d5cf76f42c380252dd2",
+                "reference": "8cd434985ca76335c5de9d5cf76f42c380252dd2",
                 "shasum": ""
             },
             "require": {
@@ -7054,9 +7055,9 @@
             "support": {
                 "forum": "https://forums.aws.amazon.com/forum.jspa?forumID=80",
                 "issues": "https://github.com/aws/aws-sdk-php/issues",
-                "source": "https://github.com/aws/aws-sdk-php/tree/3.321.3"
+                "source": "https://github.com/aws/aws-sdk-php/tree/3.321.5"
             },
-            "time": "2024-09-03T18:04:21+00:00"
+            "time": "2024-09-05T18:04:31+00:00"
         },
         {
             "name": "behat/gherkin",
@@ -7785,16 +7786,16 @@
         },
         {
             "name": "doctrine/annotations",
-            "version": "1.14.3",
+            "version": "1.14.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/annotations.git",
-                "reference": "fb0d71a7393298a7b232cbf4c8b1f73f3ec3d5af"
+                "reference": "253dca476f70808a5aeed3a47cc2cc88c5cab915"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/annotations/zipball/fb0d71a7393298a7b232cbf4c8b1f73f3ec3d5af",
-                "reference": "fb0d71a7393298a7b232cbf4c8b1f73f3ec3d5af",
+                "url": "https://api.github.com/repos/doctrine/annotations/zipball/253dca476f70808a5aeed3a47cc2cc88c5cab915",
+                "reference": "253dca476f70808a5aeed3a47cc2cc88c5cab915",
                 "shasum": ""
             },
             "require": {
@@ -7805,11 +7806,11 @@
             },
             "require-dev": {
                 "doctrine/cache": "^1.11 || ^2.0",
-                "doctrine/coding-standard": "^9 || ^10",
-                "phpstan/phpstan": "~1.4.10 || ^1.8.0",
+                "doctrine/coding-standard": "^9 || ^12",
+                "phpstan/phpstan": "~1.4.10 || ^1.10.28",
                 "phpunit/phpunit": "^7.5 || ^8.5 || ^9.5",
-                "symfony/cache": "^4.4 || ^5.4 || ^6",
-                "vimeo/psalm": "^4.10"
+                "symfony/cache": "^4.4 || ^5.4 || ^6.4 || ^7",
+                "vimeo/psalm": "^4.30 || ^5.14"
             },
             "suggest": {
                 "php": "PHP 8.0 or higher comes with attributes, a native replacement for annotations"
@@ -7855,9 +7856,9 @@
             ],
             "support": {
                 "issues": "https://github.com/doctrine/annotations/issues",
-                "source": "https://github.com/doctrine/annotations/tree/1.14.3"
+                "source": "https://github.com/doctrine/annotations/tree/1.14.4"
             },
-            "time": "2023-02-01T09:20:38+00:00"
+            "time": "2024-09-05T10:15:52+00:00"
         },
         {
             "name": "doctrine/cache",
@@ -9028,16 +9029,16 @@
         },
         {
             "name": "mtdowling/jmespath.php",
-            "version": "2.7.0",
+            "version": "2.8.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/jmespath/jmespath.php.git",
-                "reference": "bbb69a935c2cbb0c03d7f481a238027430f6440b"
+                "reference": "a2a865e05d5f420b50cc2f85bb78d565db12a6bc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/jmespath/jmespath.php/zipball/bbb69a935c2cbb0c03d7f481a238027430f6440b",
-                "reference": "bbb69a935c2cbb0c03d7f481a238027430f6440b",
+                "url": "https://api.github.com/repos/jmespath/jmespath.php/zipball/a2a865e05d5f420b50cc2f85bb78d565db12a6bc",
+                "reference": "a2a865e05d5f420b50cc2f85bb78d565db12a6bc",
                 "shasum": ""
             },
             "require": {
@@ -9054,7 +9055,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.7-dev"
+                    "dev-master": "2.8-dev"
                 }
             },
             "autoload": {
@@ -9088,9 +9089,9 @@
             ],
             "support": {
                 "issues": "https://github.com/jmespath/jmespath.php/issues",
-                "source": "https://github.com/jmespath/jmespath.php/tree/2.7.0"
+                "source": "https://github.com/jmespath/jmespath.php/tree/2.8.0"
             },
-            "time": "2023-08-25T10:54:48+00:00"
+            "time": "2024-09-04T18:46:31+00:00"
         },
         {
             "name": "mustache/mustache",
