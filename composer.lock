@@ -1478,6 +1478,7 @@
                 "rss": "https://github.com/laminas/laminas-config/releases.atom",
                 "source": "https://github.com/laminas/laminas-config"
             },
+            "abandoned": true,
             "time": "2019-12-31T16:30:04+00:00"
         },
         {
@@ -2620,6 +2621,7 @@
                 "rss": "https://github.com/laminas/laminas-json/releases.atom",
                 "source": "https://github.com/laminas/laminas-json"
             },
+            "abandoned": true,
             "time": "2019-12-31T17:15:00+00:00"
         },
         {
@@ -2676,6 +2678,7 @@
                     "type": "community_bridge"
                 }
             ],
+            "abandoned": true,
             "time": "2021-09-02T18:30:53+00:00"
         },
         {
@@ -2962,6 +2965,7 @@
                     "type": "community_bridge"
                 }
             ],
+            "abandoned": "symfony/mime",
             "time": "2022-08-30T09:38:41+00:00"
         },
         {
@@ -6889,16 +6893,16 @@
         },
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.328.3",
+            "version": "3.330.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "bceb5a6443ecd51e988ef28af70210f7168ad0e5"
+                "reference": "136749f15d1dbff07064ef5ba1c2f08b96cf78ff"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/bceb5a6443ecd51e988ef28af70210f7168ad0e5",
-                "reference": "bceb5a6443ecd51e988ef28af70210f7168ad0e5",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/136749f15d1dbff07064ef5ba1c2f08b96cf78ff",
+                "reference": "136749f15d1dbff07064ef5ba1c2f08b96cf78ff",
                 "shasum": ""
             },
             "require": {
@@ -6981,9 +6985,9 @@
             "support": {
                 "forum": "https://forums.aws.amazon.com/forum.jspa?forumID=80",
                 "issues": "https://github.com/aws/aws-sdk-php/issues",
-                "source": "https://github.com/aws/aws-sdk-php/tree/3.328.3"
+                "source": "https://github.com/aws/aws-sdk-php/tree/3.330.1"
             },
-            "time": "2024-11-20T19:04:23+00:00"
+            "time": "2024-11-25T19:20:00+00:00"
         },
         {
             "name": "behat/gherkin",
