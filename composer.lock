@@ -2728,13 +2728,13 @@
             },
             "type": "library",
             "extra": {
-                "branch-alias": {
-                    "dev-master": "2.12.x-dev",
-                    "dev-develop": "2.13.x-dev"
-                },
                 "laminas": {
                     "component": "Laminas\\Log",
                     "config-provider": "Laminas\\Log\\ConfigProvider"
+                },
+                "branch-alias": {
+                    "dev-master": "2.12.x-dev",
+                    "dev-develop": "2.13.x-dev"
                 }
             },
             "autoload": {
@@ -2761,6 +2761,7 @@
                 "rss": "https://github.com/laminas/laminas-log/releases.atom",
                 "source": "https://github.com/laminas/laminas-log"
             },
+            "abandoned": "monolog/monolog",
             "time": "2019-12-31T17:18:59+00:00"
         },
         {
@@ -2904,6 +2905,7 @@
                 "rss": "https://github.com/laminas/laminas-math/releases.atom",
                 "source": "https://github.com/laminas/laminas-math"
             },
+            "abandoned": true,
             "time": "2019-12-31T17:24:15+00:00"
         },
         {
@@ -3676,6 +3678,7 @@
                 "rss": "https://github.com/laminas/laminas-text/releases.atom",
                 "source": "https://github.com/laminas/laminas-text"
             },
+            "abandoned": true,
             "time": "2019-12-31T17:54:52+00:00"
         },
         {
@@ -6893,16 +6896,16 @@
         },
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.332.0",
+            "version": "3.334.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "3b4972a465b66fe3da461a3febdcc363954a0969"
+                "reference": "3938b3467f64a30fed7ee1762a6785f808a5ae4d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/3b4972a465b66fe3da461a3febdcc363954a0969",
-                "reference": "3b4972a465b66fe3da461a3febdcc363954a0969",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/3938b3467f64a30fed7ee1762a6785f808a5ae4d",
+                "reference": "3938b3467f64a30fed7ee1762a6785f808a5ae4d",
                 "shasum": ""
             },
             "require": {
@@ -6985,9 +6988,9 @@
             "support": {
                 "forum": "https://forums.aws.amazon.com/forum.jspa?forumID=80",
                 "issues": "https://github.com/aws/aws-sdk-php/issues",
-                "source": "https://github.com/aws/aws-sdk-php/tree/3.332.0"
+                "source": "https://github.com/aws/aws-sdk-php/tree/3.334.1"
             },
-            "time": "2024-12-02T03:48:16+00:00"
+            "time": "2024-12-05T01:17:41+00:00"
         },
         {
             "name": "behat/gherkin",
