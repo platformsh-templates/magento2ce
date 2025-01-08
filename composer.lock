@@ -229,16 +229,16 @@
         },
         {
             "name": "composer/ca-bundle",
-            "version": "1.5.4",
+            "version": "1.5.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/composer/ca-bundle.git",
-                "reference": "bc0593537a463e55cadf45fd938d23b75095b7e1"
+                "reference": "08c50d5ec4c6ced7d0271d2862dec8c1033283e6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/composer/ca-bundle/zipball/bc0593537a463e55cadf45fd938d23b75095b7e1",
-                "reference": "bc0593537a463e55cadf45fd938d23b75095b7e1",
+                "url": "https://api.github.com/repos/composer/ca-bundle/zipball/08c50d5ec4c6ced7d0271d2862dec8c1033283e6",
+                "reference": "08c50d5ec4c6ced7d0271d2862dec8c1033283e6",
                 "shasum": ""
             },
             "require": {
@@ -285,7 +285,7 @@
             "support": {
                 "irc": "irc://irc.freenode.org/composer",
                 "issues": "https://github.com/composer/ca-bundle/issues",
-                "source": "https://github.com/composer/ca-bundle/tree/1.5.4"
+                "source": "https://github.com/composer/ca-bundle/tree/1.5.5"
             },
             "funding": [
                 {
@@ -301,7 +301,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2024-11-27T15:35:25+00:00"
+            "time": "2025-01-08T16:17:16+00:00"
         },
         {
             "name": "composer/composer",
@@ -6896,16 +6896,16 @@
         },
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.336.10",
+            "version": "3.336.11",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "bb137145fdbcd4ca121446157d804b9653aff54c"
+                "reference": "442039c766a82f06ecfecb0ac2c610d6aaba228d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/bb137145fdbcd4ca121446157d804b9653aff54c",
-                "reference": "bb137145fdbcd4ca121446157d804b9653aff54c",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/442039c766a82f06ecfecb0ac2c610d6aaba228d",
+                "reference": "442039c766a82f06ecfecb0ac2c610d6aaba228d",
                 "shasum": ""
             },
             "require": {
@@ -6988,9 +6988,9 @@
             "support": {
                 "forum": "https://forums.aws.amazon.com/forum.jspa?forumID=80",
                 "issues": "https://github.com/aws/aws-sdk-php/issues",
-                "source": "https://github.com/aws/aws-sdk-php/tree/3.336.10"
+                "source": "https://github.com/aws/aws-sdk-php/tree/3.336.11"
             },
-            "time": "2025-01-07T19:05:48+00:00"
+            "time": "2025-01-08T19:06:59+00:00"
         },
         {
             "name": "behat/gherkin",
