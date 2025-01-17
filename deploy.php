@@ -163,6 +163,7 @@ class MagentoDeployer
         $database = self::getRelationship('database');
         $search = self::getRelationship('search');
         $installFile = self::$FILE_PATHS['installed'];
+        $mysqlPassword = $database['password'];
 
         return [
             'Installing Magento 2.3' => [
@@ -176,6 +177,7 @@ class MagentoDeployer
                     '--db-host='.$database['host'],
                     '--db-name='.$database['path'],
                     '--db-user='.$database['username'],
+                    '--db-password='.$database['password'],
                     '--backend-frontname=admin',
                     '--language=en_US',
                     '--currency=USD',
@@ -206,8 +208,8 @@ class MagentoDeployer
                 'args' => [
                     "-h{$database['host']}",
                     "-u{$database['username']}",
-                    $database['password'] ?? "-p{$database['password']}", // Password, but only if there is one
-                    $database['path'],
+                    "--password='{$mysqlPassword}'",
+                    "-D {$database['path']}",
                     "-e \"insert into admin_passwords (user_id, password_hash, expires, last_updated) values (1, '123456789:2', 1, 1435156243);\"",
                 ],
                 'custom_fail_message' => 'WARNING! Failed to expire admin password. Please login to /admin and reset the password.',
