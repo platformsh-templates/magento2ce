@@ -1,4 +1,4 @@
-# Magento 2 Community Edition for Platform.sh
+# Magento 2 Community Edition for Platform.sh/Upsun
 
 <p align="center">
 <a href="https://console.platform.sh/projects/create-project?template=https://raw.githubusercontent.com/platformsh/template-builder/master/templates/magento2ce/.platform.template.yaml&utm_content=magento2ce&utm_source=github&utm_medium=button&utm_campaign=deploy_on_platform">
@@ -6,40 +6,41 @@
 </a>
 </p>
 
-This template builds Magento 2 CE on Platform.sh.  It includes additional scripts to customize Magento to run effectively in a build-and-deploy environment.  A MariaDB database and Redis cache server come pre-configured and work out of the box.  The installer has been modified to not ask for database information.  Background workers are run using a worker container rather than via cron.
+This template builds Magento 2 CE on Platform.sh and Upsun.  It includes the Magento ECE-Tools to run effectively in a build-and-deploy environment.  A MariaDB Database, Elasticsearch Indexer, RabbitMQ Message Queue and Redis Cache server come pre-configured and work out of the box. 
 
-Magento is a fully integrated ecommerce system and web store written in PHP.  This is the Open Source version.
+Magento is a fully integrated ecommerce system and web store written in PHP.  This is the Open Source version of Magento.
 
 ## Features
 
-* PHP 7.4
-* MariaDB 10.3
-* Redis 6.0
-* OpenSearch 1.2
-* Dedicated worker instance for background processing
+* PHP 8.3
+* MariaDB 10.6
+* Redis 7.2
+* Opensearch 2
+* RabbitMQ 3.13
 * Automatic TLS certificates
 * Composer-based build
 
-## Platform.sh Requirements
+## Composer Authentication and Post Installation Setup
 
-* Medium plan or greater.
-* Magento 2.3.7 - This Magento 2.4 requires different services versions and slightly modified setup/install commands.
-
-## Post-install
-
-1. The site comes pre-configured with an admin account, with username/password of `admin`/`admin123`.  Login at `/admin` in your browser.  **You will be required to update the password the first time you log in**.
+1. Get your Magento Repository authentication keys https://devdocs.magento.com/guides/v2.4/install-gde/prereq/connect-auth.html if you want to adjust the composer repo to https://repo.magento.com/
+2. Add your keys as a project level variable `platform variable:create -p <your Platform.sh projectID> --level project --name env:COMPOSER_AUTH --json true --visible-runtime false --sensitive true --visible-build true  --value '{"http-basic":{"repo.magento.com":{"username":"<your public key>","password":"<your private key>"}}}'`
+3. Replace https://mirror.mage-os.org/ in the composer.json with the https://repo.magento.com/
+4. Please disable Magento two factor auth for admin logins on development enviroments with mail disabled, please SSH into your application and run `bin/magento config:set twofactorauth/general/enable 0` 
+5. Please add an admin user using `php bin/magento admin:user:create`.  Login at `/admin` in your browser. 
 
 ## Customizations
 
-The following changes have been made relative to Magento 2 as it is downloaded from Magento.com.  If using this project as a reference for your own existing project, replicate the changes below to your project.
+If using this project as a reference for your own existing project, replicate the changes below to your project.
 
 * The `.platform.app.yaml`, `.platform/services.yaml`, and `.platform/routes.yaml` files have been added.  These provide Platform.sh-specific configuration and are present in all projects on Platform.sh.  You may customize them as you see fit.
-* A custom deploy script is provided in the `deploy.php` file and called from the deploy hook in `.platform.app.yaml`.  The `deploy` script handles installing Magento on first run, including populating the administrator account.  It also handles Magento self-updates on normal point release updates.
-* The installer has been patched to not ask for information that is already provided by Platform.sh, such as database credentials, file paths, or the initial administrator account.  These changes should have no impact post-installation.  See the [patch file](https://github.com/platformsh/template-builder/blob/master/templates/magento2ce/platformsh.patch) for details.
-* An additional step has been added to the `deploy.php` file to force the cron process to not start background workers. See [disable-cron-workers.php](disable-cron-workers.php) for details. It runs on deploy and modifies the `.config/env.php` file.
-* A worker container is also created to handle background processing. That means that Magento cannot be run on a production plan smaller than Medium.
+* The `.upsun/config.yaml` files has been added. This provides Upsun-specific configuration which can also be reviewed.
+* The `composer.json` file has had the ECE-Tools package and its dependencies added.
+* We are using https://mirror.mage-os.org/ and GitHub for the Magento sources.
+* Magento crons have been setup to ensure they are run sequentially to ensure there is availible memory
+* A logrotate and report housekeeping cron have been added.
+* A module which allows two factor authentication to be disabled has been added to `composer.json`.
 
 ## References
 
-* [Magento](https://magento.com/)
+* [Adobe Commerce Docs](https://experienceleague.adobe.com/en/docs/commerce)
 * [PHP on Platform.sh](https://docs.platform.sh/languages/php.html)

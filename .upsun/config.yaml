@@ -1,0 +1,205 @@
+applications:
+    app:
+        # The runtime the application uses.
+        type: php:8.3
+        # Specify additional PHP extensions that should be loaded.
+        runtime:
+            extensions:
+                - xsl
+                - sodium
+                - redis
+                - blackfire
+        variables:
+            env:
+                NVM_VERSION: master
+                NODE_VERSION: 20
+                MAGENTO_DC_INDEXER__USE_APPLICATION_LOCK: true
+                MAGENTO_INDEXER_BATCH_SIZE__CATALOGINVENTORY_STOCK__SIMPLE: 200
+                MAGENTO_INDEXER_BATCH_SIZE__CATALOG_CATEGORY_PRODUCT: 666
+                MAGENTO_INDEXER_BATCH_SIZE__CATALOGSEARCH_FULLTEXT__PARTIAL_REINDEX: 100
+                MAGENTO_INDEXER_BATCH_SIZE__CATALOGSEARCH_FULLTEXT__MYSQL_GET: 500
+                MAGENTO_INDEXER_BATCH_SIZE__CATALOGSEARCH_FULLTEXT__ELASTIC_SAVE: 500
+                MAGENTO_INDEXER_BATCH_SIZE__CATALOG_PRODUCT_PRICE__SIMPLE: 200
+                MAGENTO_INDEXER_BATCH_SIZE__CATALOG_PRODUCT_PRICE__DEFAULT: 500
+                MAGENTO_INDEXER_BATCH_SIZE__CATALOG_PRODUCT_PRICE__CONFIGURABLE: 666
+                MAGENTO_INDEXER_BATCH_SIZE__CATALOGPERMISSIONS_CATEGORY: 999
+                MAGENTO_INDEXER_BATCH_SIZE__INVENTORY__SIMPLE: 210
+                MAGENTO_INDEXER_BATCH_SIZE__INVENTORY__DEFAULT: 510
+                MAGENTO_INDEXER_BATCH_SIZE__INVENTORY__CONFIGURABLE: 616
+            php:
+                memory_limit: "512M"
+        # Configuration of the build of this application.
+        build:
+            flavor: none
+        dependencies:
+            php:
+                composer/composer: '^2'
+        # The relationships of the application with services or other applications.
+        #
+        # The left-hand side is the name of the relationship as it will be exposed
+        # to the application in the PLATFORM_RELATIONSHIPS variable. The right-hand
+        # side is in the form `<service name>:<endpoint name>`.
+        relationships:
+            database: 
+              service: db
+              endpoint: write
+            database-slave: 
+              service: db
+              endpoint: read
+            redis:
+                service: cache
+                endpoint: redis
+            redis-slave:
+                service: cache
+                endpoint: redis-replica
+            redis-session: session:redis
+            opensearch: indexer:opensearch
+            rabbitmq: queue:rabbitmq
+        # The 'mounts' describe writable, persistent filesystem mounts in the application.
+        mounts:
+            "/var":
+                source: storage
+                source_path: "var"
+            "/var/log":
+                source: instance
+                source_path: "log"
+            "/app/etc":
+                source: storage
+                source_path: "etc"
+            "/pub/media":
+                source: storage
+                source_path: "media"
+            "/pub/static":
+                source: storage
+                source_path: "static"
+            "/var/report":
+                source: tmp
+                source_path: "report"
+        # The hooks executed at various points in the lifecycle of the application.
+        hooks:
+            build: |
+              set -e
+              #prep node as per https://experienceleague.adobe.com/en/docs/commerce-knowledge-base/kb/how-to/configure-npm-to-be-able-to-use-pwa-studio
+              unset NPM_CONFIG_PREFIX
+              export NVM_DIR="$PLATFORM_APP_DIR/.nvm"
+              # install.sh will automatically install NodeJS based on the presence of $NODE_VERSION
+              curl -f -o- https://raw.githubusercontent.com/nvm-sh/nvm/$NVM_VERSION/install.sh | bash
+              [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+              npm -v
+              nvm install $NODE_VERSION
+              echo 'unset NPM_CONFIG_PREFIX' >> .environment
+              echo 'export NO_UPDATE_NOTIFIER=1' >> .environment
+              echo 'export NVM_DIR="$PLATFORM_APP_DIR/.nvm"' >> .environment
+              echo '[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"' >> .environment
+              #install php application
+              composer install --no-dev --no-interaction
+              php ./vendor/bin/ece-tools run scenario/build/generate.xml
+              php ./vendor/bin/ece-tools run scenario/build/transfer.xml
+              sed -i 's/_process>1<\/use_/_process>0<\/use_/g' ${PLATFORM_APP_DIR}/vendor/magento/*/etc/cron_groups.xml
+            deploy: |
+              php ./vendor/bin/ece-tools run scenario/deploy.xml
+            post_deploy: |
+              php ./vendor/bin/ece-tools run scenario/post-deploy.xml
+        # The configuration of scheduled execution.
+        crons:
+            magento:
+                spec: "*/5 * * * *"
+                cmd: bash -c 'for group in $(grep -shoP "(?<=<group id=\")(.+)(?=\">)" {app,vendor}/*/*/etc/cron_groups.xml); do echo -n Running cron group ${group} --- && php -d memory_limit=-1 bin/magento cron:run --group=${group}; done'
+            logrotate:
+                spec: "45 1 * * *"
+                cmd: shtool rotate -n10 $PLATFORM_APP_DIR/var/log/*.log
+            reportcleanup:
+                spec: "0 2 * * *"
+                cmd: find $PLATFORM_APP_DIR/var/report/* -mtime +10 -delete
+        # The configuration of app when it is exposed to the web.
+        web:
+            locations:
+                "/":
+                    # The public directory of the app, relative to its root.
+                    root: "pub"
+                    # The front-controller script to send non-static requests to.
+                    passthru: "/index.php"
+                    index:
+                        - index.php
+                    expires: -1
+                    scripts: true
+                    allow: false
+                    rules:
+                        ? \.(css|js|map|hbs|gif|jpe?g|png|tiff|wbmp|ico|jng|bmp|svgz|midi?|mp?ga|mp2|mp3|m4a|ra|weba|3gpp?|mp4|mpe?g|mpe|ogv|mov|webm|flv|mng|asx|asf|wmv|avi|ogx|swf|jar|ttf|eot|woff|otf|html?)$
+                        :   allow: true
+                        ^/sitemap(.*)\.xml$:
+                            passthru: "/media/sitemap$1.xml"
+                        ^/.well-known/apple-developer-merchantid-domain-association.xml$:
+                            passthru: "/media/apple-developer-merchantid-domain-association.xml"
+                        ^/.well-known/apple-developer-merchantid-domain-association.txt$:
+                            passthru: "/media/apple-developer-merchantid-domain-association.txt"
+                "/media":
+                    root: "pub/media"
+                    allow: true
+                    scripts: false
+                    expires: 1y
+                    passthru: "/get.php"
+                "/static":
+                    root: "pub/static"
+                    allow: true
+                    scripts: false
+                    expires: 1y
+                    passthru: "/front-static.php"
+                    rules:
+                        ^/static/version\d+/(?<resource>.*)$:
+                            passthru: "/static/$resource"
+        source:
+            root: /
+services:
+    db:
+        type: mariadb:10.6
+        configuration:
+          schemas:
+            - main
+          endpoints:
+            write:
+              default_schema: main
+              privileges:
+                main: admin
+            read:
+              default_schema: main
+              privileges:
+                main: ro
+    
+    cache:
+        type: redis:7.2
+        configuration:
+            maxmemory_policy: allkeys-lru
+    
+    session:
+        type: redis-persistent:7.2
+        configuration:
+            maxmemory_policy: allkeys-lru
+    
+    indexer:
+        type: opensearch:2
+        configuration:
+            plugins:
+                - analysis-phonetic
+                - analysis-icu
+    queue:
+        type: rabbitmq:3.13
+routes:
+    https://{default}/:
+        type: upstream
+        upstream: app:http
+    https://{default}/static/:
+        type: upstream
+        upstream: app:http
+        cache:
+            enabled: true
+            cookies: []
+    https://{all}/:
+        type: upstream
+        upstream: app:http
+    https://{all}/static/:
+        type: upstream
+        upstream: app:http
+        cache:
+            enabled: true
+            cookies: []
